@@ -1,0 +1,146 @@
+{
+  "version": "20260216_232033",
+  "engine": "lightgbm",
+  "created_at": "2026-02-16T23:20:33.754670",
+  "n_features": 39,
+  "feature_names": [
+    "log_revenue_2025",
+    "log_revenue_2024",
+    "log_revenue_2023",
+    "log_revenue_2022",
+    "log_revenue_2021",
+    "log_revenue_2020",
+    "log_profit_2025",
+    "log_profit_2024",
+    "log_profit_2023",
+    "log_profit_2022",
+    "log_profit_2021",
+    "log_profit_2020",
+    "max_revenue_log",
+    "max_profit_log",
+    "revenue_trend",
+    "profit_margin",
+    "revenue_stability",
+    "years_with_revenue",
+    "trl",
+    "irl",
+    "mrl",
+    "crl",
+    "patent_count",
+    "tech_count",
+    "has_ai",
+    "product_count",
+    "industry_count",
+    "project_count",
+    "has_revenue",
+    "company_age",
+    "cluster_IT-кластер",
+    "cluster_Биомед",
+    "cluster_Энерготех",
+    "cluster_Космос",
+    "cluster_Ядерные технологии",
+    "status_encoded",
+    "len_company_desc",
+    "len_product_desc",
+    "len_technologies"
+  ],
+  "cv_metrics": {
+    "folds": [
+      {
+        "fold": 1,
+        "mae": 0.1287,
+        "rmse": 0.2798,
+        "r2": 0.9739
+      },
+      {
+        "fold": 2,
+        "mae": 0.1431,
+        "rmse": 0.3289,
+        "r2": 0.9668
+      },
+      {
+        "fold": 3,
+        "mae": 0.1391,
+        "rmse": 0.3164,
+        "r2": 0.9689
+      },
+      {
+        "fold": 4,
+        "mae": 0.1509,
+        "rmse": 0.3772,
+        "r2": 0.9551
+      },
+      {
+        "fold": 5,
+        "mae": 0.1229,
+        "rmse": 0.2436,
+        "r2": 0.9826
+      }
+    ],
+    "avg_mae": 0.1369,
+    "avg_rmse": 0.3092,
+    "avg_r2": 0.9695
+  },
+  "top_features": [
+    {
+      "feature": "crl",
+      "importance": 564.0
+    },
+    {
+      "feature": "patent_count",
+      "importance": 527.0
+    },
+    {
+      "feature": "len_technologies",
+      "importance": 522.0
+    },
+    {
+      "feature": "max_revenue_log",
+      "importance": 440.0
+    },
+    {
+      "feature": "revenue_trend",
+      "importance": 437.0
+    },
+    {
+      "feature": "irl",
+      "importance": 425.0
+    },
+    {
+      "feature": "trl",
+      "importance": 386.0
+    },
+    {
+      "feature": "max_profit_log",
+      "importance": 350.0
+    },
+    {
+      "feature": "len_company_desc",
+      "importance": 343.0
+    },
+    {
+      "feature": "len_product_desc",
+      "importance": 314.0
+    },
+    {
+      "feature": "log_profit_2021",
+      "importance": 289.0
+    },
+    {
+      "feature": "has_ai",
+      "importance": 257.0
+    },
+    {
+      "feature": "mrl",
+      "importance": 238.0
+    },
+    {
+      "feature": "profit_margin",
+      "importance": 212.0
+    },
+    {
+      "feature": "tech_count",
+      "importance": 211.0
+    }
+  ]
+}

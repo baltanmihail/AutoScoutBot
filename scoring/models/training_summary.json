@@ -1,0 +1,380 @@
+{
+  "engine": "lightgbm",
+  "trained_at": "2026-02-16T23:28:04.092464",
+  "n_samples": 5166,
+  "n_features": 39,
+  "targets": {
+    "overall": {
+      "version": "20260216_232756",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.1287,
+            "rmse": 0.2798,
+            "r2": 0.9739
+          },
+          {
+            "fold": 2,
+            "mae": 0.1431,
+            "rmse": 0.3289,
+            "r2": 0.9668
+          },
+          {
+            "fold": 3,
+            "mae": 0.1391,
+            "rmse": 0.3164,
+            "r2": 0.9689
+          },
+          {
+            "fold": 4,
+            "mae": 0.1509,
+            "rmse": 0.3772,
+            "r2": 0.9551
+          },
+          {
+            "fold": 5,
+            "mae": 0.1229,
+            "rmse": 0.2436,
+            "r2": 0.9826
+          }
+        ],
+        "avg_mae": 0.1369,
+        "avg_rmse": 0.3092,
+        "avg_r2": 0.9695
+      },
+      "top_features": [
+        {
+          "feature": "crl",
+          "importance": 564.0
+        },
+        {
+          "feature": "patent_count",
+          "importance": 527.0
+        },
+        {
+          "feature": "len_technologies",
+          "importance": 522.0
+        },
+        {
+          "feature": "max_revenue_log",
+          "importance": 440.0
+        },
+        {
+          "feature": "revenue_trend",
+          "importance": 437.0
+        }
+      ]
+    },
+    "tech_maturity": {
+      "version": "20260216_232757",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.1398,
+            "rmse": 0.4277,
+            "r2": 0.9675
+          },
+          {
+            "fold": 2,
+            "mae": 0.1435,
+            "rmse": 0.4966,
+            "r2": 0.9573
+          },
+          {
+            "fold": 3,
+            "mae": 0.1473,
+            "rmse": 0.3953,
+            "r2": 0.9742
+          },
+          {
+            "fold": 4,
+            "mae": 0.1537,
+            "rmse": 0.4875,
+            "r2": 0.9589
+          },
+          {
+            "fold": 5,
+            "mae": 0.1244,
+            "rmse": 0.2924,
+            "r2": 0.9857
+          }
+        ],
+        "avg_mae": 0.1417,
+        "avg_rmse": 0.4199,
+        "avg_r2": 0.9687
+      },
+      "top_features": [
+        {
+          "feature": "trl",
+          "importance": 754.0
+        },
+        {
+          "feature": "irl",
+          "importance": 698.0
+        },
+        {
+          "feature": "crl",
+          "importance": 549.0
+        },
+        {
+          "feature": "mrl",
+          "importance": 527.0
+        },
+        {
+          "feature": "len_company_desc",
+          "importance": 325.0
+        }
+      ]
+    },
+    "innovation": {
+      "version": "20260216_232759",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.1128,
+            "rmse": 0.2694,
+            "r2": 0.9832
+          },
+          {
+            "fold": 2,
+            "mae": 0.1172,
+            "rmse": 0.3577,
+            "r2": 0.9743
+          },
+          {
+            "fold": 3,
+            "mae": 0.1053,
+            "rmse": 0.2935,
+            "r2": 0.9809
+          },
+          {
+            "fold": 4,
+            "mae": 0.1185,
+            "rmse": 0.3571,
+            "r2": 0.9737
+          },
+          {
+            "fold": 5,
+            "mae": 0.1121,
+            "rmse": 0.3763,
+            "r2": 0.9708
+          }
+        ],
+        "avg_mae": 0.1132,
+        "avg_rmse": 0.3308,
+        "avg_r2": 0.9766
+      },
+      "top_features": [
+        {
+          "feature": "patent_count",
+          "importance": 915.0
+        },
+        {
+          "feature": "tech_count",
+          "importance": 761.0
+        },
+        {
+          "feature": "trl",
+          "importance": 697.0
+        },
+        {
+          "feature": "len_technologies",
+          "importance": 459.0
+        },
+        {
+          "feature": "has_ai",
+          "importance": 454.0
+        }
+      ]
+    },
+    "market_potential": {
+      "version": "20260216_232801",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.0956,
+            "rmse": 0.3276,
+            "r2": 0.9737
+          },
+          {
+            "fold": 2,
+            "mae": 0.1105,
+            "rmse": 0.3375,
+            "r2": 0.9738
+          },
+          {
+            "fold": 3,
+            "mae": 0.1074,
+            "rmse": 0.3466,
+            "r2": 0.9721
+          },
+          {
+            "fold": 4,
+            "mae": 0.1151,
+            "rmse": 0.4465,
+            "r2": 0.9538
+          },
+          {
+            "fold": 5,
+            "mae": 0.0974,
+            "rmse": 0.2246,
+            "r2": 0.9892
+          }
+        ],
+        "avg_mae": 0.1052,
+        "avg_rmse": 0.3366,
+        "avg_r2": 0.9725
+      },
+      "top_features": [
+        {
+          "feature": "irl",
+          "importance": 744.0
+        },
+        {
+          "feature": "industry_count",
+          "importance": 618.0
+        },
+        {
+          "feature": "product_count",
+          "importance": 504.0
+        },
+        {
+          "feature": "patent_count",
+          "importance": 390.0
+        },
+        {
+          "feature": "len_product_desc",
+          "importance": 357.0
+        }
+      ]
+    },
+    "team_readiness": {
+      "version": "20260216_232802",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.0821,
+            "rmse": 0.2239,
+            "r2": 0.9796
+          },
+          {
+            "fold": 2,
+            "mae": 0.088,
+            "rmse": 0.2477,
+            "r2": 0.976
+          },
+          {
+            "fold": 3,
+            "mae": 0.0952,
+            "rmse": 0.3098,
+            "r2": 0.961
+          },
+          {
+            "fold": 4,
+            "mae": 0.105,
+            "rmse": 0.3485,
+            "r2": 0.9557
+          },
+          {
+            "fold": 5,
+            "mae": 0.0762,
+            "rmse": 0.2255,
+            "r2": 0.9792
+          }
+        ],
+        "avg_mae": 0.0893,
+        "avg_rmse": 0.2711,
+        "avg_r2": 0.9703
+      },
+      "top_features": [
+        {
+          "feature": "crl",
+          "importance": 741.0
+        },
+        {
+          "feature": "irl",
+          "importance": 615.0
+        },
+        {
+          "feature": "max_revenue_log",
+          "importance": 379.0
+        },
+        {
+          "feature": "len_company_desc",
+          "importance": 365.0
+        },
+        {
+          "feature": "log_profit_2020",
+          "importance": 360.0
+        }
+      ]
+    },
+    "financial_health": {
+      "version": "20260216_232804",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.1388,
+            "rmse": 0.3827,
+            "r2": 0.9723
+          },
+          {
+            "fold": 2,
+            "mae": 0.1438,
+            "rmse": 0.3801,
+            "r2": 0.9731
+          },
+          {
+            "fold": 3,
+            "mae": 0.1412,
+            "rmse": 0.3991,
+            "r2": 0.9705
+          },
+          {
+            "fold": 4,
+            "mae": 0.1638,
+            "rmse": 0.4631,
+            "r2": 0.9578
+          },
+          {
+            "fold": 5,
+            "mae": 0.1312,
+            "rmse": 0.3184,
+            "r2": 0.9809
+          }
+        ],
+        "avg_mae": 0.1438,
+        "avg_rmse": 0.3887,
+        "avg_r2": 0.9709
+      },
+      "top_features": [
+        {
+          "feature": "max_profit_log",
+          "importance": 644.0
+        },
+        {
+          "feature": "revenue_trend",
+          "importance": 633.0
+        },
+        {
+          "feature": "max_revenue_log",
+          "importance": 392.0
+        },
+        {
+          "feature": "len_technologies",
+          "importance": 372.0
+        },
+        {
+          "feature": "years_with_revenue",
+          "importance": 367.0
+        }
+      ]
+    }
+  }
+}
