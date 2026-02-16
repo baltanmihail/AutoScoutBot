@@ -312,7 +312,22 @@ def calculate_patent_score(startup: dict) -> dict:
 
 
 def analyze_startup(startup: dict):
-    """Проводит комплексный анализ стартапа"""
+    """
+    Комплексный анализ стартапа.
+    Приоритет: ML-модель (LightGBM, R²>0.96) -> heuristics (fallback).
+    """
+    # --- ML scoring (primary) ---
+    try:
+        from scoring.ml_scoring import ml_analyze_startup
+        ml_result = ml_analyze_startup(startup)
+        if ml_result is not None:
+            return ml_result
+    except ImportError:
+        pass
+    except Exception as e:
+        logger.warning(f"ML scoring fallback: {e}")
+
+    # --- Heuristic scoring (fallback) ---
     try:
         trl_raw = startup.get("trl", 0)
         irl_raw = startup.get("irl", 0)
