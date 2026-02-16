@@ -1,10 +1,14 @@
-# files and folders of projects
+# Secrets (НЕ коммитить!)
 config.py
 config_local.py
+.env
+
+# Временные / генерируемые файлы
 startups_report.csv
 refund_for_devs.py
-SkolkovoStartups.csv
 rag_index_gigachat.json
+
+# SkolkovoStartups.csv -- КОММИТИТСЯ (нужен на Railway, репо приватный)
 
 # Данные и кэш (опционально — раскомментируйте, если не хотите коммитить)
 # query_history.db
