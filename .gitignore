@@ -3,6 +3,8 @@ config.py
 config_local.py
 startups_report.csv
 refund_for_devs.py
+SkolkovoStartups.csv
+rag_index_gigachat.json
 
 # Данные и кэш (опционально — раскомментируйте, если не хотите коммитить)
 # query_history.db
