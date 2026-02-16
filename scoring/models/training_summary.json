@@ -1,378 +1,378 @@
 {
-  "engine": "lightgbm",
-  "trained_at": "2026-02-16T23:28:04.092464",
+  "engine": "xgboost",
+  "trained_at": "2026-02-17T01:07:16.805988",
   "n_samples": 5166,
   "n_features": 39,
   "targets": {
     "overall": {
-      "version": "20260216_232756",
+      "version": "20260217_010658",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1287,
-            "rmse": 0.2798,
-            "r2": 0.9739
+            "mae": 0.135,
+            "rmse": 0.2938,
+            "r2": 0.9713
           },
           {
             "fold": 2,
-            "mae": 0.1431,
-            "rmse": 0.3289,
-            "r2": 0.9668
+            "mae": 0.1392,
+            "rmse": 0.3254,
+            "r2": 0.9675
           },
           {
             "fold": 3,
-            "mae": 0.1391,
-            "rmse": 0.3164,
-            "r2": 0.9689
+            "mae": 0.1373,
+            "rmse": 0.3199,
+            "r2": 0.9682
           },
           {
             "fold": 4,
-            "mae": 0.1509,
-            "rmse": 0.3772,
-            "r2": 0.9551
+            "mae": 0.1503,
+            "rmse": 0.3834,
+            "r2": 0.9536
           },
           {
             "fold": 5,
-            "mae": 0.1229,
-            "rmse": 0.2436,
+            "mae": 0.1175,
+            "rmse": 0.2434,
             "r2": 0.9826
           }
         ],
-        "avg_mae": 0.1369,
-        "avg_rmse": 0.3092,
-        "avg_r2": 0.9695
+        "avg_mae": 0.1359,
+        "avg_rmse": 0.3132,
+        "avg_r2": 0.9686
       },
       "top_features": [
         {
-          "feature": "crl",
-          "importance": 564.0
+          "feature": "trl",
+          "importance": 0.249
         },
         {
-          "feature": "patent_count",
-          "importance": 527.0
+          "feature": "has_revenue",
+          "importance": 0.2471
         },
         {
-          "feature": "len_technologies",
-          "importance": 522.0
+          "feature": "mrl",
+          "importance": 0.1451
+        },
+        {
+          "feature": "irl",
+          "importance": 0.1093
         },
         {
           "feature": "max_revenue_log",
-          "importance": 440.0
-        },
-        {
-          "feature": "revenue_trend",
-          "importance": 437.0
+          "importance": 0.0749
         }
       ]
     },
     "tech_maturity": {
-      "version": "20260216_232757",
+      "version": "20260217_010701",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1398,
-            "rmse": 0.4277,
-            "r2": 0.9675
+            "mae": 0.1329,
+            "rmse": 0.4459,
+            "r2": 0.9647
           },
           {
             "fold": 2,
-            "mae": 0.1435,
-            "rmse": 0.4966,
-            "r2": 0.9573
+            "mae": 0.1382,
+            "rmse": 0.4972,
+            "r2": 0.9572
           },
           {
             "fold": 3,
-            "mae": 0.1473,
-            "rmse": 0.3953,
-            "r2": 0.9742
+            "mae": 0.1339,
+            "rmse": 0.4002,
+            "r2": 0.9736
           },
           {
             "fold": 4,
-            "mae": 0.1537,
-            "rmse": 0.4875,
-            "r2": 0.9589
+            "mae": 0.1489,
+            "rmse": 0.5056,
+            "r2": 0.9558
           },
           {
             "fold": 5,
-            "mae": 0.1244,
-            "rmse": 0.2924,
-            "r2": 0.9857
+            "mae": 0.1171,
+            "rmse": 0.3069,
+            "r2": 0.9842
           }
         ],
-        "avg_mae": 0.1417,
-        "avg_rmse": 0.4199,
-        "avg_r2": 0.9687
+        "avg_mae": 0.1342,
+        "avg_rmse": 0.4312,
+        "avg_r2": 0.9671
       },
       "top_features": [
         {
           "feature": "trl",
-          "importance": 754.0
-        },
-        {
-          "feature": "irl",
-          "importance": 698.0
-        },
-        {
-          "feature": "crl",
-          "importance": 549.0
+          "importance": 0.4979
         },
         {
           "feature": "mrl",
-          "importance": 527.0
+          "importance": 0.2283
         },
         {
-          "feature": "len_company_desc",
-          "importance": 325.0
+          "feature": "irl",
+          "importance": 0.145
+        },
+        {
+          "feature": "crl",
+          "importance": 0.0287
+        },
+        {
+          "feature": "product_count",
+          "importance": 0.0089
         }
       ]
     },
     "innovation": {
-      "version": "20260216_232759",
+      "version": "20260217_010705",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1128,
-            "rmse": 0.2694,
-            "r2": 0.9832
+            "mae": 0.1088,
+            "rmse": 0.2862,
+            "r2": 0.9811
           },
           {
             "fold": 2,
-            "mae": 0.1172,
-            "rmse": 0.3577,
-            "r2": 0.9743
-          },
-          {
-            "fold": 3,
-            "mae": 0.1053,
-            "rmse": 0.2935,
-            "r2": 0.9809
-          },
-          {
-            "fold": 4,
-            "mae": 0.1185,
-            "rmse": 0.3571,
-            "r2": 0.9737
-          },
-          {
-            "fold": 5,
-            "mae": 0.1121,
-            "rmse": 0.3763,
-            "r2": 0.9708
-          }
-        ],
-        "avg_mae": 0.1132,
-        "avg_rmse": 0.3308,
-        "avg_r2": 0.9766
-      },
-      "top_features": [
-        {
-          "feature": "patent_count",
-          "importance": 915.0
-        },
-        {
-          "feature": "tech_count",
-          "importance": 761.0
-        },
-        {
-          "feature": "trl",
-          "importance": 697.0
-        },
-        {
-          "feature": "len_technologies",
-          "importance": 459.0
-        },
-        {
-          "feature": "has_ai",
-          "importance": 454.0
-        }
-      ]
-    },
-    "market_potential": {
-      "version": "20260216_232801",
-      "cv_metrics": {
-        "folds": [
-          {
-            "fold": 1,
-            "mae": 0.0956,
-            "rmse": 0.3276,
-            "r2": 0.9737
-          },
-          {
-            "fold": 2,
-            "mae": 0.1105,
-            "rmse": 0.3375,
+            "mae": 0.1119,
+            "rmse": 0.3612,
             "r2": 0.9738
           },
           {
             "fold": 3,
-            "mae": 0.1074,
-            "rmse": 0.3466,
-            "r2": 0.9721
+            "mae": 0.102,
+            "rmse": 0.3081,
+            "r2": 0.979
           },
           {
             "fold": 4,
-            "mae": 0.1151,
-            "rmse": 0.4465,
-            "r2": 0.9538
+            "mae": 0.117,
+            "rmse": 0.3779,
+            "r2": 0.9705
           },
           {
             "fold": 5,
-            "mae": 0.0974,
-            "rmse": 0.2246,
-            "r2": 0.9892
+            "mae": 0.1041,
+            "rmse": 0.3859,
+            "r2": 0.9693
           }
         ],
-        "avg_mae": 0.1052,
-        "avg_rmse": 0.3366,
-        "avg_r2": 0.9725
+        "avg_mae": 0.1088,
+        "avg_rmse": 0.3439,
+        "avg_r2": 0.9747
       },
       "top_features": [
         {
-          "feature": "irl",
-          "importance": 744.0
+          "feature": "trl",
+          "importance": 0.3316
         },
         {
-          "feature": "industry_count",
-          "importance": 618.0
+          "feature": "has_ai",
+          "importance": 0.2499
         },
         {
-          "feature": "product_count",
-          "importance": 504.0
+          "feature": "mrl",
+          "importance": 0.1494
         },
         {
           "feature": "patent_count",
-          "importance": 390.0
+          "importance": 0.0902
         },
         {
-          "feature": "len_product_desc",
-          "importance": 357.0
+          "feature": "len_technologies",
+          "importance": 0.0386
+        }
+      ]
+    },
+    "market_potential": {
+      "version": "20260217_010709",
+      "cv_metrics": {
+        "folds": [
+          {
+            "fold": 1,
+            "mae": 0.1031,
+            "rmse": 0.3599,
+            "r2": 0.9682
+          },
+          {
+            "fold": 2,
+            "mae": 0.1008,
+            "rmse": 0.3363,
+            "r2": 0.974
+          },
+          {
+            "fold": 3,
+            "mae": 0.1059,
+            "rmse": 0.3652,
+            "r2": 0.969
+          },
+          {
+            "fold": 4,
+            "mae": 0.1177,
+            "rmse": 0.4712,
+            "r2": 0.9486
+          },
+          {
+            "fold": 5,
+            "mae": 0.0971,
+            "rmse": 0.2479,
+            "r2": 0.9869
+          }
+        ],
+        "avg_mae": 0.1049,
+        "avg_rmse": 0.3561,
+        "avg_r2": 0.9693
+      },
+      "top_features": [
+        {
+          "feature": "has_revenue",
+          "importance": 0.6001
+        },
+        {
+          "feature": "irl",
+          "importance": 0.1729
+        },
+        {
+          "feature": "years_with_revenue",
+          "importance": 0.1178
+        },
+        {
+          "feature": "industry_count",
+          "importance": 0.0373
+        },
+        {
+          "feature": "max_revenue_log",
+          "importance": 0.0174
         }
       ]
     },
     "team_readiness": {
-      "version": "20260216_232802",
+      "version": "20260217_010712",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.0821,
-            "rmse": 0.2239,
-            "r2": 0.9796
+            "mae": 0.0641,
+            "rmse": 0.2364,
+            "r2": 0.9773
           },
           {
             "fold": 2,
-            "mae": 0.088,
-            "rmse": 0.2477,
-            "r2": 0.976
+            "mae": 0.0726,
+            "rmse": 0.2535,
+            "r2": 0.9748
           },
           {
             "fold": 3,
-            "mae": 0.0952,
-            "rmse": 0.3098,
-            "r2": 0.961
+            "mae": 0.0787,
+            "rmse": 0.3111,
+            "r2": 0.9607
           },
           {
             "fold": 4,
-            "mae": 0.105,
-            "rmse": 0.3485,
-            "r2": 0.9557
+            "mae": 0.0901,
+            "rmse": 0.3558,
+            "r2": 0.9538
           },
           {
             "fold": 5,
-            "mae": 0.0762,
-            "rmse": 0.2255,
-            "r2": 0.9792
+            "mae": 0.0664,
+            "rmse": 0.2395,
+            "r2": 0.9765
           }
         ],
-        "avg_mae": 0.0893,
-        "avg_rmse": 0.2711,
-        "avg_r2": 0.9703
+        "avg_mae": 0.0744,
+        "avg_rmse": 0.2793,
+        "avg_r2": 0.9686
       },
       "top_features": [
         {
           "feature": "crl",
-          "importance": 741.0
+          "importance": 0.8703
         },
         {
           "feature": "irl",
-          "importance": 615.0
+          "importance": 0.0232
         },
         {
           "feature": "max_revenue_log",
-          "importance": 379.0
+          "importance": 0.0183
         },
         {
-          "feature": "len_company_desc",
-          "importance": 365.0
+          "feature": "mrl",
+          "importance": 0.0088
         },
         {
-          "feature": "log_profit_2020",
-          "importance": 360.0
+          "feature": "log_revenue_2023",
+          "importance": 0.0058
         }
       ]
     },
     "financial_health": {
-      "version": "20260216_232804",
+      "version": "20260217_010716",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1388,
-            "rmse": 0.3827,
-            "r2": 0.9723
+            "mae": 0.1321,
+            "rmse": 0.3963,
+            "r2": 0.9703
           },
           {
             "fold": 2,
-            "mae": 0.1438,
-            "rmse": 0.3801,
-            "r2": 0.9731
+            "mae": 0.1389,
+            "rmse": 0.3776,
+            "r2": 0.9735
           },
           {
             "fold": 3,
-            "mae": 0.1412,
-            "rmse": 0.3991,
-            "r2": 0.9705
+            "mae": 0.1376,
+            "rmse": 0.4028,
+            "r2": 0.97
           },
           {
             "fold": 4,
-            "mae": 0.1638,
-            "rmse": 0.4631,
-            "r2": 0.9578
+            "mae": 0.1505,
+            "rmse": 0.4602,
+            "r2": 0.9583
           },
           {
             "fold": 5,
-            "mae": 0.1312,
-            "rmse": 0.3184,
-            "r2": 0.9809
+            "mae": 0.1256,
+            "rmse": 0.3364,
+            "r2": 0.9787
           }
         ],
-        "avg_mae": 0.1438,
-        "avg_rmse": 0.3887,
-        "avg_r2": 0.9709
+        "avg_mae": 0.1369,
+        "avg_rmse": 0.3947,
+        "avg_r2": 0.9702
       },
       "top_features": [
         {
-          "feature": "max_profit_log",
-          "importance": 644.0
-        },
-        {
-          "feature": "revenue_trend",
-          "importance": 633.0
-        },
-        {
           "feature": "max_revenue_log",
-          "importance": 392.0
+          "importance": 0.492
         },
         {
-          "feature": "len_technologies",
-          "importance": 372.0
+          "feature": "max_profit_log",
+          "importance": 0.1478
+        },
+        {
+          "feature": "has_revenue",
+          "importance": 0.1252
+        },
+        {
+          "feature": "revenue_stability",
+          "importance": 0.062
         },
         {
           "feature": "years_with_revenue",
-          "importance": 367.0
+          "importance": 0.0351
         }
       ]
     }

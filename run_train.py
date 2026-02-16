@@ -36,11 +36,7 @@ for col in [c for c in labels.columns if c.startswith("score_")]:
 print("\n[2/2] Training all 6 scoring models ...")
 from scoring.train import train_multi_target
 
-try:
-    results = train_multi_target(csv_path, engine="lightgbm")
-except ImportError:
-    print("  LightGBM not available, trying XGBoost ...")
-    results = train_multi_target(csv_path, engine="xgboost")
+results = train_multi_target(csv_path, engine="xgboost")
 
 print("\n" + "=" * 60)
 print("  TRAINING COMPLETE -- Summary")

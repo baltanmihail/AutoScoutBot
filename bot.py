@@ -57,12 +57,12 @@ else:
     print("❌ Не удалось загрузить базу Сколково")
     SKOLKOVO_DB = []
 
-# ML Scoring: pre-warm LightGBM models (trained on Skolkovo expert data)
+# ML Scoring: pre-warm XGBoost models (trained on Skolkovo expert data)
 try:
     from scoring.ml_scoring import _get_predictor
     predictor = _get_predictor()
     if predictor and predictor.is_ready:
-        print(f"🧠 ML модель загружена (LightGBM, R²>0.96, version={predictor.version})")
+        print(f"🧠 ML модель загружена (XGBoost, R²>0.96, version={predictor.version})")
         print(f"   Анализ стартапов теперь использует ML вместо эвристик")
     else:
         print("⚠️ ML модель не найдена, используются эвристики")

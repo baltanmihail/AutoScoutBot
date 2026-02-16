@@ -1,5 +1,5 @@
 """
-ML Scoring bridge -- connects trained LightGBM models to the bot.
+ML Scoring bridge -- connects trained XGBoost models to the bot.
 
 Usage in bot code:
     from scoring.ml_scoring import ml_analyze_startup
@@ -115,7 +115,7 @@ def ml_analyze_startup(startup: dict) -> Optional[dict]:
 
         # ML scores breakdown
         comments.append("")
-        comments.append(f"🧠 ML-оценка (LightGBM, обучена на данных Сколково):")
+        comments.append(f"🧠 ML-оценка (XGBoost, обучена на данных Сколково):")
         comments.append(f"   ⭐ Общий балл: {overall:.1f}/10")
         comments.append(f"   🔬 Технологическая зрелость: {tech:.1f}/10")
         comments.append(f"   💡 Инновационность: {innov:.1f}/10")
