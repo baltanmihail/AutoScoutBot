@@ -12,6 +12,6 @@ if os.path.exists(lock): os.remove(lock)
 
 run("git add -A")
 run("git status --short")
-run('git commit -m "fix: add nixpacks.toml for lightgbm system deps on Railway"')
+run('git commit -m "fix: Dockerfile for LightGBM (libgomp) on Railway"')
 run("git push origin main")
 print("\nDone! Railway will auto-deploy.")
