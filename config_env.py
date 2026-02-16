@@ -2,7 +2,6 @@
 # Используется, если нет config_local.py (см. config.example.py и README).
 
 import os
-import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,7 +13,18 @@ def _env_int_list(key: str, default: list = None) -> list:
     s = _env(key)
     if not s:
         return default or []
-    return [int(x.strip()) for x in s.split(",") if x.strip()]
+    # Поддержка форматов: "1,2,3" или "[1, 2, 3]" (как в Railway)
+    s = s.strip().strip("[]")
+    result = []
+    for x in s.split(","):
+        x = x.strip().strip("[]")
+        if not x:
+            continue
+        try:
+            result.append(int(x))
+        except ValueError:
+            continue
+    return result if result else (default or [])
 
 # Секреты и пути (обязательно задать в .env или Railway)
 TELEGRAM_TOKEN = _env("TELEGRAM_TOKEN")
