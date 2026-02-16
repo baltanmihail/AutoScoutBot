@@ -12,6 +12,6 @@ if os.path.exists(lock): os.remove(lock)
 
 run("git add -A")
 run("git status --short")
-run('git commit -m "fix: restore ML scoring integration in bot.py + analyze_startup"')
+run('git commit -m "fix: add nixpacks.toml for lightgbm system deps on Railway"')
 run("git push origin main")
 print("\nDone! Railway will auto-deploy.")
