@@ -16,7 +16,7 @@
 
 3. **Пуш в GitHub:**
    ```bash
-   git remote add origin https://github.com/YOUR_USERNAME/AutoScoutBot.git
+   git remote add origin https://github.com/baltanmihail@gmail.com/AutoScoutBot.git
    git branch -M main
    git push -u origin main
    ```
@@ -29,10 +29,13 @@
 
 3. **Variables** (переменные окружения) — обязательно задайте:
    - `TELEGRAM_TOKEN` — токен бота от @BotFather
-   - `GIGACHAT_API_TOKEN` — токен GigaChat API  
-   - `ADMIN_IDS` — ID админов через запятую: `5079636941,1856746424` (формат `[5079636941, 1856746424]` тоже поддерживается)
+   - `GIGACHAT_API_TOKEN` — токен GigaChat API (эмбеддинги + _internal)
+   - `NEUROAPI_KEY` — API-ключ NeuroAPI (пользовательские LLM-модели)
+   - `ADMIN_IDS` — ID админов через запятую: `5079636941,1856746424`
 
    Опционально:
+   - `NEUROAPI_BASE_URL` (по умолчанию `https://neuroapi.host/v1`)
+   - `LLM_MODEL_STANDARD`, `LLM_MODEL_PREMIUM`, `LLM_MODEL_ULTRA` (переопределение моделей)
    - `SKOLKOVO_DATABASE_PATH` (по умолчанию `SkolkovoStartups.csv`)
    - `RAG_ENABLED` = `true` / `false`
    - `RAG_INDEX_FILE`, `RAG_TOP_K`
@@ -52,6 +55,7 @@
 ```env
 TELEGRAM_TOKEN=ваш_токен_бота
 GIGACHAT_API_TOKEN=ваш_токен_gigachat
+NEUROAPI_KEY=sk-ваш_ключ_neuroapi
 ADMIN_IDS=5079636941,1856746424
 ```
 

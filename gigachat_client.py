@@ -43,28 +43,33 @@ class GigaChatClient:
 
     def _initialize_client(self):
         """Initialize the OpenAI-compatible client for NeuroAPI."""
+        if not LLM_API_KEY:
+            logger.error("❌ LLM_API_KEY не задан — клиент не создан")
+            self.client = None
+            return
+
+        logger.info(f"🔄 Инициализация LLM ({self.model_name}) через NeuroAPI")
+
+        self.client = OpenAI(
+            api_key=LLM_API_KEY,
+            base_url=LLM_BASE_URL,
+            timeout=90,
+            max_retries=3,
+        )
+
         try:
-            logger.info(f"🔄 Инициализация LLM ({self.model_name}) через NeuroAPI")
-
-            self.client = OpenAI(
-                api_key=LLM_API_KEY,
-                base_url=LLM_BASE_URL,
-                timeout=60,
-            )
-
-            # Quick connectivity test
             test = self.client.chat.completions.create(
                 model=self.model_name,
-                messages=[{"role": "user", "content": "Ответь одним словом: OK"}],
+                messages=[{"role": "user", "content": "OK"}],
                 max_tokens=5,
             )
             reply = test.choices[0].message.content.strip() if test.choices else "?"
-            logger.info(f"✅ LLM клиент инициализирован: {self.model_name}")
-            logger.info(f"📊 Тестовый ответ: {reply}")
-
+            logger.info(f"✅ LLM подключён: {self.model_name} (тест: {reply})")
         except Exception as e:
-            logger.error(f"❌ Ошибка инициализации LLM ({self.model_name}): {e}")
-            self.client = None
+            logger.warning(
+                f"⚠️ Тестовый запрос не прошёл ({self.model_name}): {e}. "
+                f"Клиент создан — запросы будут работать, когда сеть стабилизируется."
+            )
 
     def set_model(self, model_type: str):
         """Switch the active model tier."""

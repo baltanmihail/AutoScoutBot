@@ -2,6 +2,7 @@
 config.py
 config_local.py
 .env
+.venv312
 
 # Временные / генерируемые файлы
 startups_report.csv
