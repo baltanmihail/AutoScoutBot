@@ -6,7 +6,7 @@
    ```bash
    git init
    git add .
-   git commit -m "Деплой 2"
+   git commit -m "Деплой 3"
    ```
 
 2. **Убедитесь, что в репозиторий не попадают:**

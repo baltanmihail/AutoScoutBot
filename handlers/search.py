@@ -16,6 +16,32 @@ from utils.excel_generator import generate_csv, generate_excel
 from logger import logger
 
 
+def _clean_description(text: str) -> str:
+    """Clean raw company descriptions: normalize whitespace, remove bullet artifacts."""
+    if not text:
+        return ""
+    text = re.sub(r'[ \t]+', ' ', text)
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    text = re.sub(r'^\s*[•●◦▪▸]\s*', '— ', text, flags=re.MULTILINE)
+    return text.strip()
+
+
+def _smart_truncate(text: str, max_len: int = 300) -> str:
+    """Truncate text at the last sentence boundary within max_len chars."""
+    if not text or len(text) <= max_len:
+        return text
+    truncated = text[:max_len]
+    # Try to cut at last sentence end
+    last_end = max(truncated.rfind('. '), truncated.rfind('.\n'), truncated.rfind('!'), truncated.rfind('?'))
+    if last_end > max_len // 3:
+        return truncated[:last_end + 1]
+    # Fall back to last space
+    last_space = truncated.rfind(' ')
+    if last_space > max_len // 3:
+        return truncated[:last_space] + "..."
+    return truncated + "..."
+
+
 def register_search_handlers(
     router: Router,
     bot: Bot,
@@ -38,7 +64,7 @@ def register_search_handlers(
         
         # Проверяем наличие запросов хотя бы для одной модели
         balance = await user_repository.get_user_balance(user_id)
-        has_requests = balance["standard"] > 0 or balance["pro"] > 0 or balance["max"] > 0
+        has_requests = balance.get("standard", 0) > 0 or balance.get("premium", 0) > 0 or balance.get("ultra", 0) > 0
         
         if not has_requests:
             keyboard = InlineKeyboardMarkup(
@@ -47,7 +73,7 @@ def register_search_handlers(
                 ]
             )
             await message.answer(
-                "У вас закончились запросы. Чтобы приобрести их, нажмите на кнопку \"Приобрести запросы\"",
+                "У вас закончились запросы. Нажмите кнопку ниже для покупки:",
                 reply_markup=keyboard
             )
             return
@@ -69,14 +95,12 @@ def register_search_handlers(
     async def analyze_menu_btn(query: types.CallbackQuery, state: FSMContext):
         user_id = query.from_user.id
         
-        # Проверяем, не забанен ли пользователь
         if await user_repository.is_banned(user_id):
             await query.answer("❌ Ваш аккаунт заблокирован", show_alert=True)
             return
         
-        # Проверяем наличие запросов хотя бы для одной модели
         balance = await user_repository.get_user_balance(user_id)
-        has_requests = balance["standard"] > 0 or balance["pro"] > 0 or balance["max"] > 0
+        has_requests = balance.get("standard", 0) > 0 or balance.get("premium", 0) > 0 or balance.get("ultra", 0) > 0
         
         if not has_requests:
             keyboard = InlineKeyboardMarkup(
@@ -85,7 +109,7 @@ def register_search_handlers(
                 ]
             )
             await query.message.edit_text(
-                "У вас закончились запросы. Чтобы приобрести их, нажмите на кнопку \"Приобрести запросы\"",
+                "У вас закончились запросы. Нажмите кнопку ниже для покупки:",
                 reply_markup=keyboard
             )
             await query.answer()
@@ -114,12 +138,12 @@ def register_search_handlers(
         balance = await user_repository.get_user_balance(user_id)
         
         keyboard_buttons = []
-        if balance["standard"] > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="Standard", callback_data="select_model_standard")])
-        if balance["pro"] > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="Pro", callback_data="select_model_pro")])
-        if balance["max"] > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="Max", callback_data="select_model_max")])
+        if balance.get("standard", 0) > 0:
+            keyboard_buttons.append([InlineKeyboardButton(text="⚡ Gemini 3 Pro", callback_data="select_model_standard")])
+        if balance.get("premium", 0) > 0:
+            keyboard_buttons.append([InlineKeyboardButton(text="🧠 Claude Sonnet 4.5", callback_data="select_model_premium")])
+        if balance.get("ultra", 0) > 0:
+            keyboard_buttons.append([InlineKeyboardButton(text="💎 Claude Opus 4.6", callback_data="select_model_ultra")])
         
         if not keyboard_buttons:
             keyboard = InlineKeyboardMarkup(
@@ -128,14 +152,14 @@ def register_search_handlers(
                 ]
             )
             await query.message.edit_text(
-                "У вас нет доступных запросов. Чтобы приобрести их, нажмите на кнопку \"Приобрести запросы\"",
+                "У вас нет доступных запросов. Нажмите кнопку ниже для покупки:",
                 reply_markup=keyboard
             )
             return
         
         keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
         await query.message.edit_text(
-            "Выберите модель GigaChat для анализа:",
+            "Выберите модель AI для анализа:",
             reply_markup=keyboard
         )
         await state.set_state(SkStates.AI_MODEL_SELECTION)
@@ -257,8 +281,8 @@ async def start_search_func(
                     startup["analysis"]["rag_similarity"] = rag_similarity
                     logger.info(f"✅ Добавлен RAG similarity: {rag_similarity:.3f}")
                 
-                # Генерируем AI-рекомендацию для моделей Pro и Max
-                if model_type in ["pro", "max"]:
+                # Генерируем AI-рекомендацию для моделей Standard и Premium
+                if model_type in ["standard", "premium"]:
                     recommendation = gigachat_client.generate_recommendation(startup, user_request, query_history)
                     if recommendation:
                         startup["analysis"]["AIRecommendation"] = recommendation
@@ -292,78 +316,82 @@ async def start_search_func(
             text_response = ""
             for i, s in enumerate(processed_startups, 1):
                 analysis = s.get("analysis", {})
-                # Получаем краткое описание
-                description = s.get('company_description', '') or s.get('description', '')
-                short_description = description[:150] + "..." if len(description) > 150 else description
-                
-                # Базовая информация
+
+                # Clean and summarize company description (sentence-aware, not char-cut)
+                raw_desc = s.get('company_description', '') or s.get('description', '')
+                short_description = _smart_truncate(_clean_description(raw_desc), max_len=300)
+
+                # Overall ML score for header (if available)
+                ml_overall = analysis.get('ml_overall', 0)
+                traffic_light_map = {1: "🔴", 2: "🟡", 3: "🟢"}
+                tl_emoji = traffic_light_map.get(analysis.get('TrafficLight', 1), "🔴")
+
+                # Card header
                 text_response += f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
-                text_response += f"🏢 <b>{i}. {escape_html(s.get('name', 'Название не указано'))}</b>\n"
+                header = f"{tl_emoji} <b>{i}. {escape_html(s.get('name', 'Название не указано'))}</b>"
+                if ml_overall > 0:
+                    header += f"  ({ml_overall:.1f}/10)"
+                text_response += f"{header}\n"
                 text_response += f"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
-                
+
                 if short_description:
                     text_response += f"<b>📄 О компании:</b>\n{escape_html(short_description)}\n\n"
-                
-                # Ключевые показатели
+
+                # Key metrics
                 text_response += f"<b>📊 Ключевые показатели:</b>\n"
                 text_response += f"  • Год основания: {escape_html(str(s.get('year', 'н/д')))}\n"
                 text_response += f"  • Стадия: {escape_html(determine_stage(s))}\n"
-                
+
                 cluster = s.get('cluster', '')
                 if cluster:
                     text_response += f"  • Кластер: {escape_html(cluster)}\n"
-                
+
                 text_response += f"  • Направление: {escape_html(s.get('category', 'н/д'))}\n"
                 text_response += f"  • Регион: {escape_html(s.get('country', 'н/д'))}\n"
-                text_response += f"  • Сайт: {escape_html(s.get('website', 'н/д'))}\n\n"
-                
-                # Оценка технологичности
+                website = s.get('website', 'н/д')
+                if website and website != 'н/д':
+                    text_response += f"  • Сайт: {escape_html(website)}\n\n"
+                else:
+                    text_response += "\n"
+
+                # Assessment (no duplicate traffic light -- it's in the header)
                 text_response += f"<b>🎯 Оценка:</b>\n"
-                
-                # Показываем RAG similarity если доступно
+
                 rag_similarity_raw = analysis.get('rag_similarity', 0)
                 if rag_similarity_raw > 0:
                     text_response += f"  • Схожесть с запросом: {rag_similarity_raw:.3f}\n"
-                
-                traffic_light_map = {1: "🔴 Красный", 2: "🟡 Желтый", 3: "🟢 Зеленый"}
-                traffic_light_emoji = traffic_light_map.get(analysis.get('TrafficLight', 1), "🔴")
-                text_response += f"  • Светофор: {traffic_light_emoji}\n"
+
                 text_response += f"  • DeepTech: {analysis.get('DeepTech', 'н/д')}/3\n"
                 text_response += f"  • GenAI: {analysis.get('GenAI', 'н/д')}\n"
                 text_response += f"  • WOW-эффект: {analysis.get('WOW', 'н/д')}\n\n"
-                
-                # Аналитический комментарий
+
+                # Detailed analysis comments
                 comments_text = escape_html(analysis.get('Comments', 'Нет данных'))
                 text_response += f"<b>📋 Детальный анализ:</b>\n{comments_text}\n\n"
-                
-                # AI-анализ (для моделей Pro и Max) - ограничиваем длину в Telegram
+
+                # AI recommendation (Pro/Max) -- increased limit to 3000 chars
                 ai_recommendation = analysis.get('AIRecommendation', '')
                 if ai_recommendation:
                     ai_recommendation_text = escape_html(ai_recommendation)
-                    # Ограничиваем длину для Telegram, обрезаем по целому предложению
-                    if len(ai_recommendation_text) > 1500:
-                        # Ищем последнее завершенное предложение в пределах 1500 символов
-                        truncated = ai_recommendation_text[:1500]
-                        # Ищем последнюю точку, восклицательный или вопросительный знак
+                    if len(ai_recommendation_text) > 3000:
+                        truncated = ai_recommendation_text[:3000]
                         last_sentence_end = max(
                             truncated.rfind('.'),
                             truncated.rfind('!'),
                             truncated.rfind('?')
                         )
-                        
                         if last_sentence_end > 0:
-                            ai_recommendation_text = truncated[:last_sentence_end + 1] + "\n\n<i>(Полная версия доступна в файле Excel/CSV)</i>"
+                            ai_recommendation_text = truncated[:last_sentence_end + 1]
                         else:
-                            # Если не нашли точку - обрезаем по последнему пробелу
                             last_space = truncated.rfind(' ')
                             if last_space > 0:
-                                ai_recommendation_text = truncated[:last_space] + "...\n\n<i>(Полная версия доступна в файле Excel/CSV)</i>"
+                                ai_recommendation_text = truncated[:last_space] + "..."
                             else:
-                                ai_recommendation_text = truncated + "...\n\n<i>(Полная версия доступна в файле Excel/CSV)</i>"
-                    
+                                ai_recommendation_text = truncated + "..."
+
                     text_response += f"<b>💼 Аналитический обзор:</b>\n{ai_recommendation_text}\n\n"
-                
-                # Реквизиты
+
+                # Requisites
                 text_response += f"<b>📎 Реквизиты:</b> ИНН {s.get('inn', 'н/д')}, ОГРН {s.get('ogrn', 'н/д')}\n\n"
             
             if len(text_response) > 4000:

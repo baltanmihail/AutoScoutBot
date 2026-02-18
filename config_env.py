@@ -1,19 +1,20 @@
 # Конфигурация из переменных окружения (.env или Railway Variables).
-# Используется, если нет config_local.py (см. config.example.py и README).
+# Используется, если нет config.py (локальный файл с секретами).
 
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def _env(key: str, default: str = "") -> str:
     return os.environ.get(key, default).strip()
+
 
 def _env_int_list(key: str, default: list = None) -> list:
     s = _env(key)
     if not s:
         return default or []
-    # Поддержка форматов: "1,2,3" или "[1, 2, 3]" (как в Railway)
     s = s.strip().strip("[]")
     result = []
     for x in s.split(","):
@@ -26,62 +27,96 @@ def _env_int_list(key: str, default: list = None) -> list:
             continue
     return result if result else (default or [])
 
-# Секреты и пути (обязательно задать в .env или Railway)
+
+# ============================================================================
+# Secrets
+# ============================================================================
 TELEGRAM_TOKEN = _env("TELEGRAM_TOKEN")
 SKOLKOVO_DATABASE_PATH = _env("SKOLKOVO_DATABASE_PATH", "SkolkovoStartups.csv")
-GIGACHAT_API_TOKEN = _env("GIGACHAT_API_TOKEN")
 SYSTEM_PROMPT_PATH = _env("SYSTEM_PROMPT_PATH", "system_prompt.txt")
 USERS_DB_FILE_NAME = _env("USERS_DB_FILE_NAME", "users.db")
 
-# Админы: в env как "5079636941,1856746424"
-ADMIN_IDS = _env_int_list("ADMIN_IDS", [5079636941, 1856746424])
+# GigaChat -- RAG Embeddings + _internal (re-ranking, smart search)
+GIGACHAT_API_TOKEN = _env("GIGACHAT_API_TOKEN")
 
-# Модели GigaChat
-GIGACHAT_MODELS = {
-    "standard": "GigaChat",
-    "pro": "GigaChat-Pro",
-    "max": "GigaChat-Max"
+# ============================================================================
+# NeuroAPI (OpenAI-compatible) -- LLM-провайдер для пользовательских запросов
+# ============================================================================
+LLM_API_KEY = _env("NEUROAPI_KEY", _env("LLM_API_KEY"))
+LLM_BASE_URL = _env("NEUROAPI_BASE_URL", _env("LLM_BASE_URL", "https://neuroapi.host/v1"))
+
+LLM_MODELS = {
+    "standard": _env("LLM_MODEL_STANDARD", "gemini-3-pro-preview"),
+    "premium":  _env("LLM_MODEL_PREMIUM",  "claude-sonnet-4-5-20250929-thinking"),
+    "ultra":    _env("LLM_MODEL_ULTRA",    "claude-opus-4-6-thinking"),
+    "_internal": "gigachat",
 }
 
-REQUEST_PRICES = {
-    "standard": {3: 25, 5: 35, 10: 65},
-    "pro": {3: 35, 5: 45, 10: 75},
-    "max": {3: 45, 5: 55, 10: 85}
-}
-
-GIGACHAT_TOKEN_PRICES = {
-    "standard": {"input": 0, "output": 0},
-    "pro": {"input": 200, "output": 400},
-    "max": {"input": 600, "output": 1200}
-}
-
-GIGACHAT_TOKEN_LIMITS = {
+LLM_TOKEN_LIMITS = {
     "standard": {
+        "filters": 1500,
+        "recommendations": 800,
+        "temperature_filters": 0.15,
+        "temperature_recommendations": 0.5,
+    },
+    "premium": {
+        "filters": 2000,
+        "recommendations": 2000,
+        "temperature_filters": 0.1,
+        "temperature_recommendations": 0.55,
+    },
+    "ultra": {
+        "filters": 2000,
+        "recommendations": 3000,
+        "temperature_filters": 0.1,
+        "temperature_recommendations": 0.6,
+    },
+    "_internal": {
         "filters": 1500,
         "recommendations": 0,
         "temperature_filters": 0.2,
         "temperature_recommendations": 0.0,
     },
-    "pro": {
-        "filters": 0,
-        "recommendations": 500,
-        "temperature_filters": 0.0,
-        "temperature_recommendations": 0.5,
-    },
-    "max": {
-        "filters": 300,
-        "recommendations": 250,
-        "temperature_filters": 0.1,
-        "temperature_recommendations": 0.6,
-    }
 }
 
-# RAG
+# Реальные цены NeuroAPI (руб. за 1M токенов, февраль 2026)
+LLM_TOKEN_PRICES = {
+    "standard": {"input": 134.30, "output": 805.80},
+    "premium":  {"input": 376.04, "output": 1880.20},
+    "ultra":    {"input": 335.75, "output": 1678.75},
+    "_internal": {"input": 0,     "output": 0},
+}
+
+REQUEST_PRICES = {
+    "standard": {3: 10, 5: 15, 10: 25},
+    "premium":  {3: 25, 5: 40, 10: 70},
+    "ultra":    {3: 35, 5: 55, 10: 95},
+}
+
+# ============================================================================
+# Backward compatibility aliases
+# ============================================================================
+# Old code references GIGACHAT_MODELS / GIGACHAT_TOKEN_LIMITS / GIGACHAT_TOKEN_PRICES.
+# Map them to the new names so nothing breaks.
+GIGACHAT_MODELS = LLM_MODELS
+GIGACHAT_TOKEN_LIMITS = LLM_TOKEN_LIMITS
+GIGACHAT_TOKEN_PRICES = LLM_TOKEN_PRICES
+
+# ============================================================================
+# Admin
+# ============================================================================
+ADMIN_IDS = _env_int_list("ADMIN_IDS", [5079636941, 1856746424])
+
+# ============================================================================
+# RAG (still uses GigaChat Embeddings -- free / cheap)
+# ============================================================================
 RAG_ENABLED = _env("RAG_ENABLED", "true").lower() in ("1", "true", "yes")
 RAG_INDEX_FILE = _env("RAG_INDEX_FILE", "rag_index_gigachat.json")
 RAG_TOP_K = int(_env("RAG_TOP_K", "200"))
 
-# Самообучение (числа через env опционально)
+# ============================================================================
+# Continuous learning
+# ============================================================================
 CONTINUOUS_LEARNING = {
     "enabled": _env("CONTINUOUS_LEARNING_ENABLED", "true").lower() in ("1", "true", "yes"),
     "light_learning": True,
@@ -102,5 +137,12 @@ FINE_TUNING = {
     "include_rag_similarity": True,
 }
 
-# Для совместимости с domain/admin.py: AI_MODELS[model]['name']
-AI_MODELS = {k: {"name": v} for k, v in GIGACHAT_MODELS.items()}
+# Backend API URL (for bot -> FastAPI communication)
+BACKEND_URL = _env("BACKEND_URL", "http://localhost:8000")
+
+# Data enrichment
+ENABLE_ENRICHMENT = _env("ENABLE_ENRICHMENT", "true").lower() in ("1", "true", "yes")
+ENRICHMENT_INTERVAL_HOURS = int(_env("ENRICHMENT_INTERVAL_HOURS", "6"))
+
+# For backward compat with domain/admin.py
+AI_MODELS = {k: {"name": v} for k, v in LLM_MODELS.items()}

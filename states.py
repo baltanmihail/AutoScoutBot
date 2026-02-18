@@ -18,4 +18,6 @@ class SkStates(StatesGroup):
     ACTION_REFINE = State()  # Уточнение запроса
     DEEP_ANALYSIS_SELECTION = State()  # Выбор стартапа для глубокого анализа
     DEEP_ANALYSIS_MODEL = State()  # Выбор модели для глубокого анализа
+    # Проверка стартапа по ИНН (внешние источники)
+    CHECK_STARTUP_INPUT = State()  # Ввод ИНН/названия
 

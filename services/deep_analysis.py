@@ -3,10 +3,12 @@
 
 Функции:
 - Анализ дополнительных данных из БД (рекомендации в ячейках TRL, IRL, MRL, CRL)
-- Интеграция с внешними источниками (Checko.ru, РБК, официальные порталы)
+- Интеграция с внешними источниками (BFO, EGRUL, MOEX, News, Checko)
 - Агрегация и проверка достоверности информации
 - Генерация расширенного отчета
+- Smart article search (query generation via GigaChat _internal)
 """
+import asyncio
 import logging
 import re
 from typing import Dict, List, Optional
@@ -21,60 +23,91 @@ class DeepAnalysisService:
     """
     
     def __init__(self):
-        self.external_sources_enabled = False  # Пока отключено, будет включено после тестирования
+        self.external_sources_enabled = True  # Enabled: uses parsers from parsers/
     
     def analyze_startup_deep(
         self,
         startup: Dict,
         user_request: str = "",
-        include_external: bool = False
+        include_external: bool = False,
     ) -> Dict:
         """
-        Проводит глубокий анализ стартапа
-        
-        Args:
-            startup: Данные стартапа из БД
-            user_request: Исходный запрос пользователя
-            include_external: Включать ли данные из внешних источников
-        
-        Returns:
-            Словарь с результатами глубокого анализа
+        Synchronous deep analysis (backward compatible).
+        For async with external sources, use analyze_startup_deep_async().
         """
-        analysis = {
+        analysis = self._build_base_analysis(startup)
+
+        # Internal analysis (always)
+        analysis["internal_analysis"] = self._analyze_internal_data(startup)
+        analysis["internal_analysis"]["level_recommendations"] = self._extract_level_recommendations(startup)
+
+        # External sources (sync wrapper)
+        if include_external and self.external_sources_enabled:
+            analysis["external_analysis"] = self._analyze_external_sources(
+                startup.get("inn", ""),
+                startup.get("ogrn", ""),
+            )
+
+        analysis["recommendations"] = self._generate_recommendations(analysis)
+        analysis["risk_factors"] = self._identify_risks(analysis)
+        analysis["opportunities"] = self._identify_opportunities(analysis, user_request)
+
+        return analysis
+
+    async def analyze_startup_deep_async(
+        self,
+        startup: Dict,
+        user_request: str = "",
+        include_external: bool = True,
+    ) -> Dict:
+        """
+        Full async deep analysis with external sources and smart article search.
+        """
+        analysis = self._build_base_analysis(startup)
+
+        # 1. Internal analysis
+        analysis["internal_analysis"] = self._analyze_internal_data(startup)
+        analysis["internal_analysis"]["level_recommendations"] = self._extract_level_recommendations(startup)
+
+        inn = str(startup.get("inn", "")).strip()
+        company_name = startup.get("name", "")
+
+        # 2. External sources + smart article search (in parallel)
+        if include_external and self.external_sources_enabled and inn:
+            ext_task = self.analyze_external_sources(
+                inn=inn,
+                ogrn=str(startup.get("ogrn", "")),
+                company_name=company_name,
+            )
+            articles_task = self.smart_article_search(
+                company_name=company_name,
+                context=f"{startup.get('cluster', '')} {startup.get('technologies', '')[:200]}",
+            )
+            ext_result, articles = await asyncio.gather(ext_task, articles_task)
+            analysis["external_analysis"] = ext_result
+            analysis["smart_articles"] = articles
+
+        # 3. Recommendations, risks, opportunities
+        analysis["recommendations"] = self._generate_recommendations(analysis)
+        analysis["risk_factors"] = self._identify_risks(analysis)
+        analysis["opportunities"] = self._identify_opportunities(analysis, user_request)
+
+        return analysis
+
+    @staticmethod
+    def _build_base_analysis(startup: Dict) -> Dict:
+        return {
             "startup_name": startup.get("name", "н/д"),
             "inn": startup.get("inn", ""),
             "ogrn": startup.get("ogrn", ""),
             "timestamp": datetime.now().isoformat(),
             "internal_analysis": {},
             "external_analysis": {},
+            "smart_articles": [],
             "recommendations": [],
             "risk_factors": [],
             "opportunities": [],
         }
-        
-        # 1. Анализ внутренних данных (БД Сколково)
-        analysis["internal_analysis"] = self._analyze_internal_data(startup)
-        
-        # 2. Анализ рекомендаций в ячейках TRL, IRL, MRL, CRL
-        analysis["internal_analysis"]["level_recommendations"] = self._extract_level_recommendations(startup)
-        
-        # 3. Внешние источники (если включено)
-        if include_external and self.external_sources_enabled:
-            analysis["external_analysis"] = self._analyze_external_sources(
-                startup.get("inn", ""),
-                startup.get("ogrn", "")
-            )
-        
-        # 4. Генерация рекомендаций
-        analysis["recommendations"] = self._generate_recommendations(analysis)
-        
-        # 5. Выявление рисков
-        analysis["risk_factors"] = self._identify_risks(analysis)
-        
-        # 6. Выявление возможностей
-        analysis["opportunities"] = self._identify_opportunities(analysis, user_request)
-        
-        return analysis
     
     def _analyze_internal_data(self, startup: Dict) -> Dict:
         """Анализ внутренних данных из БД Сколково"""
@@ -162,42 +195,104 @@ class DeepAnalysisService:
         
         return recommendations
     
-    def _analyze_external_sources(
+    async def analyze_external_sources(
         self,
         inn: str,
-        ogrn: str
+        ogrn: str = "",
+        company_name: str = "",
     ) -> Dict:
         """
-        Анализ данных из внешних источников
-        
-        TODO: Реализовать интеграцию с:
-        - Checko.ru (БФО)
-        - Официальные порталы (ФНС, ЕГРЮЛ)
-        - РБК, Коммерсант и другие СМИ
-        - Другие базы стартапов
-        
+        Fetch and analyze data from external sources (BFO, EGRUL, MOEX, news, Checko).
+
         Args:
             inn: ИНН компании
             ogrn: ОГРН компании
-        
+            company_name: Название компании (для поиска в новостях)
+
         Returns:
-            Словарь с данными из внешних источников
+            Dict with financial_data, legal_status, news_mentions, market_data, sources.
         """
         external = {
             "financial_data": {},
+            "legal_status": {},
             "news_mentions": [],
+            "market_data": {},
             "reliability_score": 0.0,
             "sources": [],
         }
-        
-        if not inn and not ogrn:
-            logger.warning("Нет ИНН/ОГРН для внешнего анализа")
+
+        if not inn:
+            logger.warning("Нет ИНН для внешнего анализа")
             return external
-        
-        # TODO: Реализовать парсинг внешних источников
-        # См. test_external_sources.py для примеров
-        
+
+        try:
+            from parsers.manager import ParserManager
+
+            mgr = ParserManager()
+            raw = await mgr.fetch_all(inn=inn, company_name=company_name)
+            await mgr.close()
+
+            # BFO -- financial data
+            bfo = raw.get("bfo", {})
+            if bfo:
+                external["financial_data"] = bfo.get("financials", {})
+                external["sources"].append({"name": "БФО ФНС", "key": "bfo"})
+
+            # EGRUL -- legal status
+            egrul = raw.get("egrul", {})
+            if egrul:
+                external["legal_status"] = {
+                    "name": egrul.get("name", ""),
+                    "ogrn": egrul.get("ogrn", ""),
+                    "status": egrul.get("status", ""),
+                    "is_active": egrul.get("is_active", None),
+                    "registration_date": egrul.get("registration_date", ""),
+                    "address": egrul.get("address", ""),
+                }
+                external["sources"].append({"name": "ЕГРЮЛ", "key": "egrul"})
+
+            # MOEX -- market data
+            moex = raw.get("moex", {})
+            if moex and moex.get("has_quotes"):
+                external["market_data"] = moex
+                external["sources"].append({"name": "MOEX", "key": "moex"})
+
+            # News -- mentions
+            news = raw.get("news", {})
+            if news and news.get("total_count", 0) > 0:
+                external["news_mentions"] = news.get("mentions", [])
+                external["sources"].append({"name": "СМИ (РБК/ТАСС/Интерфакс)", "key": "news"})
+
+            # Checko -- aggregated financial summary
+            checko = raw.get("checko", {})
+            if checko:
+                external["checko_summary"] = checko
+                external["sources"].append({"name": "Checko.ru", "key": "checko"})
+
+            # Reliability score (placeholder; real computation via ReliabilityEngine)
+            external["reliability_score"] = len(external["sources"]) / 5.0
+
+        except Exception as e:
+            logger.error(f"Ошибка анализа внешних источников: {e}")
+
         return external
+
+    # Keep old sync method name for backward compat (wraps async)
+    def _analyze_external_sources(self, inn: str, ogrn: str) -> Dict:
+        """Sync wrapper around async analyze_external_sources."""
+        try:
+            loop = asyncio.get_event_loop()
+            if loop.is_running():
+                import concurrent.futures
+                with concurrent.futures.ThreadPoolExecutor() as pool:
+                    return pool.submit(
+                        asyncio.run,
+                        self.analyze_external_sources(inn, ogrn)
+                    ).result(timeout=60)
+            return asyncio.run(self.analyze_external_sources(inn, ogrn))
+        except Exception as e:
+            logger.warning(f"Sync external analysis failed: {e}")
+            return {"financial_data": {}, "news_mentions": [], "reliability_score": 0.0, "sources": []}
     
     def _assess_financial_health(self, avg_profit: float, max_profit: float) -> str:
         """Оценка финансового здоровья"""
@@ -333,6 +428,94 @@ class DeepAnalysisService:
                 return int(match.group())
         return 0
     
+    async def smart_article_search(self, company_name: str, context: str = "") -> List[Dict]:
+        """
+        Use GigaChat (_internal tier) to generate smart search queries,
+        then search RSS feeds for relevant articles.
+
+        GigaChat тратит остаточные токены -- не NeuroAPI.
+        """
+        articles: List[Dict] = []
+
+        try:
+            from config import GIGACHAT_API_TOKEN
+            from gigachat import GigaChat
+            from gigachat.models import Chat, Messages, MessagesRole
+
+            if not GIGACHAT_API_TOKEN:
+                logger.warning("smart_article_search: GIGACHAT_API_TOKEN not set")
+                return articles
+
+            giga = GigaChat(
+                credentials=GIGACHAT_API_TOKEN,
+                verify_ssl_certs=False,
+                timeout=30,
+                scope="GIGACHAT_API_PERS",
+            )
+
+            prompt = (
+                f"Сгенерируй 3 поисковых запроса для поиска статей про компанию '{company_name}'. "
+                f"Контекст: {context[:200]}. "
+                "Ответь JSON-массивом строк, без markdown."
+            )
+
+            resp = giga.chat(Chat(
+                messages=[Messages(role=MessagesRole.USER, content=prompt)],
+                max_tokens=200,
+                temperature=0.3,
+            ))
+
+            queries_text = resp.choices[0].message.content.strip() if resp.choices else "[]"
+            queries_text = queries_text.replace("```json", "").replace("```", "").strip()
+
+            import json
+            try:
+                queries = json.loads(queries_text)
+            except json.JSONDecodeError:
+                queries = [company_name]
+
+            from parsers.news_parser import NewsParser
+            parser = NewsParser()
+            for query in queries[:3]:
+                result = await parser.safe_fetch(inn="", company_name=str(query))
+                for mention in result.get("mentions", []):
+                    articles.append(mention)
+            await parser.close()
+
+            seen_links = set()
+            unique = []
+            for art in articles:
+                link = art.get("link", "")
+                if link and link not in seen_links:
+                    seen_links.add(link)
+                    unique.append(art)
+            articles = unique[:10]
+
+            if articles:
+                titles = "\n".join(f"- {a['title']}" for a in articles[:5])
+                summary_prompt = (
+                    f"Кратко обобщи упоминания компании '{company_name}' в прессе "
+                    f"на основе заголовков:\n{titles}\n\n"
+                    "Ответь 2-3 предложениями на русском."
+                )
+                summary_resp = giga.chat(Chat(
+                    messages=[Messages(role=MessagesRole.USER, content=summary_prompt)],
+                    max_tokens=200,
+                    temperature=0.4,
+                ))
+                if summary_resp.choices:
+                    articles.insert(0, {
+                        "source": "AI",
+                        "title": "Сводка по СМИ",
+                        "link": "",
+                        "summary": summary_resp.choices[0].message.content.strip(),
+                    })
+
+        except Exception as e:
+            logger.warning("smart_article_search error: %s", e)
+
+        return articles
+
     def format_deep_analysis_report(self, analysis: Dict) -> str:
         """
         Форматирует отчет глубокого анализа для вывода в Telegram
@@ -391,14 +574,63 @@ class DeepAnalysisService:
                 report += f"{i}. {opp}\n"
             report += "\n"
         
-        # Внешние источники (если есть)
+        # External sources
         external = analysis.get("external_analysis", {})
-        if external.get("sources"):
-            report += f"<b>📰 Внешние источники:</b>\n"
-            report += f"• Найдено источников: {len(external.get('sources', []))}\n"
-            report += f"• Достоверность: {external.get('reliability_score', 0):.1%}\n\n"
-        
-        report += f"<i>Полный отчет доступен в файле Excel/CSV</i>"
-        
+        sources = external.get("sources", [])
+        if sources:
+            report += "<b>🌐 Внешние источники:</b>\n"
+            for src in sources:
+                report += f"  • {src.get('name', src.get('key', ''))}\n"
+            report += f"  Достоверность данных: {external.get('reliability_score', 0):.0%}\n\n"
+
+        # Financial data from external
+        fin = external.get("financial_data", {})
+        if fin:
+            report += "<b>💰 Финансы (внешние источники):</b>\n"
+            for year in sorted(fin.keys(), reverse=True)[:3]:
+                yd = fin[year] if isinstance(fin[year], dict) else {}
+                rev = yd.get("revenue", 0)
+                profit = yd.get("net_profit", 0)
+                rev_s = f"{rev / 1_000_000:.1f} млн" if rev else "н/д"
+                prof_s = f"{profit / 1_000_000:.1f} млн" if profit else "н/д"
+                report += f"  • {year}: выручка {rev_s}, прибыль {prof_s}\n"
+            report += "\n"
+
+        # Legal status from EGRUL
+        legal = external.get("legal_status", {})
+        if legal:
+            report += "<b>📋 Юридический статус (ЕГРЮЛ):</b>\n"
+            if legal.get("status"):
+                report += f"  • Статус: {legal['status']}\n"
+            if legal.get("registration_date"):
+                report += f"  • Дата рег.: {legal['registration_date']}\n"
+            report += "\n"
+
+        # News mentions
+        news = external.get("news_mentions", [])
+        if news:
+            report += f"<b>📰 Упоминания в СМИ ({len(news)}):</b>\n"
+            for mention in news[:5]:
+                if mention.get("summary"):
+                    report += f"  {mention['summary']}\n"
+                else:
+                    src = mention.get("source", "").upper()
+                    title = mention.get("title", "")[:80]
+                    report += f"  • [{src}] {title}\n"
+            report += "\n"
+
+        # Smart article search results
+        smart_articles = analysis.get("smart_articles", [])
+        if smart_articles:
+            report += "<b>🔎 Найденные статьи (AI-поиск):</b>\n"
+            for art in smart_articles[:5]:
+                if art.get("summary"):
+                    report += f"  📝 {art['summary']}\n"
+                else:
+                    report += f"  • [{art.get('source', '').upper()}] {art.get('title', '')[:80]}\n"
+            report += "\n"
+
+        report += "<i>Полный отчет доступен в файле Excel/CSV</i>"
+
         return report
 

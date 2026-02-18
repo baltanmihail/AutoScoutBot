@@ -70,21 +70,21 @@ class SQLiteUserRepositoryImpl(UserRepository):
     def _migrate_database_schema(self):
         """Миграция схемы базы данных - добавление новых колонок"""
         try:
-            # Получаем список существующих колонок
             self.cursor.execute("PRAGMA table_info(Users)")
             existing_columns = [col[1] for col in self.cursor.fetchall()]
             
-            # Список колонок, которые должны быть (без DEFAULT для created_at, т.к. SQLite не поддерживает)
             required_columns = {
                 "requests_standard": "INTEGER DEFAULT 0",
+                "requests_premium": "INTEGER DEFAULT 0",
+                "requests_ultra": "INTEGER DEFAULT 0",
+                "requests_economy": "INTEGER DEFAULT 0",
                 "requests_pro": "INTEGER DEFAULT 0",
                 "requests_max": "INTEGER DEFAULT 0",
                 "is_banned": "INTEGER DEFAULT 0",
                 "is_admin": "INTEGER DEFAULT 0",
-                "created_at": "TIMESTAMP"  # Без DEFAULT, установим значения позже
+                "created_at": "TIMESTAMP",
             }
             
-            # Добавляем отсутствующие колонки
             for column_name, column_type in required_columns.items():
                 if column_name not in existing_columns:
                     try:
@@ -273,15 +273,19 @@ class SQLiteUserRepositoryImpl(UserRepository):
         is_admin = 1 if user_id in ADMIN_IDS else 0
         has_created_at = self._check_column_exists("created_at")
         
+        # Новые пользователи получают 3 бесплатных запроса Gemini 3 Pro
+        free_requests = user.available_requests_amount
+        economy_col = "requests_standard"
+        
         if has_created_at:
             self.cursor.execute(
-                f'INSERT INTO {TABLE_NAME} (tg_user_id, requests_standard, is_admin, created_at) VALUES (?, ?, ?, datetime("now"))',
-                (user_id, user.available_requests_amount, is_admin)
+                f'INSERT INTO {TABLE_NAME} (tg_user_id, {economy_col}, is_admin, created_at) VALUES (?, ?, ?, datetime("now"))',
+                (user_id, free_requests, is_admin)
             )
         else:
             self.cursor.execute(
-                f'INSERT INTO {TABLE_NAME} (tg_user_id, requests_standard, is_admin) VALUES (?, ?, ?)',
-                (user_id, user.available_requests_amount, is_admin)
+                f'INSERT INTO {TABLE_NAME} (tg_user_id, {economy_col}, is_admin) VALUES (?, ?, ?)',
+                (user_id, free_requests, is_admin)
             )
         self.connection.commit()
         logger.info(f"Пользователь с id {user_id} добавлен")
@@ -307,14 +311,13 @@ class SQLiteUserRepositoryImpl(UserRepository):
         return request_amount
     
     async def get_user_balance(self, user_id):
-        """Получить баланс пользователя по всем моделям"""
+        """Получить баланс пользователя по всем тирам (standard/premium/ultra)"""
         if not (await self.user_exists(user_id)):
-            return {"standard": 0, "pro": 0, "max": 0}
+            return {"standard": 0, "premium": 0, "ultra": 0}
         
-        # Проверяем наличие колонок и используем COALESCE
-        balance = {"standard": 0, "pro": 0, "max": 0}
+        balance = {"standard": 0, "premium": 0, "ultra": 0}
         
-        for model_type in ["standard", "pro", "max"]:
+        for model_type in ["standard", "premium", "ultra"]:
             col_name = f"requests_{model_type}"
             if self._check_column_exists(col_name):
                 self.cursor.execute(

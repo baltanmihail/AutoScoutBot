@@ -38,6 +38,7 @@ from handlers import (
     register_filters_handlers,
     register_interactive_handlers,
     register_admin_handlers,
+    register_check_startup_handlers,
 )
 
 # ============ Константы и глобальные переменные ============
@@ -150,6 +151,7 @@ start_router = Router()
 search_router = Router()
 filters_router = Router()
 interactive_router = Router()
+check_startup_router = Router()
 
 # Регистрируем обработчики
 register_start_handlers(start_router, user_repository)
@@ -175,6 +177,9 @@ register_interactive_handlers(
     )
 )
 
+# Проверка стартапа по ИНН (внешние источники)
+register_check_startup_handlers(check_startup_router, bot, user_repository, SKOLKOVO_DB)
+
 # Регистрация админ-обработчиков (должен быть зарегистрирован ДО Fallback)
 admin_router = Router()
 register_admin_handlers(
@@ -186,6 +191,7 @@ dp.include_router(start_router)
 dp.include_router(search_router)
 dp.include_router(filters_router)
 dp.include_router(interactive_router)
+dp.include_router(check_startup_router)
 dp.include_router(admin_router)
 dp.include_router(Fallback.router)  # Fallback должен быть последним
 

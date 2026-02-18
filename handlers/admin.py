@@ -197,6 +197,11 @@ async def _show_admin_panel(
     except:
         pass
     
+    # Кнопка дообучения ML на внешних стартапах
+    keyboard.inline_keyboard.append([
+        InlineKeyboardButton(text="🔬 ML: дообучить на внешних", callback_data="admin_ml_retrain")
+    ])
+    
     # Кнопка "Назад"
     keyboard.inline_keyboard.append([
         InlineKeyboardButton(text="◀️ Назад", callback_data="start_over")
@@ -1022,6 +1027,97 @@ def register_admin_handlers(
         )
         
         await query.message.edit_text(text, reply_markup=keyboard)
+
+    @router.callback_query(F.data == "admin_ml_retrain")
+    async def admin_ml_retrain(query: types.CallbackQuery):
+        """Дообучение ML моделей на внешних стартапах (Semi-Supervised)."""
+        user_id = query.from_user.id
+        if not await user_repository.is_admin(user_id):
+            await query.answer("У вас нет доступа", show_alert=True)
+            return
+
+        await query.answer()
+        await query.message.edit_text(
+            "🔬 Запускаю дообучение ML...\n\n"
+            "Шаги:\n"
+            "1. Загрузка Сколково (ground truth)\n"
+            "2. Загрузка внешних стартапов из БД\n"
+            "3. Генерация псевдо-меток (bootstrap)\n"
+            "4. Фильтрация по confidence\n"
+            "5. Дообучение XGBoost\n"
+            "6. Валидация на held-out Сколково\n\n"
+            "Это может занять 1-5 минут..."
+        )
+
+        try:
+            from scoring.retrain import retrain_with_external, prepare_external_from_db
+            import asyncio
+
+            external = await asyncio.to_thread(prepare_external_from_db)
+
+            if not external:
+                keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="Назад в админку", callback_data="admin_panel")]
+                ])
+                await query.message.edit_text(
+                    "Нет внешних стартапов для дообучения.\n\n"
+                    "Используйте /check для сбора данных по ИНН,\n"
+                    "или дождитесь, пока пользователи начнут проверять стартапы.",
+                    reply_markup=keyboard
+                )
+                return
+
+            csv_path = str(SKOLKOVO_DB) if hasattr(SKOLKOVO_DB, '__iter__') and not isinstance(SKOLKOVO_DB, str) else "SkolkovoStartups.csv"
+            if isinstance(SKOLKOVO_DB, list) and SKOLKOVO_DB:
+                csv_path = "SkolkovoStartups.csv"
+
+            result = await asyncio.to_thread(
+                retrain_with_external,
+                csv_path="SkolkovoStartups.csv",
+                external_startups=external,
+                confidence_threshold=0.8,
+                min_external=10,
+                dry_run=False,
+            )
+
+            status_icon = {
+                "success": "Модели обновлены!",
+                "rollback": "Откат: метрики упали",
+                "skipped": "Пропущено",
+                "dry_run": "Тестовый прогон (без сохранения)",
+            }.get(result["status"], result["status"])
+
+            text = f"🔬 ML ДООБУЧЕНИЕ\n\n"
+            text += f"Статус: {status_icon}\n"
+            text += f"Причина: {result['reason']}\n\n"
+            text += f"Сколково: {result['n_skolkovo']} стартапов\n"
+            text += f"Внешних (всего): {result['n_external_total']}\n"
+            text += f"Внешних (использовано): {result['n_external_used']}\n\n"
+
+            if result["metrics_before"]:
+                text += "Метрики ДО:\n"
+                for t, m in list(result["metrics_before"].items())[:3]:
+                    text += f"  {t}: R2={m['r2']:.3f}\n"
+
+            if result["metrics_after"]:
+                text += "\nМетрики ПОСЛЕ:\n"
+                for t, m in list(result["metrics_after"].items())[:3]:
+                    text += f"  {t}: R2={m['r2']:.3f}\n"
+
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="Назад в админку", callback_data="admin_panel")]
+            ])
+            await query.message.edit_text(text, reply_markup=keyboard)
+
+        except Exception as e:
+            logger.error(f"Ошибка ML дообучения: {e}")
+            keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="Назад в админку", callback_data="admin_panel")]
+            ])
+            await query.message.edit_text(
+                f"Ошибка дообучения: {str(e)[:300]}",
+                reply_markup=keyboard
+            )
 
     @router.callback_query(F.data == "admin_tokens_users")
     async def admin_tokens_users(query: types.CallbackQuery):

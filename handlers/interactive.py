@@ -300,17 +300,24 @@ def register_interactive_handlers(
                 deep_analysis_service = DeepAnalysisService()
                 user_request = data.get("user_request", "")
                 
-                # Проводим глубокий анализ
-                analysis = deep_analysis_service.analyze_startup_deep(
+                # Use async deep analysis with external sources
+                analysis = await deep_analysis_service.analyze_startup_deep_async(
                     selected_startup,
                     user_request=user_request,
-                    include_external=False  # Пока отключено, будет включено после тестирования
+                    include_external=True,
                 )
                 
                 # Форматируем отчет
                 report = deep_analysis_service.format_deep_analysis_report(analysis)
                 
-                await query.message.edit_text(report, parse_mode='HTML')
+                # Send report (may exceed 4096 char Telegram limit)
+                if len(report) > 4000:
+                    await query.message.edit_text("🔬 Анализ завершён. Отчёт отправлен ниже.")
+                    parts = [report[i:i + 4000] for i in range(0, len(report), 4000)]
+                    for part in parts:
+                        await bot.send_message(chat_id=query.message.chat.id, text=part, parse_mode="HTML")
+                else:
+                    await query.message.edit_text(report, parse_mode='HTML')
                 
                 # Предлагаем экспорт
                 keyboard = InlineKeyboardMarkup(

@@ -138,6 +138,79 @@ class ExternalData(Base):
 
 
 # ---------------------------------------------------------------------------
+# External Startups DB (Phase 2 -- startups found outside Skolkovo)
+# ---------------------------------------------------------------------------
+
+class ExternalStartup(Base):
+    """Startups discovered from external sources (not in Skolkovo ground truth)."""
+    __tablename__ = "external_startups"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    inn = Column(String(20), nullable=False, unique=True, index=True)
+    ogrn = Column(String(20), default="")
+    name = Column(String(512), nullable=False, index=True)
+    full_legal_name = Column(String(1024), default="")
+    region = Column(String(256), default="")
+    status_egrul = Column(String(128), default="")
+    registration_date = Column(DateTime, nullable=True)
+
+    # ML scores (populated by XGBoost)
+    ml_overall = Column(Float, nullable=True)
+    ml_tech_maturity = Column(Float, nullable=True)
+    ml_innovation = Column(Float, nullable=True)
+    ml_market_potential = Column(Float, nullable=True)
+    ml_team_readiness = Column(Float, nullable=True)
+    ml_financial_health = Column(Float, nullable=True)
+
+    # Features extracted from external sources (JSON blob)
+    features_json = Column(Text, default="{}")
+    features_filled_count = Column(Integer, default=0)
+
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    raw_data = relationship("RawExternalData", back_populates="external_startup")
+
+    __table_args__ = (
+        Index("ix_ext_startups_ml_overall", "ml_overall"),
+    )
+
+
+class RawExternalData(Base):
+    """Raw data fetched from each external source for a given startup."""
+    __tablename__ = "raw_external_data"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    external_startup_id = Column(Integer, ForeignKey("external_startups.id"), nullable=False, index=True)
+    source = Column(String(64), nullable=False)  # bfo, egrul, moex, checko, rbc, tass, interfax
+    data_json = Column(Text, default="{}")
+    fetched_at = Column(DateTime, default=func.now())
+
+    external_startup = relationship("ExternalStartup", back_populates="raw_data")
+
+    __table_args__ = (
+        Index("ix_raw_source_startup", "source", "external_startup_id"),
+    )
+
+
+class SourceReliability(Base):
+    """Reliability score for each external data source, computed by
+    cross-referencing external data with Skolkovo ground truth."""
+    __tablename__ = "source_reliability"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    source = Column(String(64), nullable=False, unique=True, index=True)
+    field = Column(String(64), nullable=False, default="overall")
+    reliability = Column(Float, default=0.5)
+    samples_count = Column(Integer, default=0)
+    last_computed_at = Column(DateTime, default=func.now())
+
+    __table_args__ = (
+        Index("ix_source_field", "source", "field", unique=True),
+    )
+
+
+# ---------------------------------------------------------------------------
 # Embeddings (pgvector -- Phase 4)
 # ---------------------------------------------------------------------------
 
@@ -174,7 +247,12 @@ class User(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     tg_user_id = Column(BigInteger, unique=True, nullable=False, index=True)
-    requests_standard = Column(Integer, default=3)
+    # Тиры: standard (Gemini) / premium (Sonnet) / ultra (Opus)
+    requests_standard = Column(Integer, default=3)   # 3 бесплатных при регистрации
+    requests_premium = Column(Integer, default=0)
+    requests_ultra = Column(Integer, default=0)
+    # Legacy-колонки для обратной совместимости при миграции
+    requests_economy = Column(Integer, default=0)
     requests_pro = Column(Integer, default=0)
     requests_max = Column(Integer, default=0)
     is_banned = Column(Boolean, default=False)

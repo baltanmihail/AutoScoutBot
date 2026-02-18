@@ -134,28 +134,28 @@ async def create_model_selection_keyboard(
         
         keyboard_buttons = []
         
-        # Проверяем доступные модели
+        # Check available model tiers
         if balance.get("standard", 0) > 0:
             keyboard_buttons.append([
                 InlineKeyboardButton(
-                    text="Standard",
+                    text="⚡ Gemini 3 Pro",
                     callback_data=f"model_{action_type}_{action_data}_standard"
                 )
             ])
         
-        if balance.get("pro", 0) > 0:
+        if balance.get("premium", 0) > 0:
             keyboard_buttons.append([
                 InlineKeyboardButton(
-                    text="Pro",
-                    callback_data=f"model_{action_type}_{action_data}_pro"
+                    text="🧠 Claude Sonnet 4.5",
+                    callback_data=f"model_{action_type}_{action_data}_premium"
                 )
             ])
         
-        if balance.get("max", 0) > 0:
+        if balance.get("ultra", 0) > 0:
             keyboard_buttons.append([
                 InlineKeyboardButton(
-                    text="Max",
-                    callback_data=f"model_{action_type}_{action_data}_max"
+                    text="💎 Claude Opus 4.6",
+                    callback_data=f"model_{action_type}_{action_data}_ultra"
                 )
             ])
         
