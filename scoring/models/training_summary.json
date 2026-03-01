@@ -1,11 +1,11 @@
 {
   "engine": "xgboost",
-  "trained_at": "2026-02-17T01:07:16.805988",
+  "trained_at": "2026-03-02T01:29:11.783992",
   "n_samples": 5166,
   "n_features": 39,
   "targets": {
     "overall": {
-      "version": "20260217_010658",
+      "version": "20260302_012842",
       "cv_metrics": {
         "folds": [
           {
@@ -67,7 +67,7 @@
       ]
     },
     "tech_maturity": {
-      "version": "20260217_010701",
+      "version": "20260302_012847",
       "cv_metrics": {
         "folds": [
           {
@@ -129,7 +129,7 @@
       ]
     },
     "innovation": {
-      "version": "20260217_010705",
+      "version": "20260302_012855",
       "cv_metrics": {
         "folds": [
           {
@@ -191,7 +191,7 @@
       ]
     },
     "market_potential": {
-      "version": "20260217_010709",
+      "version": "20260302_012859",
       "cv_metrics": {
         "folds": [
           {
@@ -253,7 +253,7 @@
       ]
     },
     "team_readiness": {
-      "version": "20260217_010712",
+      "version": "20260302_012907",
       "cv_metrics": {
         "folds": [
           {
@@ -315,7 +315,7 @@
       ]
     },
     "financial_health": {
-      "version": "20260217_010716",
+      "version": "20260302_012911",
       "cv_metrics": {
         "folds": [
           {
