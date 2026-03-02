@@ -160,12 +160,27 @@ class SQLiteUserRepositoryImpl(UserRepository):
         except Exception as e:
             logger.error(f"Ошибка миграции данных: {e}")
     
+    def _column_for_model(self, model_type: str) -> str:
+        """
+        Нормализация имени модели в название колонки.
+
+        В истории проекта использовались разные обозначения:
+        - premium  -> requests_pro
+        - ultra    -> requests_max
+        - standard -> requests_standard
+        Для совместимости приводим все обращения к единым колонкам.
+        """
+        if model_type == "premium":
+            return "requests_pro"
+        if model_type == "ultra":
+            return "requests_max"
+        return f"requests_{model_type}"
+
     async def add_available_requests(self, user_id, request_amount: int, model_type: str = "standard") -> int:
         if not (await self.user_exists(user_id)):
             logger.error(f"Пользователь с id {user_id} не существует! add_available_requests")
             return 0
-        
-        column_name = f"requests_{model_type}"
+        column_name = self._column_for_model(model_type)
         
         # Проверяем наличие колонки
         if not self._check_column_exists(column_name):
@@ -249,8 +264,7 @@ class SQLiteUserRepositoryImpl(UserRepository):
         if not (await self.user_have_available_requests(user_id, model_type)):
             logger.error(f"Пользователь с id {user_id} не имеет доступных запросов для модели {model_type}! use_request")
             return
-
-        column_name = f"requests_{model_type}"
+        column_name = self._column_for_model(model_type)
         
         # Проверяем наличие колонки
         if not self._check_column_exists(column_name):
@@ -297,8 +311,7 @@ class SQLiteUserRepositoryImpl(UserRepository):
         if not (await self.user_exists(user_id)):
             logger.error(f"Пользователь с id {user_id} не существует! available_requests_amount")
             return 0
-        
-        column_name = f"requests_{model_type}"
+        column_name = self._column_for_model(model_type)
         
         # Проверяем наличие колонки
         if not self._check_column_exists(column_name):
@@ -311,14 +324,14 @@ class SQLiteUserRepositoryImpl(UserRepository):
         return request_amount
     
     async def get_user_balance(self, user_id):
-        """Получить баланс пользователя по всем тирам (standard/premium/ultra)"""
+        """Получить баланс пользователя по всем тирам (standard/premium/ultra) с учётом старых колонок pro/max."""
         if not (await self.user_exists(user_id)):
             return {"standard": 0, "premium": 0, "ultra": 0}
-        
+
         balance = {"standard": 0, "premium": 0, "ultra": 0}
-        
+
         for model_type in ["standard", "premium", "ultra"]:
-            col_name = f"requests_{model_type}"
+            col_name = self._column_for_model(model_type)
             if self._check_column_exists(col_name):
                 self.cursor.execute(
                     f'SELECT COALESCE({col_name}, 0) FROM {TABLE_NAME} WHERE tg_user_id = ?',
@@ -326,7 +339,7 @@ class SQLiteUserRepositoryImpl(UserRepository):
                 )
                 result = self.cursor.fetchone()
                 balance[model_type] = result[0] if result and result[0] is not None else 0
-        
+
         return balance
     
     async def is_admin(self, user_id) -> bool:
