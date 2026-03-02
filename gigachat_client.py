@@ -168,19 +168,27 @@ CRL: {startup.get('crl', 'н/д')} - {str(startup.get('crl_description', ''))[:1
 - НЕ обрезай мысль на полуслове — заверши каждое предложение"""
 
             temperature = limits.get("temperature_recommendations", 0.5)
+            min_length = 300
 
-            response = self.client.chat.completions.create(
-                model=self.model_name,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=max_tokens,
-                temperature=temperature,
-            )
+            for attempt in range(2):
+                response = self.client.chat.completions.create(
+                    model=self.model_name,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=max_tokens,
+                    temperature=temperature + (0.1 * attempt),
+                )
 
-            if response.choices:
-                recommendation = response.choices[0].message.content.strip()
-                recommendation = recommendation.replace("**", "").replace("__", "").replace("*", "").replace("_", "")
-                logger.info(f"✅ Сгенерирована рекомендация ({len(recommendation)} символов)")
-                return recommendation
+                if response.choices:
+                    recommendation = response.choices[0].message.content.strip()
+                    recommendation = recommendation.replace("**", "").replace("__", "").replace("*", "").replace("_", "")
+
+                    if len(recommendation) >= min_length or attempt == 1:
+                        logger.info(f"✅ Сгенерирована рекомендация ({len(recommendation)} символов)")
+                        return recommendation
+
+                    logger.warning(
+                        f"⚠️ Рекомендация слишком короткая ({len(recommendation)} < {min_length}), повтор..."
+                    )
 
             return ""
 
@@ -268,10 +276,10 @@ CRL: {startup.get('crl', 'н/д')} - {str(startup.get('crl_description', ''))[:1
 
     @staticmethod
     def _soften_filters(filters: dict):
-        """Remove strict criteria so RAG can find relevant startups."""
+        """Remove strict thresholds but keep structural filters for soft scoring."""
         for key in ("DeepTech", "GenAI", "WOW"):
             filters[key] = ""
-        for key in ("trl", "irl", "mrl", "crl", "stage", "cluster", "category"):
+        for key in ("category",):
             filters[key] = []
         filters["min_profit"] = 0
 
