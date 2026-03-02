@@ -170,15 +170,17 @@ def _extract_features_from_external(external_data: dict) -> dict:
 
     checko = external_data.get("checko", {})
     egrul = external_data.get("egrul", {})
+    bfo = external_data.get("bfo", {})
     rusprofile = external_data.get("rusprofile", {})
 
     features["name"] = (
         checko.get("name")
         or egrul.get("name")
+        or bfo.get("name")
         or rusprofile.get("name", "Неизвестная компания")
     )
 
-    features["inn"] = checko.get("inn") or egrul.get("inn") or rusprofile.get("inn", "")
+    features["inn"] = checko.get("inn") or egrul.get("inn") or bfo.get("inn") or rusprofile.get("inn", "")
     features["ogrn"] = checko.get("ogrn") or egrul.get("ogrn", "")
 
     is_active = (checko.get("is_active")
@@ -204,8 +206,11 @@ def _extract_features_from_external(external_data: dict) -> dict:
         features["year"] = int(year_founded)
         filled += 1
 
-    financials = (checko.get("financials")
-                  or rusprofile.get("financials", {}))
+    financials = (
+        checko.get("financials")
+        or bfo.get("financials")
+        or rusprofile.get("financials", {})
+    )
     for year in range(2020, 2026):
         year_data = financials.get(year, financials.get(str(year), {}))
         if year_data:

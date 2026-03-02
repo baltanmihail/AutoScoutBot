@@ -113,15 +113,18 @@ def build_block_1_card(
     egrul: dict,
     checko: dict,
     inn: str,
+    bfo: Optional[dict] = None,
 ) -> List[str]:
-    """Block 1: Company card (facts from EGRUL / Checko / Skolkovo)."""
+    """Block 1: Company card (facts from EGRUL / Checko / BFO / Skolkovo)."""
     lines: List[str] = []
     lines.append("┃ 📋 <b>КАРТОЧКА КОМПАНИИ</b>")
+    bfo = bfo or {}
 
     name = (
         (skolkovo_match or {}).get("name")
         or checko.get("name")
         or egrul.get("name")
+        or bfo.get("name")
         or "Не найдена"
     )
     lines.append(f"┃  Название: <b>{escape_html(name)}</b>")
@@ -163,13 +166,14 @@ def build_block_1_card(
     return lines
 
 
-def build_block_2_financials(financials: dict) -> List[str]:
-    """Block 2: Financial statements (raw BFO data, table format)."""
+def build_block_2_financials(financials: dict, source_hint: str = "") -> List[str]:
+    """Block 2: Financial statements (raw BFO data, table format). source_hint: 'ФНС' or 'Checko'."""
     if not financials:
         return []
 
     lines: List[str] = []
-    lines.append("┃ 💰 <b>ФИНАНСОВЫЕ ПОКАЗАТЕЛИ (БФО)</b>")
+    hint = f" ({source_hint})" if source_hint else ""
+    lines.append(f"┃ 💰 <b>ФИНАНСОВЫЕ ПОКАЗАТЕЛИ (БФО){hint}</b>")
 
     years = sorted(financials.keys(), key=lambda x: int(x), reverse=True)[:4]
 
@@ -408,6 +412,20 @@ def build_block_6_ai_note(
     return lines
 
 
+def _merge_financials(
+    checko_fin: Optional[Dict[str, Any]] = None,
+    bfo_fin: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Merge financials from Checko API and BFO (ФНС). Prefer Checko; fill from BFO. Keys normalized to str."""
+    merged: Dict[str, Any] = {}
+    for source in (checko_fin or {}, bfo_fin or {}):
+        for k, v in source.items():
+            key = str(k)
+            if key not in merged and isinstance(v, dict) and v:
+                merged[key] = v
+    return dict(merged)
+
+
 def build_full_report(
     inn: str,
     company_name: str,
@@ -418,8 +436,10 @@ def build_full_report(
     """Build the complete 6-block analytical report."""
     checko = external_data.get("checko", {})
     egrul = external_data.get("egrul", {})
+    bfo = external_data.get("bfo", {})
     news = external_data.get("news", {})
-    financials = checko.get("financials", {})
+    financials = _merge_financials(checko.get("financials"), bfo.get("financials"))
+    financials_source = "Checko" if checko.get("financials") else ("ФНС" if bfo.get("financials") else "")
 
     display_name = (
         (skolkovo_match or {}).get("name")
@@ -437,12 +457,12 @@ def build_full_report(
     parts.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
     # Block 1
-    block1 = build_block_1_card(skolkovo_match, egrul, checko, inn)
+    block1 = build_block_1_card(skolkovo_match, egrul, checko, inn, bfo=bfo)
     parts.extend(block1)
     parts.append("┠───────────────────────────────")
 
     # Block 2
-    block2 = build_block_2_financials(financials)
+    block2 = build_block_2_financials(financials, source_hint=financials_source)
     if block2:
         parts.extend(block2)
         parts.append("┠───────────────────────────────")

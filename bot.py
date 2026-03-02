@@ -1,4 +1,5 @@
 import asyncio
+import os
 import sys
 
 # Конфиг: локальный config.py или переменные окружения (config_env для Railway/.env)
@@ -7,6 +8,10 @@ try:
 except ImportError:
     import config_env as config
     sys.modules["config"] = config
+
+# Подставляем BACKEND_URL из config в env для api_client (если не задан в окружении)
+if getattr(config, "BACKEND_URL", ""):
+    os.environ.setdefault("BACKEND_URL", config.BACKEND_URL)
 
 from aiogram.client.default import DefaultBotProperties
 from aiogram import Bot, Dispatcher, Router

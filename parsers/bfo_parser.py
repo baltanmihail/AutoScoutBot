@@ -71,6 +71,7 @@ class BFOParser(BaseParser):
                     "equity": self._extract_value(report, "1300"),
                     "current_assets": self._extract_value(report, "1200"),
                     "current_liabilities": self._extract_value(report, "1500"),
+                    "cash": self._extract_value(report, "1250"),
                 }
 
             result["financials"] = yearly_data

@@ -247,8 +247,70 @@ async def start_search_func(
     # Получаем запрос пользователя из состояния
     user_request = data.get("user_request", "")
 
+    selected_startups = []
+    backend_used = False
+
+    # Попытка поиска через FastAPI backend (если настроен BACKEND_URL)
     try:
+        backend_url = getattr(__import__("config"), "BACKEND_URL", "") or ""
+        if backend_url and user_request.strip():
+            try:
+                from services.api_client import get_api_client
+                api = get_api_client()
+                health = await api.health()
+                if health.get("status") == "ok":
+                    api_result = await api.search(
+                        query=user_request,
+                        model_type=model_type,
+                        top_k=count,
+                        filters=filters.get("criteria") or filters.get("additional") or {},
+                        user_id=user.id,
+                    )
+                    if api_result and api_result.get("results"):
+                        # Строим id -> полная запись из базы Сколково
+                        id_to_startup = {str(s.get("id", "")): s for s in skolkovo_db if s.get("id")}
+                        for r in api_result["results"]:
+                            stub = r.get("startup") or {}
+                            sid = stub.get("id", "")
+                            full = id_to_startup.get(sid)
+                            if full is not None:
+                                full = dict(full)
+                                full["rag_similarity"] = r.get("rag_similarity", 0) or 0
+                                full["ai_relevance"] = r.get("ai_relevance", 0) or 0
+                                if r.get("ml_score") is not None:
+                                    full["ml_score"] = r.get("ml_score")
+                                selected_startups.append(full)
+                            else:
+                                # Нет в локальной базе — минимальная карточка из API
+                                selected_startups.append({
+                                    "id": sid,
+                                    "name": stub.get("name", "—"),
+                                    "cluster": stub.get("cluster", ""),
+                                    "status": stub.get("status", ""),
+                                    "year_founded": stub.get("year_founded"),
+                                    "company_description": "",
+                                    "description": "",
+                                    "website": "",
+                                    "category": "",
+                                    "country": "",
+                                    "inn": "",
+                                    "ogrn": "",
+                                    "rag_similarity": r.get("rag_similarity", 0),
+                                    "ai_relevance": r.get("ai_relevance", 0),
+                                    "ml_score": r.get("ml_score"),
+                                })
+                        if selected_startups:
+                            backend_used = True
+                            logger.info("✅ Поиск выполнен через Backend API (%d результатов)", len(selected_startups))
+            except Exception as e:
+                logger.debug("Backend search skip: %s", e)
+    except Exception as e:
+        logger.debug("Backend search not used: %s", e)
+
+    if not selected_startups:
         selected_startups = get_unique_startups(count, filters, user_request, user_id=user.id)
+
+    try:
         actual_count = len(selected_startups)
         if not selected_startups:
             await bot.send_message(

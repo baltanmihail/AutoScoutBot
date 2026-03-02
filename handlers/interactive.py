@@ -313,6 +313,42 @@ def register_interactive_handlers(
                 
                 # Форматируем отчет
                 report = deep_analysis_service.format_deep_analysis_report(analysis)
+
+                # Дополняем отчёт данными Backend API (/score/full): SHAP, финансовые показатели
+                try:
+                    backend_url = getattr(__import__("config"), "BACKEND_URL", "") or ""
+                    sid = (selected_startup.get("id") or "").strip()
+                    if backend_url and sid:
+                        from services.api_client import get_api_client
+                        api = get_api_client()
+                        if (await api.health()).get("status") == "ok":
+                            full = await api.get_full_score(sid)
+                            if full:
+                                report += "\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+                                report += "<b>📊 ML-скоринг (Backend API)</b>\n\n"
+                                ml = full.get("ml_scores") or full.get("proxy_scores") or {}
+                                if ml:
+                                    report += f"• Общая оценка: {ml.get('overall', 0):.1f}/10\n"
+                                    report += f"• Технологическая зрелость: {ml.get('tech_maturity', 0):.1f}\n"
+                                    report += f"• Инновационность: {ml.get('innovation', 0):.1f}\n"
+                                    report += f"• Рыночный потенциал: {ml.get('market_potential', 0):.1f}\n"
+                                    report += f"• Готовность команды: {ml.get('team_readiness', 0):.1f}\n"
+                                    report += f"• Финансовое здоровье: {ml.get('financial_health', 0):.1f}\n\n"
+                                expl = full.get("explanation") or {}
+                                if expl.get("top_positive") or expl.get("top_negative"):
+                                    report += "<b>Ключевые факторы (SHAP):</b>\n"
+                                    for x in (expl.get("top_positive") or [])[:4]:
+                                        report += f"  ✅ {x.get('feature', '')} (+{x.get('contribution', 0):.2f})\n"
+                                    for x in (expl.get("top_negative") or [])[:3]:
+                                        report += f"  ⚠️ {x.get('feature', '')} ({x.get('contribution', 0):.2f})\n"
+                                    report += "\n"
+                                fin = full.get("financials") or []
+                                if fin:
+                                    report += "<b>💰 Финансы (последние годы):</b>\n"
+                                    for f in sorted(fin, key=lambda x: x.get("year", 0), reverse=True)[:3]:
+                                        report += f"  {f.get('year')}: выручка {f.get('revenue', 0):.0f}, прибыль {f.get('profit', 0):.0f}\n"
+                except Exception as e:
+                    logger.debug("Backend full score not used: %s", e)
                 
                 # Send report (may exceed 4096 char Telegram limit)
                 if len(report) > 4000:

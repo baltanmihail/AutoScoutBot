@@ -16,6 +16,7 @@ from typing import Any, Dict
 
 from .checko_parser import CheckoParser
 from .egrul_parser import EGRULParser
+from .bfo_parser import BFOParser
 from .moex_parser import MOEXParser
 from .news_parser import NewsParser
 
@@ -42,6 +43,7 @@ class ParserManager:
     def __init__(self):
         self.checko = CheckoParser(api_key=_get_checko_keys())
         self.egrul = EGRULParser()
+        self.bfo = BFOParser()
         self.moex = MOEXParser()
         self.news = NewsParser()
 
@@ -65,6 +67,7 @@ class ParserManager:
         sources = {
             "checko": self.checko.safe_fetch(inn),
             "egrul": self.egrul.safe_fetch(inn),
+            "bfo": self.bfo.safe_fetch(inn),
             "moex": self.moex.safe_fetch(inn),
             "news": self.news.safe_fetch(inn, company_name=company_name),
         }
@@ -93,6 +96,7 @@ class ParserManager:
         await asyncio.gather(
             self.checko.close(),
             self.egrul.close(),
+            self.bfo.close(),
             self.moex.close(),
             self.news.close(),
         )
