@@ -25,8 +25,8 @@ def register_start_handlers(router: Router, user_repository):
         balance = await user_repository.get_user_balance(user.id)
         
         keyboard_buttons = [
-            [InlineKeyboardButton(text="📊 Анализ Сколково", callback_data="analyze")],
-            [InlineKeyboardButton(text="🔍 Проверить стартап (по ИНН)", callback_data="check_startup")],
+            [InlineKeyboardButton(text="📊 Поиск по базе Сколково (ИИ)", callback_data="analyze")],
+            [InlineKeyboardButton(text="🔍 Проверка по ИНН (внешние данные + оценка)", callback_data="check_startup")],
             [InlineKeyboardButton(text="👤 Мой аккаунт", callback_data="user_account")],
             [InlineKeyboardButton(text="❓ Помощь", callback_data="help")],
         ]
@@ -40,8 +40,8 @@ def register_start_handlers(router: Router, user_repository):
             "🚀 Привет! Я бот для поиска и анализа стартапов.\n\n"
             "📋 Доступные команды:\n"
             "/start — Начало работы\n"
-            "/analyze — Анализ базы Сколково\n"
-            "/check — Проверить стартап по ИНН\n"
+            "/analyze — Поиск по базе Сколково (ИИ: запрос текстом)\n"
+            "/check — Проверка по ИНН (внешние данные и ML-оценка)\n"
             "/pay — Приобрести запросы\n"
             "/help — Помощь\n\n"
         )
@@ -62,23 +62,16 @@ def register_start_handlers(router: Router, user_repository):
             ]
         )
         await message.answer(
-            "📋 Список доступных команд:\n\n"
-            "/start — Начало работы с ботом\n"
-            "/analyze — Анализ стартапов из базы Сколково\n"
-            "/check — Проверить стартап по ИНН (внешние источники)\n"
-            "/pay — Приобрести запросы\n"
-            "/help — Показать этот список команд\n"
-            "/paysupport — Поддержка по вопросам оплаты\n\n"
-            "Модели AI:\n"
-            "• ⚡ Gemini 3 Pro — быстрый анализ + рекомендация\n"
-            "• 🧠 Claude Sonnet 4.5 — глубокий анализ\n"
-            "• 💎 Claude Opus 4.6 — максимально детальный анализ\n\n"
-            "ML-оценка (XGBoost, 6 измерений 0-10):\n"
-            "• Общий балл, технологии, инновации\n"
-            "• Рыночный потенциал, команда, финансы\n\n"
-            "Не является инвестиционным советником!\n\n"
+            "📋 <b>Поиск по базе Сколково (ИИ)</b> — /analyze\n"
+            "Произвольный запрос: название, ИНН или описание проектов. Поиск по базе, выбор модели: Gemini / Sonnet / Opus.\n\n"
+            "<b>Проверка по ИНН (внешние данные + оценка)</b> — /check\n"
+            "Отдельная функция: внешние источники (ЕГРЮЛ, БФО, новости), ML-оценка. Исходные данные и преддиктивная аналитика.\n\n"
+            "/pay — Приобрести запросы · /help — Помощь\n\n"
+            "Модели AI: ⚡ Gemini 3 Pro · 🧠 Claude Sonnet 4.5 · 💎 Claude Opus 4.6\n\n"
+            "ML-оценка — преддиктивная аналитика на основе финансовых данных и кейсов из обучения. Не является инвестиционным советником.\n\n"
             "❓ Вопросы → @bfm5451",
-            reply_markup=keyboard
+            reply_markup=keyboard,
+            parse_mode="HTML"
         )
 
     @router.callback_query(F.data == "start_over")
@@ -90,8 +83,8 @@ def register_start_handlers(router: Router, user_repository):
         balance = await user_repository.get_user_balance(user.id)
         
         keyboard_buttons = [
-            [InlineKeyboardButton(text="📊 Анализ Сколково", callback_data="analyze")],
-            [InlineKeyboardButton(text="🔍 Проверить стартап (по ИНН)", callback_data="check_startup")],
+            [InlineKeyboardButton(text="📊 Поиск по базе Сколково (ИИ)", callback_data="analyze")],
+            [InlineKeyboardButton(text="🔍 Проверка по ИНН (внешние данные + оценка)", callback_data="check_startup")],
             [InlineKeyboardButton(text="👤 Мой аккаунт", callback_data="user_account")],
             [InlineKeyboardButton(text="❓ Помощь", callback_data="help")],
         ]
@@ -105,8 +98,8 @@ def register_start_handlers(router: Router, user_repository):
             "🚀 Привет! Я бот для поиска и анализа стартапов.\n\n"
             "📋 Доступные команды:\n"
             "/start — Начало работы\n"
-            "/analyze — Анализ базы Сколково\n"
-            "/check — Проверить стартап по ИНН\n"
+            "/analyze — Поиск по базе Сколково (ИИ: запрос текстом)\n"
+            "/check — Проверка по ИНН (внешние данные и ML-оценка)\n"
             "/pay — Приобрести запросы\n"
             "/help — Помощь\n\n"
         )
@@ -121,24 +114,18 @@ def register_start_handlers(router: Router, user_repository):
     @router.callback_query(F.data == "help")
     async def help_btn(query: types.CallbackQuery):
         await query.message.edit_text(
-            "📋 Список доступных команд:\n\n"
-            "/start — Начало работы с ботом\n"
-            "/analyze — Анализ стартапов из базы Сколково\n"
-            "/check — Проверить стартап по ИНН (внешние источники)\n"
-            "/pay — Приобрести запросы\n"
-            "/help — Показать этот список команд\n"
-            "/paysupport — Поддержка по вопросам оплаты\n\n"
-            "Модели AI:\n"
-            "• ⚡ Gemini 3 Pro — анализ + рекомендация\n"
-            "• 🧠 Claude Sonnet 4.5 — глубокий анализ\n"
-            "• 💎 Claude Opus 4.6 — максимальная детализация\n\n"
-            "Не является инвестиционным советником!\n\n"
+            "📋 <b>Поиск по базе Сколково (ИИ)</b> — /analyze\n"
+            "Запрос текстом: название, ИНН или описание. Модели: Gemini / Sonnet / Opus.\n\n"
+            "<b>Проверка по ИНН</b> — /check: внешние данные и ML-оценка (преддиктивная аналитика).\n\n"
+            "/pay — Приобрести запросы\n\n"
+            "Модели: ⚡ Gemini · 🧠 Sonnet · 💎 Opus. Не является инвестиционным советником.\n\n"
             "❓ Вопросы → @bfm5451",
             reply_markup=InlineKeyboardMarkup(
                 inline_keyboard=[
                     [InlineKeyboardButton(text="В начало", callback_data="start_over")]
                 ]
-            )
+            ),
+            parse_mode="HTML"
         )
         await query.answer()
 

@@ -115,7 +115,7 @@ def register_search_handlers(
             await query.answer()
             return
 
-        # Сброс фильтров
+        await state.clear()
         await state.update_data(filters={"criteria": {}, "additional": {}})
         keyboard = InlineKeyboardMarkup(
             inline_keyboard=[
@@ -134,43 +134,54 @@ def register_search_handlers(
         await query.answer()
         user_id = query.from_user.id
         
-        # Проверяем баланс для всех моделей
         balance = await user_repository.get_user_balance(user_id)
+        if not balance:
+            balance = {"standard": 0, "premium": 0, "ultra": 0}
         
+        # Всегда показываем все 3 модели (Gemini, Sonnet, Opus); при 0 — «0 — купить»
+        labels = [
+            ("standard", "⚡ Gemini 3 Pro"),
+            ("premium", "🧠 Claude Sonnet 4.5"),
+            ("ultra", "💎 Claude Opus 4.6"),
+        ]
         keyboard_buttons = []
-        if balance.get("standard", 0) > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="⚡ Gemini 3 Pro", callback_data="select_model_standard")])
-        if balance.get("premium", 0) > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="🧠 Claude Sonnet 4.5", callback_data="select_model_premium")])
-        if balance.get("ultra", 0) > 0:
-            keyboard_buttons.append([InlineKeyboardButton(text="💎 Claude Opus 4.6", callback_data="select_model_ultra")])
-        
-        if not keyboard_buttons:
-            keyboard = InlineKeyboardMarkup(
-                inline_keyboard=[
-                    [InlineKeyboardButton(text="Приобрести запросы", callback_data="pay")],
-                ]
-            )
-            await query.message.edit_text(
-                "У вас нет доступных запросов. Нажмите кнопку ниже для покупки:",
-                reply_markup=keyboard
-            )
-            return
+        for tier, label in labels:
+            n = balance.get(tier, 0)
+            text = f"{label} ({n} запр.)" if n else f"{label} (0 — купить)"
+            keyboard_buttons.append([
+                InlineKeyboardButton(text=text, callback_data=f"select_model_{tier}")
+            ])
+        keyboard_buttons.append([InlineKeyboardButton(text="❌ Отмена", callback_data="analyze")])
         
         keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
         await query.message.edit_text(
-            "Выберите модель AI для анализа:",
+            "Выберите модель AI для поиска по базе Сколково:\n\n"
+            "Введите потом запрос: название, ИНН или описание интересующих проектов.",
             reply_markup=keyboard
         )
         await state.set_state(SkStates.AI_MODEL_SELECTION)
 
     @router.callback_query(SkStates.AI_MODEL_SELECTION, F.data.startswith("select_model_"))
     async def select_model_for_ai(query: types.CallbackQuery, state: FSMContext):
-        model_type = query.data.replace("select_model_", "")
-        await state.update_data(model_type=model_type)
-        await query.message.edit_text("Введите запрос для поиска стартапов:")
-        await state.set_state(SkStates.AI_FILTERS)
         await query.answer()
+        model_type = query.data.replace("select_model_", "")
+        user_id = query.from_user.id
+        balance = await user_repository.get_user_balance(user_id)
+        if balance.get(model_type, 0) <= 0:
+            tier_names = {"standard": "Gemini 3 Pro", "premium": "Claude Sonnet 4.5", "ultra": "Claude Opus 4.6"}
+            name = tier_names.get(model_type, model_type)
+            await query.message.edit_text(
+                f"У вас нет запросов для модели {name}.\nПриобретите запросы, чтобы использовать эту модель.",
+                reply_markup=InlineKeyboardMarkup(inline_keyboard=[
+                    [InlineKeyboardButton(text="💳 Приобрести запросы", callback_data="pay")],
+                    [InlineKeyboardButton(text="◀️ Назад", callback_data="analyze")],
+                ])
+            )
+            await state.clear()
+            return
+        await state.update_data(model_type=model_type)
+        await query.message.edit_text("Введите запрос для поиска стартапов (название, ИНН или описание интересов):")
+        await state.set_state(SkStates.AI_FILTERS)
 
     @router.message(SkStates.AI_FILTERS, F.text)
     async def process_filters_criteria_text(message: types.Message, state: FSMContext):

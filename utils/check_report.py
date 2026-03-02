@@ -167,13 +167,13 @@ def build_block_1_card(
 
 
 def build_block_2_financials(financials: dict, source_hint: str = "") -> List[str]:
-    """Block 2: Financial statements (raw BFO data, table format). source_hint: 'ФНС' or 'Checko'."""
+    """Block 2: Исходные данные — сырая отчётность (БФО). source_hint: 'ФНС' or 'Checko'."""
     if not financials:
         return []
 
     lines: List[str] = []
     hint = f" ({source_hint})" if source_hint else ""
-    lines.append(f"┃ 💰 <b>ФИНАНСОВЫЕ ПОКАЗАТЕЛИ (БФО){hint}</b>")
+    lines.append(f"┃ 💰 <b>ИСХОДНЫЕ ДАННЫЕ — ФИНАНСОВАЯ ОТЧЁТНОСТЬ (БФО){hint}</b>")
 
     years = sorted(financials.keys(), key=lambda x: int(x), reverse=True)[:4]
 
@@ -228,7 +228,7 @@ def build_block_3_ratios(financials: dict) -> List[str]:
     dynamic = compute_dynamic_ratios(int_keyed)
 
     lines: List[str] = []
-    lines.append(f"┃ 📊 <b>ФИНАНСОВЫЙ АНАЛИЗ ({latest_year})</b>")
+    lines.append(f"┃ 📊 <b>РАСЧЁТНЫЕ КОЭФФИЦИЕНТЫ ({latest_year})</b>")
 
     # Liquidity
     cr = static.get("current_ratio", 0)
@@ -318,9 +318,9 @@ def build_block_4_ml(
     analysis: Optional[dict],
     is_skolkovo: bool = False,
 ) -> List[str]:
-    """Block 4: ML scoring (6 dimensions)."""
+    """Block 4: Преддиктивная аналитика — ML-скоринг (6 измерений) на основе обученной модели и данных."""
     if not analysis:
-        return ["┃ 🤖 <b>ML-СКОРИНГ:</b> модели не загружены"]
+        return ["┃ 🤖 <b>ПРЕДДИКТИВНАЯ АНАЛИТИКА (ML):</b> модели не загружены"]
 
     lines: List[str] = []
     scores = analysis.get("ml_scores", {})
@@ -329,7 +329,8 @@ def build_block_4_ml(
     tl = tl_map.get(analysis.get("TrafficLight", 1), "🔴")
 
     src = "Сколково" if is_skolkovo else "внешние данные"
-    lines.append(f"┃ 🤖 <b>ML-СКОРИНГ</b> ({src})")
+    lines.append(f"┃ 🤖 <b>ПРЕДДИКТИВНАЯ АНАЛИТИКА — ML-СКОРИНГ</b> ({src})")
+    lines.append(f"┃  <i>Оценка на основе обученной модели и исторических данных (кейсы из базы).</i>")
     lines.append(f"┃")
     lines.append(f"┃  {tl} <b>Общая оценка: {overall:.1f} / 10</b>")
     lines.append(f"┃")
@@ -394,7 +395,7 @@ def build_block_6_ai_note(
     has_skolkovo: bool,
     has_financials: bool,
 ) -> List[str]:
-    """Block 6: Note about AI analytics (requires LLM call)."""
+    """Block 6: AI-аналитика и пояснение по данным."""
     lines: List[str] = []
     lines.append("┃ 🧠 <b>AI-АНАЛИТИКА</b>")
 
@@ -405,9 +406,10 @@ def build_block_6_ai_note(
         lines.append("┃  <i>Используйте «Глубокий анализ» для AI-оценки</i>")
         lines.append("┃  <i>технологической зрелости и готовности рынка.</i>")
 
-    if not has_financials:
-        lines.append("┃  ℹ️ Финансовая отчётность не найдена.")
-        lines.append("┃  Оценка может быть неточной.")
+    if has_financials:
+        lines.append("┃  ✅ Оценка финансового здоровья и рисков подкреплена отчётностью и предиктивной моделью.")
+    else:
+        lines.append("┃  ℹ️ Финансовая отчётность не найдена — оценка может быть неточной.")
 
     return lines
 

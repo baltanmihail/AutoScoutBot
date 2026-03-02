@@ -88,7 +88,7 @@ def register_check_startup_handlers(
                     inn = str(startup.get("inn", ""))
                     break
 
-        # 2. Fetch external data
+        # 2. Fetch external data (open sources: EGRUL, BFO, Checko, MOEX, News)
         external_data = {}
         try:
             from parsers.manager import ParserManager
@@ -96,10 +96,22 @@ def register_check_startup_handlers(
             if not inn and skolkovo_match:
                 inn = str(skolkovo_match.get("inn", ""))
             if inn:
+                name_for_fetch = company_name or (skolkovo_match or {}).get("name", "")
                 external_data = await mgr.fetch_all(
                     inn=inn,
-                    company_name=company_name or (skolkovo_match or {}).get("name", ""),
+                    company_name=name_for_fetch,
                 )
+                # Если ввели только ИНН — имя получили из EGRUL/BFO/Checko; дозапрашиваем новости по нему
+                if not name_for_fetch and not external_data.get("news", {}).get("mentions"):
+                    name_from_sources = (
+                        (external_data.get("egrul") or {}).get("name")
+                        or (external_data.get("bfo") or {}).get("name")
+                        or (external_data.get("checko") or {}).get("name")
+                    )
+                    if name_from_sources:
+                        news_data = await mgr.news.safe_fetch(inn, company_name=name_from_sources)
+                        if news_data:
+                            external_data["news"] = news_data
             await mgr.close()
         except Exception as e:
             logger.error(f"Ошибка при получении внешних данных: {e}")
