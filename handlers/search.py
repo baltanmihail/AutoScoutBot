@@ -354,8 +354,8 @@ async def start_search_func(
                     startup["analysis"]["rag_similarity"] = rag_similarity
                     logger.info(f"✅ Добавлен RAG similarity: {rag_similarity:.3f}")
                 
-                # Генерируем AI-рекомендацию для моделей Standard и Premium
-                if model_type in ["standard", "premium"]:
+                # Генерируем AI-рекомендацию для всех платных тиров (Gemini / Sonnet / Opus)
+                if model_type in ["standard", "premium", "ultra"]:
                     recommendation = gigachat_client.generate_recommendation(startup, user_request, query_history)
                     if recommendation:
                         startup["analysis"]["AIRecommendation"] = recommendation
@@ -438,9 +438,14 @@ async def start_search_func(
                 text_response += f"  • GenAI: {analysis.get('GenAI', 'н/д')}\n"
                 text_response += f"  • WOW-эффект: {analysis.get('WOW', 'н/д')}\n\n"
 
-                # Detailed analysis comments
+                # Detailed analysis comments (ML + SHAP)
                 comments_text = escape_html(analysis.get('Comments', 'Нет данных'))
-                text_response += f"<b>📋 Детальный анализ:</b>\n{comments_text}\n\n"
+                text_response += f"<b>📋 Детальный анализ (ML):</b>\n{comments_text}\n\n"
+                # Подсказка про расширенный 4-фазный анализ
+                text_response += (
+                    "ℹ️ Для подробной 4-фазной оценки зрелости (TRL/IRL/MRL/CRL), "
+                    "финансовых рисков и возможностей используйте «Глубокий анализ».\n\n"
+                )
 
                 # AI recommendation (Pro/Max) -- increased limit to 3000 chars
                 ai_recommendation = analysis.get('AIRecommendation', '')

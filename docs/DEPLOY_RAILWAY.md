@@ -6,7 +6,7 @@
   ```bash
    git init
    git add .
-   git commit -m "Деплой 5.1"
+   git commit -m "Деплой 5.2"
   ```
 2. **Убедитесь, что в репозиторий не попадают:**
   - `config.py` с секретами (он в .gitignore)
