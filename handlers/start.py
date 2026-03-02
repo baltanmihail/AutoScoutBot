@@ -25,7 +25,7 @@ def register_start_handlers(router: Router, user_repository):
         balance = await user_repository.get_user_balance(user.id)
         
         keyboard_buttons = [
-            [InlineKeyboardButton(text="📊 Поиск по базе Сколково (ИИ)", callback_data="analyze")],
+            [InlineKeyboardButton(text="📊 Поиск стартапов (ИИ)", callback_data="analyze")],
             [InlineKeyboardButton(text="🔍 Проверка по ИНН (внешние данные + оценка)", callback_data="check_startup")],
             [InlineKeyboardButton(text="👤 Мой аккаунт", callback_data="user_account")],
             [InlineKeyboardButton(text="❓ Помощь", callback_data="help")],
@@ -40,7 +40,7 @@ def register_start_handlers(router: Router, user_repository):
             "🚀 Привет! Я бот для поиска и анализа стартапов.\n\n"
             "📋 Доступные команды:\n"
             "/start — Начало работы\n"
-            "/analyze — Поиск по базе Сколково (ИИ: запрос текстом)\n"
+            "/analyze — Поиск стартапов (ИИ, запрос текстом)\n"
             "/check — Проверка по ИНН (внешние данные и ML-оценка)\n"
             "/pay — Приобрести запросы\n"
             "/help — Помощь\n\n"
@@ -62,7 +62,7 @@ def register_start_handlers(router: Router, user_repository):
             ]
         )
         await message.answer(
-            "📋 <b>Поиск по базе Сколково (ИИ)</b> — /analyze\n"
+            "📋 <b>Поиск стартапов (ИИ, запрос текстом)</b> — /analyze\n"
             "Произвольный запрос: название, ИНН или описание проектов. Поиск по базе, выбор модели: Gemini / Sonnet / Opus.\n\n"
             "<b>Проверка по ИНН (внешние данные + оценка)</b> — /check\n"
             "Отдельная функция: внешние источники (ЕГРЮЛ, БФО, новости), ML-оценка. Исходные данные и преддиктивная аналитика.\n\n"
@@ -83,7 +83,7 @@ def register_start_handlers(router: Router, user_repository):
         balance = await user_repository.get_user_balance(user.id)
         
         keyboard_buttons = [
-            [InlineKeyboardButton(text="📊 Поиск по базе Сколково (ИИ)", callback_data="analyze")],
+            [InlineKeyboardButton(text="📊 Поиск стартапов (ИИ)", callback_data="analyze")],
             [InlineKeyboardButton(text="🔍 Проверка по ИНН (внешние данные + оценка)", callback_data="check_startup")],
             [InlineKeyboardButton(text="👤 Мой аккаунт", callback_data="user_account")],
             [InlineKeyboardButton(text="❓ Помощь", callback_data="help")],
@@ -98,7 +98,7 @@ def register_start_handlers(router: Router, user_repository):
             "🚀 Привет! Я бот для поиска и анализа стартапов.\n\n"
             "📋 Доступные команды:\n"
             "/start — Начало работы\n"
-            "/analyze — Поиск по базе Сколково (ИИ: запрос текстом)\n"
+            "/analyze — Поиск стартапов (ИИ, запрос текстом)\n"
             "/check — Проверка по ИНН (внешние данные и ML-оценка)\n"
             "/pay — Приобрести запросы\n"
             "/help — Помощь\n\n"
