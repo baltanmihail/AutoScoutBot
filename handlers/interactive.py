@@ -340,8 +340,6 @@ def register_interactive_handlers(
             except Exception as e:
                 logger.exception("Ошибка глубокого анализа")
                 await query.message.edit_text(f"❌ Ошибка при проведении анализа: {str(e)}")
-        
-        await query.answer()
 
     @router.callback_query(F.data == "action_back_to_results")
     async def action_back_to_results(query: types.CallbackQuery, state: FSMContext):
