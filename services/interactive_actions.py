@@ -116,59 +116,38 @@ async def create_model_selection_keyboard(
     action_data: str
 ) -> Optional[InlineKeyboardMarkup]:
     """
-    Создает клавиатуру выбора модели для интерактивного действия
-    
-    Args:
-        user_id: ID пользователя
-        user_repository: Репозиторий пользователей
-        action_type: Тип действия (rerun, refine, deep_analysis)
-        action_data: Дополнительные данные для действия
-    
-    Returns:
-        InlineKeyboardMarkup с кнопками моделей или None
+    Создает клавиатуру выбора модели для интерактивного действия.
+    Всегда показывает все 3 тира (Gemini / Sonnet / Opus); при 0 запросов
+    кнопка всё равно отображается — при нажатии пользователь увидит предложение купить.
     """
     try:
         balance = await user_repository.get_user_balance(user_id)
         if not balance:
-            return None
-        
+            balance = {"standard": 0, "premium": 0, "ultra": 0}
+
+        labels = [
+            ("standard", "⚡ Gemini 3 Pro"),
+            ("premium", "🧠 Claude Sonnet 4.5"),
+            ("ultra", "💎 Claude Opus 4.6"),
+        ]
         keyboard_buttons = []
-        
-        # Check available model tiers
-        if balance.get("standard", 0) > 0:
+
+        for tier, label in labels:
+            n = balance.get(tier, 0)
+            text = f"{label} ({n} запр.)" if n else f"{label} (0 — купить)"
             keyboard_buttons.append([
                 InlineKeyboardButton(
-                    text="⚡ Gemini 3 Pro",
-                    callback_data=f"model_{action_type}_{action_data}_standard"
+                    text=text,
+                    callback_data=f"model_{action_type}_{action_data}_{tier}"
                 )
             ])
-        
-        if balance.get("premium", 0) > 0:
-            keyboard_buttons.append([
-                InlineKeyboardButton(
-                    text="🧠 Claude Sonnet 4.5",
-                    callback_data=f"model_{action_type}_{action_data}_premium"
-                )
-            ])
-        
-        if balance.get("ultra", 0) > 0:
-            keyboard_buttons.append([
-                InlineKeyboardButton(
-                    text="💎 Claude Opus 4.6",
-                    callback_data=f"model_{action_type}_{action_data}_ultra"
-                )
-            ])
-        
-        if not keyboard_buttons:
-            return None
-        
-        # Кнопка "Отмена"
+
         keyboard_buttons.append([
             InlineKeyboardButton(text="❌ Отмена", callback_data="action_cancel")
         ])
-        
+
         return InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
-    
+
     except Exception as e:
         logger.error(f"Ошибка создания клавиатуры выбора модели: {e}")
         return None

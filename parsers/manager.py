@@ -6,7 +6,7 @@ Usage:
 
     mgr = ParserManager()
     data = await mgr.fetch_all(inn="7707083893", company_name="Сбер")
-    # data == {"bfo": {...}, "egrul": {...}, "moex": {...}, "news": {...}, "checko": {...}}
+    # data == {"checko": {...}, "egrul": {...}, "moex": {...}, "news": {...}}
 """
 from __future__ import annotations
 
@@ -14,24 +14,31 @@ import asyncio
 import logging
 from typing import Any, Dict
 
-from .bfo_parser import BFOParser
+from .checko_parser import CheckoParser
 from .egrul_parser import EGRULParser
 from .moex_parser import MOEXParser
 from .news_parser import NewsParser
-from .checko_parser import CheckoParser
 
 logger = logging.getLogger(__name__)
+
+
+def _get_checko_key() -> str:
+    try:
+        from config import CHECKO_API_KEY
+        return CHECKO_API_KEY
+    except Exception:
+        import os
+        return os.environ.get("CHECKO_API_KEY", "")
 
 
 class ParserManager:
     """Runs all parsers concurrently for a given INN."""
 
     def __init__(self):
-        self.bfo = BFOParser()
+        self.checko = CheckoParser(api_key=_get_checko_key())
         self.egrul = EGRULParser()
         self.moex = MOEXParser()
         self.news = NewsParser()
-        self.checko = CheckoParser()
 
     async def fetch_all(
         self,
@@ -50,14 +57,11 @@ class ParserManager:
         Returns:
             Dict mapping source name -> parsed data.
         """
-        tasks: Dict[str, asyncio.Task] = {}
-
         sources = {
-            "bfo": self.bfo.safe_fetch(inn),
+            "checko": self.checko.safe_fetch(inn),
             "egrul": self.egrul.safe_fetch(inn),
             "moex": self.moex.safe_fetch(inn),
             "news": self.news.safe_fetch(inn, company_name=company_name),
-            "checko": self.checko.safe_fetch(inn),
         }
 
         if include:
@@ -82,9 +86,8 @@ class ParserManager:
     async def close(self):
         """Close all HTTP clients."""
         await asyncio.gather(
-            self.bfo.close(),
+            self.checko.close(),
             self.egrul.close(),
             self.moex.close(),
             self.news.close(),
-            self.checko.close(),
         )

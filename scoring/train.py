@@ -9,8 +9,9 @@ Supports:
     * Feature importance report
 
 Usage:
-    python -m scoring.train                          # defaults
-    python -m scoring.train --csv path.csv           # custom CSV
+    python -m scoring.train                          # train all 6 models (default)
+    python -m scoring.train --evaluate               # only evaluate saved models (no training)
+    python -m scoring.train --csv path.csv          # custom CSV
     python -m scoring.train --model-dir scoring/models --engine lightgbm
 """
 
@@ -403,6 +404,99 @@ def save_model(
 
 
 # ---------------------------------------------------------------------------
+# Evaluation of saved models (no training)
+# ---------------------------------------------------------------------------
+
+TARGET_NAMES = [
+    "overall",
+    "tech_maturity",
+    "innovation",
+    "market_potential",
+    "team_readiness",
+    "financial_health",
+]
+
+
+def evaluate_saved_models(
+    csv_path: str | Path,
+    model_dir: Path,
+) -> None:
+    """
+    Load saved models, build feature matrix and labels from CSV,
+    compute R² / MAE / RMSE per target and print to console.
+
+    Note: Predictions are on the SAME data the models were trained on (in-sample).
+    So R² is expected to be high (overfitting to training set). For generalization
+    metrics, the script also prints the cross-validation R² stored in model meta
+    (from 5-fold CV at training time).
+    """
+    from scoring.labeler import label_dataframe
+
+    print(f"\n{'='*60}")
+    print("EVALUATION OF SAVED MODELS")
+    print(f"{'='*60}")
+    print(f"CSV:      {csv_path}")
+    print(f"Models:   {model_dir}")
+    print()
+    print("⚠️  In-sample: model predicts on the same data it was trained on.")
+    print("   High R² here is expected; it does NOT reflect generalization.")
+    print("   For real accuracy, see 'CV R² (from training)' below.")
+    print()
+
+    X, feature_names, ids, y_overall = build_feature_matrix(csv_path)
+    labels_df = label_dataframe(csv_path)
+    label_map = {r["id"]: r for _, r in labels_df.iterrows()}
+
+    targets = {"overall": y_overall}
+    for target_name in ["tech_maturity", "innovation", "market_potential",
+                        "team_readiness", "financial_health"]:
+        col = f"score_{target_name}"
+        y_target = np.array([
+            float(label_map.get(sid, {}).get(col, 3.0))
+            if sid in label_map and len(label_map[sid]) > 0 else 3.0
+            for sid in ids
+        ], dtype=np.float32)
+        targets[target_name] = y_target
+
+    n_samples, n_feat = X.shape
+    print(f"Samples: {n_samples}, Features: {n_feat}\n")
+
+    print(f"  {'Target':<20}  {'In-sample R²':>12}  {'CV R² (train)':>14}  MAE      RMSE")
+    print("  " + "-" * 60)
+    results = []
+    for target_name in TARGET_NAMES:
+        model_path = model_dir / target_name / "model_latest.joblib"
+        meta_path = model_dir / target_name / "model_latest_meta.json"
+        if not model_path.exists():
+            print(f"  [{target_name}] model not found: {model_path}")
+            continue
+        model = joblib.load(model_path)
+        y_true = targets[target_name]
+        y_pred = model.predict(X)
+        r2_in = float(r2_score(y_true, y_pred))
+        mae = float(mean_absolute_error(y_true, y_pred))
+        rmse = float(np.sqrt(mean_squared_error(y_true, y_pred)))
+        cv_r2 = None
+        if meta_path.exists():
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+            cv_r2 = meta.get("cv_metrics", {}).get("avg_r2")
+        cv_str = f"{cv_r2:.4f}" if cv_r2 is not None else "—"
+        results.append((target_name, r2_in, cv_r2, mae, rmse))
+        print(f"  {target_name:<20}  {r2_in:>12.4f}  {cv_str:>14}  {mae:.4f}  {rmse:.4f}")
+
+    if results:
+        avg_in = sum(r[1] for r in results) / len(results)
+        cv_vals = [r[2] for r in results if r[2] is not None]
+        avg_cv = sum(cv_vals) / len(cv_vals) if cv_vals else None
+        print("  " + "-" * 60)
+        if avg_cv is not None:
+            print(f"  {'Average':<20}  {avg_in:>12.4f}  {avg_cv:>14.4f}")
+        else:
+            print(f"  {'Average (in-sample)':<20}  {avg_in:>12.4f}")
+    print()
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 
@@ -413,9 +507,15 @@ def main():
     parser.add_argument("--engine", choices=["xgboost", "lightgbm"], default="xgboost")
     parser.add_argument("--single-target", action="store_true",
                         help="Train only the overall score model (faster)")
+    parser.add_argument("--evaluate", action="store_true",
+                        help="Only evaluate saved models (R², MAE, RMSE), no training")
     args = parser.parse_args()
 
     model_dir = Path(args.model_dir)
+
+    if args.evaluate:
+        evaluate_saved_models(args.csv, model_dir)
+        return
 
     if args.single_target:
         X, feature_names, ids, y = build_feature_matrix(args.csv)

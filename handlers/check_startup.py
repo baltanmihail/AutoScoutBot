@@ -144,12 +144,25 @@ def register_check_startup_handlers(
                 response_parts.append(f"  • Дата рег.: {egrul.get('registration_date')}")
             response_parts.append("")
 
-        bfo = external_data.get("bfo", {})
-        if bfo:
-            response_parts.append("<b>💰 Финансы (БФО ФНС):</b>")
-            financials = bfo.get("financials", {})
+        fin_source = (external_data.get("checko", {})
+                      or external_data.get("rusprofile", {})
+                      or external_data.get("bfo", {}))
+        if fin_source:
+            src_name = "Checko API" if fin_source.get("source") == "checko_api" else "Rusprofile"
+            response_parts.append(f"<b>💰 Финансы ({src_name}):</b>")
+            if fin_source.get("name"):
+                response_parts.append(f"  • Название: {escape_html(fin_source['name'])}")
+            if fin_source.get("okved_name"):
+                response_parts.append(f"  • ОКВЭД: {escape_html(fin_source['okved_name'])}")
+            if fin_source.get("authorized_capital"):
+                cap = fin_source["authorized_capital"]
+                cap_str = f"{cap / 1_000_000:.1f} млн" if cap >= 1_000_000 else f"{cap:,.0f}"
+                response_parts.append(f"  • Уставный капитал: {cap_str}")
+            if fin_source.get("employees"):
+                response_parts.append(f"  • Сотрудники: {fin_source['employees']}")
+            financials = fin_source.get("financials", {})
             if financials:
-                for year in sorted(financials.keys(), reverse=True)[:3]:
+                for year in sorted(financials.keys(), key=lambda x: int(x), reverse=True)[:3]:
                     yd = financials[year]
                     rev = yd.get("revenue", 0)
                     profit = yd.get("net_profit", 0)
@@ -157,20 +170,7 @@ def register_check_startup_handlers(
                     profit_str = f"{profit / 1_000_000:.1f} млн" if profit else "н/д"
                     response_parts.append(f"  • {year}: выручка {rev_str}, прибыль {profit_str}")
             else:
-                response_parts.append("  • Отчёты не найдены")
-            response_parts.append("")
-
-        checko = external_data.get("checko", {})
-        if checko:
-            response_parts.append("<b>📊 Checko.ru:</b>")
-            if checko.get("revenue"):
-                response_parts.append(f"  • Выручка: {checko['revenue'] / 1_000_000:.1f} млн")
-            if checko.get("net_profit"):
-                response_parts.append(f"  • Чистая прибыль: {checko['net_profit'] / 1_000_000:.1f} млн")
-            if checko.get("employees"):
-                response_parts.append(f"  • Сотрудники: {checko['employees']}")
-            if checko.get("status"):
-                response_parts.append(f"  • Статус: {escape_html(checko['status'])}")
+                response_parts.append("  • Финансовые данные не найдены")
             response_parts.append("")
 
         moex = external_data.get("moex", {})
@@ -194,7 +194,7 @@ def register_check_startup_handlers(
             response_parts.append("")
 
         # 5. ML scoring for external startup (if not in Skolkovo)
-        if not skolkovo_match and (bfo or egrul):
+        if not skolkovo_match and (fin_source or egrul):
             try:
                 features = _extract_features_from_external(external_data)
                 if features:
@@ -254,37 +254,44 @@ def _extract_features_from_external(external_data: dict) -> dict:
     features: dict = {}
     filled = 0
 
-    bfo = external_data.get("bfo", {})
-    egrul = external_data.get("egrul", {})
     checko = external_data.get("checko", {})
+    egrul = external_data.get("egrul", {})
+    rusprofile = external_data.get("rusprofile", {})
 
-    # Name
     features["name"] = (
-        egrul.get("name")
-        or bfo.get("name")
-        or checko.get("name", "Неизвестная компания")
+        checko.get("name")
+        or egrul.get("name")
+        or rusprofile.get("name", "Неизвестная компания")
     )
 
-    # INN / OGRN
-    features["inn"] = egrul.get("inn", bfo.get("inn", ""))
-    features["ogrn"] = egrul.get("ogrn", "")
+    features["inn"] = checko.get("inn") or egrul.get("inn") or rusprofile.get("inn", "")
+    features["ogrn"] = checko.get("ogrn") or egrul.get("ogrn", "")
 
-    # Status
-    if egrul.get("is_active") is not None:
-        features["status"] = "active" if egrul["is_active"] else "inactive"
+    is_active = (checko.get("is_active")
+                 if checko.get("is_active") is not None
+                 else egrul.get("is_active")
+                 if egrul.get("is_active") is not None
+                 else rusprofile.get("is_active"))
+    if is_active is not None:
+        features["status"] = "active" if is_active else "inactive"
         filled += 1
 
-    # Year founded
-    reg_date = egrul.get("registration_date", checko.get("registration_date", ""))
-    if reg_date:
+    year_founded = checko.get("year_founded")
+    if not year_founded:
         import re
-        year_match = re.search(r"(\d{4})", str(reg_date))
-        if year_match:
-            features["year"] = int(year_match.group(1))
-            filled += 1
+        reg_date = (checko.get("registration_date")
+                    or egrul.get("registration_date")
+                    or rusprofile.get("registration_date", ""))
+        if reg_date:
+            year_match = re.search(r"(\d{4})", str(reg_date))
+            if year_match:
+                year_founded = int(year_match.group(1))
+    if year_founded:
+        features["year"] = int(year_founded)
+        filled += 1
 
-    # Financials from BFO
-    financials = bfo.get("financials", {})
+    financials = (checko.get("financials")
+                  or rusprofile.get("financials", {}))
     for year in range(2020, 2026):
         year_data = financials.get(year, financials.get(str(year), {}))
         if year_data:

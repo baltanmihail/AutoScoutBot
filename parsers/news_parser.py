@@ -29,6 +29,17 @@ class NewsParser(BaseParser):
 
     SOURCE_NAME = "news"
 
+    async def safe_fetch(self, inn: str, company_name: str = "") -> Dict[str, Any]:
+        """Wrapper to pass company_name to fetch."""
+        try:
+            data = await self.fetch(inn, company_name=company_name)
+            if data:
+                logger.info("✅ %s: получены данные для ИНН %s", self.SOURCE_NAME, inn)
+            return data or {}
+        except Exception as e:
+            logger.warning("⚠️ %s: ошибка для ИНН %s: %s", self.SOURCE_NAME, inn, e)
+            return {}
+
     async def fetch(self, inn: str, company_name: str = "") -> Dict[str, Any]:
         """Fetch news mentions for a company.
 

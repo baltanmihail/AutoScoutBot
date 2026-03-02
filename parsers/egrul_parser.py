@@ -38,22 +38,19 @@ class EGRULParser(BaseParser):
             logger.info(f"EGRUL: поиск по ИНН {inn} не вернул токен")
             return {}
 
-        # Step 2: poll for results (EGRUL uses async processing)
         import asyncio
-        for _ in range(10):
+        for attempt in range(10):
             await asyncio.sleep(1)
             result_resp = await client.get(self.RESULT_URL.format(token=token))
             result_resp.raise_for_status()
             result_data = result_resp.json()
 
-            status = result_data.get("status", "")
-            if status == "ready":
-                rows = result_data.get("rows", [])
-                if not rows:
-                    return {}
+            rows = result_data.get("rows", [])
+            if rows:
+                return self._parse_row(rows[0], inn)
 
-                row = rows[0]
-                return self._parse_row(row, inn)
+            if result_data.get("status") == "ready":
+                return {}
 
         logger.warning(f"EGRUL: таймаут ожидания результатов для ИНН {inn}")
         return {}

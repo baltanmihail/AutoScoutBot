@@ -1,7 +1,7 @@
 {
-  "version": "20260302_030328",
+  "version": "20260302_023607",
   "engine": "xgboost",
-  "created_at": "2026-03-02T03:03:28.839647",
+  "created_at": "2026-03-02T02:36:07.363966",
   "n_features": 39,
   "feature_names": [
     "log_revenue_2025",
@@ -45,72 +45,72 @@
     "len_technologies"
   ],
   "cv_metrics": {
-    "r2": 0.9812,
-    "mae": 0.1075,
-    "n_samples": 5251,
+    "r2": 0.9766,
+    "mae": 0.0642,
+    "n_samples": 5173,
     "n_skolkovo": 5166,
-    "n_external": 85
+    "n_external": 7
   },
   "top_features": [
     {
-      "feature": "trl",
-      "importance": 0.3268
+      "feature": "crl",
+      "importance": 0.8657
     },
     {
-      "feature": "has_ai",
-      "importance": 0.2416
-    },
-    {
-      "feature": "mrl",
-      "importance": 0.1538
-    },
-    {
-      "feature": "patent_count",
-      "importance": 0.0919
-    },
-    {
-      "feature": "len_technologies",
-      "importance": 0.0438
-    },
-    {
-      "feature": "tech_count",
-      "importance": 0.037
-    },
-    {
-      "feature": "product_count",
-      "importance": 0.0231
-    },
-    {
-      "feature": "len_product_desc",
-      "importance": 0.0182
-    },
-    {
-      "feature": "industry_count",
-      "importance": 0.0166
-    },
-    {
-      "feature": "log_revenue_2021",
-      "importance": 0.0043
-    },
-    {
-      "feature": "log_profit_2024",
-      "importance": 0.0036
-    },
-    {
-      "feature": "max_profit_log",
-      "importance": 0.0031
+      "feature": "irl",
+      "importance": 0.024
     },
     {
       "feature": "max_revenue_log",
-      "importance": 0.003
+      "importance": 0.018
     },
     {
-      "feature": "company_age",
-      "importance": 0.003
+      "feature": "mrl",
+      "importance": 0.0077
     },
     {
-      "feature": "revenue_trend",
-      "importance": 0.0025
+      "feature": "trl",
+      "importance": 0.0063
+    },
+    {
+      "feature": "log_revenue_2023",
+      "importance": 0.0058
+    },
+    {
+      "feature": "log_revenue_2020",
+      "importance": 0.005
+    },
+    {
+      "feature": "industry_count",
+      "importance": 0.0043
+    },
+    {
+      "feature": "log_revenue_2021",
+      "importance": 0.0041
+    },
+    {
+      "feature": "log_revenue_2024",
+      "importance": 0.004
+    },
+    {
+      "feature": "max_profit_log",
+      "importance": 0.0038
+    },
+    {
+      "feature": "log_profit_2022",
+      "importance": 0.0036
+    },
+    {
+      "feature": "len_company_desc",
+      "importance": 0.0035
+    },
+    {
+      "feature": "log_profit_2024",
+      "importance": 0.0033
+    },
+    {
+      "feature": "profit_margin",
+      "importance": 0.0033
     }
   ]
 }

@@ -86,6 +86,7 @@ def register_interactive_handlers(
         await query.message.edit_text(
             "🔄 <b>Повторный поиск</b>\n\n"
             f"Запрос: <i>{user_request}</i>\n\n"
+            "Списывается 1 запрос выбранной модели.\n\n"
             "Выберите модель для поиска:",
             reply_markup=keyboard,
             parse_mode='HTML'
@@ -139,6 +140,7 @@ def register_interactive_handlers(
         
         await message.answer(
             f"✏️ <b>Уточненный запрос:</b> <i>{refined_query}</i>\n\n"
+            "Списывается 1 запрос выбранной модели.\n\n"
             "Выберите модель для поиска:",
             reply_markup=keyboard,
             parse_mode='HTML'
@@ -219,6 +221,8 @@ def register_interactive_handlers(
         await query.message.edit_text(
             f"🔬 <b>Глубокий анализ</b>\n\n"
             f"Стартап: <b>{startup_name}</b>\n\n"
+            "Списывается <b>1 запрос</b> выбранной модели (как один обычный анализ).\n"
+            "Тарифы и пакеты: /help\n\n"
             "Выберите модель для анализа:",
             reply_markup=keyboard,
             parse_mode='HTML'

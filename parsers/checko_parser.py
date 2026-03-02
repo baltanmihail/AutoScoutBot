@@ -1,115 +1,165 @@
 """
-Parser for Checko.ru -- aggregated financial data.
+Parser for Checko.ru Official API v2.
 
-Checko.ru provides a convenient summary page per INN.
-Since there's no official API, this parser scrapes the public HTML page
-and extracts key financial indicators.
+Endpoints used:
+  /finances  -- full BFO financial statements by year + basic company info
+  /company   -- detailed EGRUL: capital, OKVED, directors, risk factors (optional)
+
+Free tier: 100 requests/day.  Standard: 0.15 rub/req after first 100.
+API docs: https://api.checko.ru/v2
 """
 from __future__ import annotations
 
 import logging
+import os
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from .base import BaseParser
 
 logger = logging.getLogger(__name__)
 
+# BFO line codes we care about
+BFO_CODES = {
+    "2110": "revenue",
+    "2120": "cost_of_sales",
+    "2100": "gross_profit",
+    "2200": "operating_profit",
+    "2400": "net_profit",
+    "1600": "total_assets",
+    "1700": "total_liabilities",
+    "1300": "equity",
+    "1200": "current_assets",
+    "1500": "current_liabilities",
+    "1100": "non_current_assets",
+    "1150": "fixed_assets",
+    "1250": "cash",
+    "1370": "retained_earnings",
+}
+
 
 class CheckoParser(BaseParser):
-    """Scrape Checko.ru for a financial summary by INN."""
+    """Fetch data via Checko.ru official API v2."""
 
     SOURCE_NAME = "checko"
-    BASE_URL = "https://checko.ru/company/{inn}"
+    API_BASE = "https://api.checko.ru/v2"
+
+    def __init__(self, api_key: Optional[str] = None):
+        super().__init__()
+        self.api_key = api_key or os.environ.get("CHECKO_API_KEY", "")
 
     async def fetch(self, inn: str) -> Dict[str, Any]:
+        if not self.api_key:
+            logger.warning("Checko API key not configured, skipping")
+            return {}
+
         client = await self._get_client()
 
-        url = self.BASE_URL.format(inn=inn)
         resp = await client.get(
-            url,
-            headers={"User-Agent": "Mozilla/5.0 (compatible; AutoScoutBot/1.0)"},
+            f"{self.API_BASE}/finances",
+            params={"key": self.api_key, "inn": inn},
         )
-
+        if resp.status_code == 402:
+            logger.warning("Checko: API rate limit reached (402)")
+            return {}
         if resp.status_code == 404:
-            logger.info(f"Checko: компания с ИНН {inn} не найдена")
+            logger.info("Checko: INN %s not found", inn)
             return {}
         resp.raise_for_status()
+        payload = resp.json()
 
-        html = resp.text
-        return self._parse_html(html, inn)
+        result: Dict[str, Any] = {
+            "inn": inn,
+            "source": "checko_api",
+        }
 
-    @staticmethod
-    def _parse_html(html: str, inn: str) -> Dict[str, Any]:
-        """Extract structured data from Checko.ru HTML."""
-        result: Dict[str, Any] = {"inn": inn}
+        company_info = payload.get("company", {})
+        if company_info:
+            self._parse_company_info(company_info, result)
 
-        # Company name
-        name_match = re.search(r'<h1[^>]*>(.*?)</h1>', html, re.DOTALL)
-        if name_match:
-            result["name"] = re.sub(r'<[^>]+>', '', name_match.group(1)).strip()
+        fin_data = payload.get("data", {})
+        result["financials"] = self._parse_financials(fin_data)
 
-        # Status
-        if "Действующая" in html:
-            result["status"] = "active"
-        elif "Ликвидирована" in html or "Ликвидация" in html:
-            result["status"] = "liquidated"
-        elif "Реорганизация" in html:
-            result["status"] = "reorganized"
-
-        # Revenue (Выручка)
-        revenue_match = re.search(
-            r'Выручка[^<]*?</[^>]+>[^<]*?<[^>]+>([\d\s,.]+)\s*(тыс|млн|млрд)?',
-            html, re.IGNORECASE
-        )
-        if revenue_match:
-            result["revenue"] = _parse_money(revenue_match.group(1), revenue_match.group(2))
-
-        # Profit (Прибыль)
-        profit_match = re.search(
-            r'Чистая прибыль[^<]*?</[^>]+>[^<]*?<[^>]+>([-\d\s,.]+)\s*(тыс|млн|млрд)?',
-            html, re.IGNORECASE
-        )
-        if profit_match:
-            result["net_profit"] = _parse_money(profit_match.group(1), profit_match.group(2))
-
-        # Number of employees
-        emp_match = re.search(r'Сотрудники[^<]*?</[^>]+>[^<]*?<[^>]+>(\d+)', html)
-        if emp_match:
-            try:
-                result["employees"] = int(emp_match.group(1))
-            except ValueError:
-                pass
-
-        # Registration date
-        reg_match = re.search(r'Дата регистрации[^<]*?</[^>]+>[^<]*?<[^>]+>(\d{2}\.\d{2}\.\d{4})', html)
-        if reg_match:
-            result["registration_date"] = reg_match.group(1)
-
-        # Authorized capital
-        cap_match = re.search(
-            r'Уставный капитал[^<]*?</[^>]+>[^<]*?<[^>]+>([\d\s,.]+)\s*(тыс|млн|млрд)?',
-            html, re.IGNORECASE
-        )
-        if cap_match:
-            result["authorized_capital"] = _parse_money(cap_match.group(1), cap_match.group(2))
+        if result["financials"]:
+            years = sorted(result["financials"].keys())
+            logger.info(
+                "Checko API: INN %s — financials for %d years (%s..%s)",
+                inn, len(years), years[0], years[-1],
+            )
 
         return result
 
+    @staticmethod
+    def _parse_company_info(info: dict, result: dict) -> None:
+        """Extract fields from the /finances company block.
 
-def _parse_money(value_str: str, unit: str | None) -> float:
-    """Parse a money value string like '12 345,67' with optional unit."""
-    try:
-        cleaned = value_str.replace(" ", "").replace(",", ".").replace("\xa0", "")
-        value = float(cleaned)
-        if unit:
-            unit = unit.lower().strip()
-            if "млрд" in unit:
-                value *= 1_000_000_000
-            elif "млн" in unit:
-                value *= 1_000_000
-            elif "тыс" in unit:
-                value *= 1_000
-        return value
-    except (ValueError, TypeError):
-        return 0.0
+        Actual API keys (CamelCase Russian):
+          ОГРН, ИНН, КПП, НаимСокр, НаимПолн, ДатаРег, Статус,
+          РегионКод, ЮрАдрес, ОКВЭД
+        """
+        result["name"] = (info.get("\u041d\u0430\u0438\u043c\u041f\u043e\u043b\u043d")
+                          or info.get("\u041d\u0430\u0438\u043c\u0421\u043e\u043a\u0440")
+                          or "")
+        result["short_name"] = info.get("\u041d\u0430\u0438\u043c\u0421\u043e\u043a\u0440", "")
+        result["ogrn"] = info.get("\u041e\u0413\u0420\u041d", "")
+
+        created = info.get("\u0414\u0430\u0442\u0430\u0420\u0435\u0433", "")
+        if created:
+            result["registration_date"] = created
+            m = re.search(r"(\d{4})", str(created))
+            if m:
+                result["year_founded"] = int(m.group(1))
+
+        status_val = info.get("\u0421\u0442\u0430\u0442\u0443\u0441", "")
+        if status_val:
+            result["status"] = status_val
+            result["is_active"] = "\u0434\u0435\u0439\u0441\u0442\u0432" in str(status_val).lower()
+
+        okved = info.get("\u041e\u041a\u0412\u042d\u0414", "")
+        if okved:
+            result["okved_name"] = okved
+
+        address = info.get("\u042e\u0440\u0410\u0434\u0440\u0435\u0441", "")
+        if address:
+            result["address"] = address
+
+    @staticmethod
+    def _parse_financials(fin_data: dict) -> Dict[int, Dict[str, float]]:
+        financials: Dict[int, Dict[str, float]] = {}
+
+        for year_str, year_data in fin_data.items():
+            if not isinstance(year_data, dict):
+                continue
+            try:
+                year = int(year_str)
+            except (ValueError, TypeError):
+                continue
+            if year < 2015 or year > 2030:
+                continue
+
+            year_parsed: Dict[str, float] = {}
+            for code, name in BFO_CODES.items():
+                val = year_data.get(code, 0)
+                if val:
+                    try:
+                        year_parsed[name] = float(val)
+                    except (ValueError, TypeError):
+                        pass
+
+            if year_parsed:
+                financials[year] = year_parsed
+
+        return financials
+
+    async def fetch_company(self, inn: str) -> Dict[str, Any]:
+        """Detailed company info (EGRUL, capital, OKVED, etc). Extra API request."""
+        if not self.api_key:
+            return {}
+        client = await self._get_client()
+        resp = await client.get(
+            f"{self.API_BASE}/company",
+            params={"key": self.api_key, "inn": inn},
+        )
+        if resp.status_code != 200:
+            return {}
+        return resp.json().get("data", {})

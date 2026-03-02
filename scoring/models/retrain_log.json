@@ -1,0 +1,236 @@
+[
+  {
+    "timestamp": "2026-03-02T02:35:55.827439",
+    "status": "skipped",
+    "reason": "",
+    "n_skolkovo": 5166,
+    "n_external_total": 20,
+    "n_external_used": 7,
+    "metrics_before": {
+      "overall": {
+        "r2": 0.9975,
+        "mae": 0.0554
+      },
+      "tech_maturity": {
+        "r2": 0.9976,
+        "mae": 0.0568
+      },
+      "innovation": {
+        "r2": 0.9989,
+        "mae": 0.0397
+      },
+      "market_potential": {
+        "r2": 0.9984,
+        "mae": 0.039
+      },
+      "team_readiness": {
+        "r2": 0.999,
+        "mae": 0.0228
+      },
+      "financial_health": {
+        "r2": 0.9986,
+        "mae": 0.0461
+      }
+    },
+    "metrics_after": {
+      "overall": {
+        "r2": 0.9707,
+        "mae": 0.1287,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      },
+      "tech_maturity": {
+        "r2": 0.964,
+        "mae": 0.1381,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      },
+      "innovation": {
+        "r2": 0.9806,
+        "mae": 0.109,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      },
+      "market_potential": {
+        "r2": 0.9679,
+        "mae": 0.1017,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      },
+      "team_readiness": {
+        "r2": 0.9766,
+        "mae": 0.0642,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      },
+      "financial_health": {
+        "r2": 0.9699,
+        "mae": 0.1326,
+        "n_samples": 5173,
+        "n_skolkovo": 5166,
+        "n_external": 7
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-02T02:42:54.097525",
+    "status": "skipped",
+    "reason": "",
+    "n_skolkovo": 5166,
+    "n_external_total": 150,
+    "n_external_used": 46,
+    "metrics_before": {
+      "overall": {
+        "r2": 0.9975,
+        "mae": 0.0556
+      },
+      "tech_maturity": {
+        "r2": 0.9975,
+        "mae": 0.0567
+      },
+      "innovation": {
+        "r2": 0.999,
+        "mae": 0.0395
+      },
+      "market_potential": {
+        "r2": 0.9983,
+        "mae": 0.0394
+      },
+      "team_readiness": {
+        "r2": 0.999,
+        "mae": 0.0225
+      },
+      "financial_health": {
+        "r2": 0.9986,
+        "mae": 0.0459
+      }
+    },
+    "metrics_after": {
+      "overall": {
+        "r2": 0.9718,
+        "mae": 0.129,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      },
+      "tech_maturity": {
+        "r2": 0.9641,
+        "mae": 0.1365,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      },
+      "innovation": {
+        "r2": 0.9819,
+        "mae": 0.1058,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      },
+      "market_potential": {
+        "r2": 0.9684,
+        "mae": 0.1023,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      },
+      "team_readiness": {
+        "r2": 0.9767,
+        "mae": 0.0634,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      },
+      "financial_health": {
+        "r2": 0.9695,
+        "mae": 0.1331,
+        "n_samples": 5212,
+        "n_skolkovo": 5166,
+        "n_external": 46
+      }
+    }
+  },
+  {
+    "timestamp": "2026-03-02T03:03:14.027805",
+    "status": "skipped",
+    "reason": "",
+    "n_skolkovo": 5166,
+    "n_external_total": 95,
+    "n_external_used": 85,
+    "metrics_before": {
+      "overall": {
+        "r2": 0.9976,
+        "mae": 0.0547
+      },
+      "tech_maturity": {
+        "r2": 0.9975,
+        "mae": 0.0564
+      },
+      "innovation": {
+        "r2": 0.9989,
+        "mae": 0.0386
+      },
+      "market_potential": {
+        "r2": 0.9985,
+        "mae": 0.0379
+      },
+      "team_readiness": {
+        "r2": 0.999,
+        "mae": 0.0223
+      },
+      "financial_health": {
+        "r2": 0.9986,
+        "mae": 0.0465
+      }
+    },
+    "metrics_after": {
+      "overall": {
+        "r2": 0.9708,
+        "mae": 0.1315,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      },
+      "tech_maturity": {
+        "r2": 0.9644,
+        "mae": 0.1343,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      },
+      "innovation": {
+        "r2": 0.9812,
+        "mae": 0.1075,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      },
+      "market_potential": {
+        "r2": 0.9685,
+        "mae": 0.1009,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      },
+      "team_readiness": {
+        "r2": 0.9763,
+        "mae": 0.0655,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      },
+      "financial_health": {
+        "r2": 0.9695,
+        "mae": 0.1354,
+        "n_samples": 5251,
+        "n_skolkovo": 5166,
+        "n_external": 85
+      }
+    }
+  }
+]

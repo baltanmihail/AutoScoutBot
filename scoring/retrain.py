@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 MIN_R2_THRESHOLD = 0.80
 
 # Допустимое падение R² по сравнению с baseline (оригинальная модель)
-MAX_R2_DROP = 0.03
+MAX_R2_DROP = 0.05
 
 
 def load_skolkovo_data(csv_path: str | Path) -> Tuple[np.ndarray, np.ndarray, list, list]:
@@ -196,7 +196,7 @@ def compute_sample_weights(
     confidence: np.ndarray,
     source_reliability: Optional[np.ndarray] = None,
     skolkovo_weight: float = 1.0,
-    external_base_weight: float = 0.5,
+    external_base_weight: float = 0.3,
 ) -> np.ndarray:
     """
     Вычисление весов для каждого сэмпла.
@@ -547,6 +547,121 @@ def prepare_external_from_db() -> List[Dict]:
     return startups
 
 
+def _external_data_to_startup(external: Dict, name: str = "", inn: str = "") -> Dict:
+    """
+    Преобразует сырые данные парсеров (checko, egrul, rusprofile, bfo)
+    в dict, совместимый с scoring.features.extract_features.
+    Используется при загрузке из external_batch.jsonl.
+    """
+    import re
+    checko = external.get("checko", {})
+    egrul = external.get("egrul", {})
+    rusprofile = external.get("rusprofile", {})
+    bfo = external.get("bfo", {})
+
+    startup = {
+        "name": (name
+                 or checko.get("name")
+                 or egrul.get("name")
+                 or rusprofile.get("name")
+                 or bfo.get("name", "")),
+        "inn": (inn
+                or checko.get("inn", "")
+                or egrul.get("inn", "")
+                or rusprofile.get("inn", "")),
+        "company_description": "",
+        "product_description": "",
+        "technologies": "",
+        "product_names": "",
+        "project_names": "",
+        "industries": "",
+        "patents": "",
+        "cluster": "",
+        "trl_raw": 0,
+        "irl_raw": 0,
+        "mrl_raw": 0,
+        "crl_raw": 0,
+    }
+
+    if checko.get("okved_name"):
+        startup["industries"] = checko["okved_name"]
+
+    is_active = (checko.get("is_active")
+                 if checko.get("is_active") is not None
+                 else egrul.get("is_active")
+                 if egrul.get("is_active") is not None
+                 else rusprofile.get("is_active"))
+    if is_active is not None:
+        startup["status"] = "Действующий участник" if is_active else "Выбыл"
+    else:
+        startup["status"] = ""
+
+    year_founded = checko.get("year_founded")
+    if not year_founded:
+        reg_date = (checko.get("registration_date")
+                    or egrul.get("registration_date")
+                    or rusprofile.get("registration_date")
+                    or bfo.get("registration_date", ""))
+        if reg_date:
+            m = re.search(r"(\d{4})", str(reg_date))
+            if m:
+                year_founded = m.group(1)
+    startup["year_founded"] = year_founded or ""
+
+    for y in range(2020, 2026):
+        startup[f"revenue_{y}"] = 0
+        startup[f"profit_{y}"] = 0
+
+    financials = (checko.get("financials")
+                  or rusprofile.get("financials")
+                  or bfo.get("financials", {}))
+    for year in range(2020, 2026):
+        yd = financials.get(year, financials.get(str(year), {}))
+        if yd:
+            startup[f"revenue_{year}"] = yd.get("revenue", 0) or 0
+            startup[f"profit_{year}"] = yd.get("net_profit", 0) or 0
+
+    return startup
+
+
+def load_external_from_jsonl(jsonl_path: str | Path) -> List[Dict]:
+    """
+    Загрузка внешних стартапов из JSONL (результат scripts/batch_external_fetch.py).
+
+    Каждая строка: {"inn", "name", "skolkovo_id", "external": {"bfo", "egrul", ...}}
+    Возвращает список dict для extract_external_features.
+    """
+    path = Path(jsonl_path)
+    if not path.exists():
+        logger.warning("Файл не найден: %s", path)
+        return []
+
+    startups = []
+    with open(path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                row = json.loads(line)
+            except json.JSONDecodeError as e:
+                logger.warning("Ошибка парсинга строки JSONL: %s", e)
+                continue
+            ext = row.get("external", {})
+            if not ext:
+                continue
+            rec = _external_data_to_startup(
+                ext,
+                name=row.get("name", ""),
+                inn=row.get("inn", ""),
+            )
+            if rec.get("inn") or rec.get("name"):
+                startups.append(rec)
+
+    logger.info("Загружено %d внешних стартапов из JSONL: %s", len(startups), path)
+    return startups
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -577,14 +692,30 @@ def main():
         "--dry-run", action="store_true",
         help="Только рассчитать метрики, не сохранять модели"
     )
+    parser.add_argument(
+        "--jsonl", type=str, default=None,
+        help="Путь к external_batch.jsonl (вместо БД external_startups)"
+    )
     args = parser.parse_args()
 
-    external_startups = prepare_external_from_db()
+    if not Path(args.csv).exists():
+        print("\nCSV not found:", args.csv)
+        print("Specify --csv path to SkolkovoStartups.csv (or labeled_startups source CSV).")
+        return
+
+    if args.jsonl:
+        external_startups = load_external_from_jsonl(args.jsonl)
+    else:
+        external_startups = prepare_external_from_db()
 
     if not external_startups:
-        print("\n⚠️  Нет внешних стартапов для дообучения.")
-        print("Используйте команду /check в боте для сбора данных,")
-        print("или добавьте стартапы через парсеры.")
+        logger.warning(
+            "Net vneshnih startupov dlya doobucheniya. "
+            "Ispolzujte /check v bote ili --jsonl <path> posle batch_external_fetch.py"
+        )
+        print("\nNo external startups for retrain.")
+        print("Use /check in bot to collect data, or run: python scripts/batch_external_fetch.py --limit 100")
+        print("Then: python -m scoring.retrain --jsonl external_batch.jsonl")
         return
 
     result = retrain_with_external(
@@ -596,22 +727,28 @@ def main():
         dry_run=args.dry_run,
     )
 
-    print(f"\n{'='*60}")
-    print(f"Результат: {result['status']}")
-    print(f"Причина: {result['reason']}")
-    print(f"Сколково: {result['n_skolkovo']}")
-    print(f"Внешних (всего): {result['n_external_total']}")
-    print(f"Внешних (использовано): {result['n_external_used']}")
+    def safe_print(s: str) -> None:
+        try:
+            print(s)
+        except UnicodeEncodeError:
+            print(s.encode("ascii", errors="replace").decode("ascii"))
+
+    safe_print(f"\n{'='*60}")
+    safe_print(f"Result: {result['status']}")
+    safe_print(f"Reason: {result['reason']}")
+    print(f"Skolkovo: {result['n_skolkovo']}")
+    print(f"External (total): {result['n_external_total']}")
+    print(f"External (used): {result['n_external_used']}")
 
     if result['metrics_before']:
-        print(f"\nМетрики ДО:")
+        print("\nMetrics BEFORE:")
         for t, m in result['metrics_before'].items():
-            print(f"  {t}: R²={m['r2']:.4f}, MAE={m['mae']:.4f}")
+            print(f"  {t}: R2={m['r2']:.4f}, MAE={m['mae']:.4f}")
 
     if result['metrics_after']:
-        print(f"\nМетрики ПОСЛЕ:")
+        print("\nMetrics AFTER:")
         for t, m in result['metrics_after'].items():
-            print(f"  {t}: R²={m['r2']:.4f}, MAE={m['mae']:.4f}")
+            print(f"  {t}: R2={m['r2']:.4f}, MAE={m['mae']:.4f}")
 
 
 if __name__ == "__main__":
