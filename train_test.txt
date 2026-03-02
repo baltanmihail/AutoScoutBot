@@ -1,0 +1,50 @@
+﻿python : Traceback (most recent call last):
+C:\Users\click\AppData\Local\Temp\ps-script-7933310e-6db7-485d-a654-2bdd1edd6fe4.ps1:83 знак:132
++ ... ONIOENCODING="utf-8"; python -m scoring.train --evaluate 2>&1 | Out-F ...
++                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most recent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\click\OneDrive\╨а╨░╨▒╨╛╤З╨╕╨╣ ╤Б╤В╨╛╨╗\╨Ь╨У╨в╨г\Python Projects\AutoScoutBot\AutoScoutBot\scoring\trai
+n.py", line 534, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\click\OneDrive\╨а╨░╨▒╨╛╤З╨╕╨╣ ╤Б╤В╨╛╨╗\╨Ь╨У╨в╨г\Python Projects\AutoScoutBot\AutoScoutBot\scoring\trai
+n.py", line 517, in main
+    evaluate_saved_models(args.csv, model_dir)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\click\OneDrive\╨а╨░╨▒╨╛╤З╨╕╨╣ ╤Б╤В╨╛╨╗\╨Ь╨У╨в╨г\Python Projects\AutoScoutBot\AutoScoutBot\scoring\trai
+n.py", line 475, in evaluate_saved_models
+    y_pred = model.predict(X)
+  File "C:\Users\click\AppData\Roaming\Python\Python314\site-packages\xgboost\core.py", line 751, in inner_f
+    return func(**kwargs)
+  File "C:\Users\click\AppData\Roaming\Python\Python314\site-packages\xgboost\sklearn.py", line 1446, in predict
+    predts = self.get_booster().inplace_predict(
+        data=X,
+    ...<4 lines>...
+        validate_features=validate_features,
+    )
+  File "C:\Users\click\AppData\Roaming\Python\Python314\site-packages\xgboost\core.py", line 751, in inner_f
+    return func(**kwargs)
+  File "C:\Users\click\AppData\Roaming\Python\Python314\site-packages\xgboost\core.py", line 2865, in inplace_predict
+    raise ValueError(
+    ...<2 lines>...
+    )
+ValueError: Feature shape mismatch, expected: 39, got 97
+
+============================================================
+EVALUATION OF SAVED MODELS
+============================================================
+CSV:      C:\Users\click\OneDrive\╨а╨░╨▒╨╛╤З╨╕╨╣ ╤Б╤В╨╛╨╗\╨Ь╨У╨в╨г\Python Projects\AutoScoutBot\AutoScoutBot\SkolkovoStartups.csv
+Models:   C:\Users\click\OneDrive\╨а╨░╨▒╨╛╤З╨╕╨╣ ╤Б╤В╨╛╨╗\╨Ь╨У╨в╨г\Python Projects\AutoScoutBot\AutoScoutBot\scoring\models
+
+тЪая╕П  In-sample: model predicts on the same data it was trained on.
+   High R┬▓ here is expected; it does NOT reflect generalization.
+   For real accuracy, see 'CV R┬▓ (from training)' below.
+
+Samples: 5166, Features: 97
+
+  Target                In-sample R┬▓   CV R┬▓ (train)  MAE      RMSE
+  ------------------------------------------------------------

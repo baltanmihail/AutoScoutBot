@@ -1,8 +1,8 @@
 {
-  "version": "20260302_030330",
+  "version": "20260302_133528",
   "engine": "xgboost",
-  "created_at": "2026-03-02T03:03:30.539652",
-  "n_features": 39,
+  "created_at": "2026-03-02T13:35:28.949717",
+  "n_features": 97,
   "feature_names": [
     "log_revenue_2025",
     "log_revenue_2024",
@@ -42,75 +42,163 @@
     "status_encoded",
     "len_company_desc",
     "len_product_desc",
-    "len_technologies"
+    "len_technologies",
+    "bfo_current_ratio",
+    "bfo_quick_ratio",
+    "bfo_cash_ratio",
+    "bfo_cash_to_current_liab",
+    "bfo_working_capital_log",
+    "bfo_working_capital_to_assets",
+    "bfo_equity_ratio",
+    "bfo_debt_to_equity",
+    "bfo_debt_to_assets",
+    "bfo_long_term_debt_share",
+    "bfo_financial_leverage",
+    "bfo_interest_coverage",
+    "bfo_borrowings_to_assets",
+    "bfo_equity_to_debt",
+    "bfo_gross_margin",
+    "bfo_operating_margin",
+    "bfo_net_margin",
+    "bfo_roa",
+    "bfo_roe",
+    "bfo_cost_to_revenue",
+    "bfo_opex_ratio",
+    "bfo_asset_turnover",
+    "bfo_receivables_turnover",
+    "bfo_inventory_turnover",
+    "bfo_payables_turnover",
+    "bfo_receivables_days",
+    "bfo_payables_days",
+    "bfo_non_current_share",
+    "bfo_current_share",
+    "bfo_cash_share",
+    "bfo_receivables_share",
+    "bfo_inventory_share",
+    "bfo_intangible_share",
+    "bfo_rd_share",
+    "bfo_fixed_assets_share",
+    "bfo_altman_z",
+    "bfo_taffler_z",
+    "bfo_negative_equity",
+    "bfo_loss_making",
+    "bfo_overlevered",
+    "bfo_zero_revenue",
+    "bfo_negative_working_capital",
+    "bfo_log_revenue",
+    "bfo_log_net_profit",
+    "bfo_log_total_assets",
+    "bfo_log_equity",
+    "bfo_log_cash",
+    "bfo_revenue_yoy",
+    "bfo_revenue_cagr",
+    "bfo_profit_trend",
+    "bfo_profit_yoy",
+    "bfo_margin_trend",
+    "bfo_margin_volatility",
+    "bfo_asset_growth_yoy",
+    "bfo_equity_growth_yoy",
+    "bfo_years_with_revenue",
+    "bfo_years_profitable",
+    "bfo_years_of_data"
   ],
   "cv_metrics": {
-    "r2": 0.9695,
-    "mae": 0.1354,
-    "n_samples": 5251,
-    "n_skolkovo": 5166,
-    "n_external": 85
+    "folds": [
+      {
+        "fold": 1,
+        "mae": 0.1344,
+        "rmse": 0.4026,
+        "r2": 0.9693
+      },
+      {
+        "fold": 2,
+        "mae": 0.1435,
+        "rmse": 0.3859,
+        "r2": 0.9723
+      },
+      {
+        "fold": 3,
+        "mae": 0.1429,
+        "rmse": 0.4072,
+        "r2": 0.9693
+      },
+      {
+        "fold": 4,
+        "mae": 0.1554,
+        "rmse": 0.4668,
+        "r2": 0.9571
+      },
+      {
+        "fold": 5,
+        "mae": 0.1354,
+        "rmse": 0.3358,
+        "r2": 0.9787
+      }
+    ],
+    "avg_mae": 0.1423,
+    "avg_rmse": 0.3997,
+    "avg_r2": 0.9693
   },
   "top_features": [
     {
       "feature": "max_revenue_log",
-      "importance": 0.4946
+      "importance": 0.6734
     },
     {
       "feature": "max_profit_log",
-      "importance": 0.1428
-    },
-    {
-      "feature": "has_revenue",
-      "importance": 0.1268
-    },
-    {
-      "feature": "revenue_stability",
-      "importance": 0.0635
-    },
-    {
-      "feature": "log_revenue_2022",
-      "importance": 0.035
+      "importance": 0.0781
     },
     {
       "feature": "years_with_revenue",
-      "importance": 0.0341
+      "importance": 0.0286
+    },
+    {
+      "feature": "has_revenue",
+      "importance": 0.0254
     },
     {
       "feature": "revenue_trend",
-      "importance": 0.0281
+      "importance": 0.0246
+    },
+    {
+      "feature": "revenue_stability",
+      "importance": 0.0241
+    },
+    {
+      "feature": "log_revenue_2022",
+      "importance": 0.0145
     },
     {
       "feature": "log_revenue_2021",
-      "importance": 0.0197
+      "importance": 0.0136
     },
     {
-      "feature": "log_revenue_2024",
-      "importance": 0.0097
+      "feature": "bfo_log_revenue",
+      "importance": 0.0094
     },
     {
-      "feature": "log_revenue_2020",
-      "importance": 0.0044
+      "feature": "project_count",
+      "importance": 0.0085
     },
     {
-      "feature": "log_profit_2024",
-      "importance": 0.0034
+      "feature": "bfo_years_profitable",
+      "importance": 0.0082
     },
     {
-      "feature": "log_profit_2023",
-      "importance": 0.0032
+      "feature": "bfo_revenue_cagr",
+      "importance": 0.0041
     },
     {
       "feature": "log_revenue_2023",
-      "importance": 0.003
+      "importance": 0.0037
     },
     {
-      "feature": "len_technologies",
-      "importance": 0.0027
+      "feature": "bfo_cash_to_current_liab",
+      "importance": 0.0036
     },
     {
-      "feature": "trl",
-      "importance": 0.0026
+      "feature": "log_revenue_2020",
+      "importance": 0.0035
     }
   ]
 }

@@ -104,121 +104,35 @@ def register_check_startup_handlers(
         except Exception as e:
             logger.error(f"Ошибка при получении внешних данных: {e}")
 
-        # 3. Build response
-        response_parts = []
+        # 3. Build ML analysis
+        ml_analysis = None
+        startup_for_ml = skolkovo_match
+        if not startup_for_ml:
+            features = _extract_features_from_external(external_data)
+            if features:
+                startup_for_ml = features
 
-        response_parts.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
-        response_parts.append(f"🔍 <b>Проверка: {escape_html(company_name or inn)}</b>")
-        response_parts.append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
-
-        if skolkovo_match:
-            response_parts.append("✅ <b>Найден в базе Сколково (Ground Truth)</b>")
-            name = skolkovo_match.get("name", "н/д")
-            response_parts.append(f"  • Название: {escape_html(name)}")
-            response_parts.append(f"  • Кластер: {escape_html(skolkovo_match.get('cluster', 'н/д'))}")
-            response_parts.append(f"  • Статус: {escape_html(skolkovo_match.get('status', 'н/д'))}")
-            response_parts.append(f"  • ИНН: {skolkovo_match.get('inn', 'н/д')}")
-
-            # Show ML score if available
+        if startup_for_ml:
             try:
                 from scoring.ml_scoring import ml_analyze_startup
-                analysis = ml_analyze_startup(skolkovo_match)
-                if analysis:
-                    overall = analysis.get("ml_overall", 0)
-                    tl_map = {1: "🔴", 2: "🟡", 3: "🟢"}
-                    tl = tl_map.get(analysis.get("TrafficLight", 1), "🔴")
-                    response_parts.append(f"\n  {tl} ML-оценка: <b>{overall:.1f}/10</b>")
-            except Exception:
-                pass
-
-            response_parts.append("")
-
-        # 4. External data sections
-        egrul = external_data.get("egrul", {})
-        if egrul:
-            response_parts.append("<b>📋 ЕГРЮЛ:</b>")
-            response_parts.append(f"  • Название: {escape_html(egrul.get('name', 'н/д'))}")
-            response_parts.append(f"  • ОГРН: {egrul.get('ogrn', 'н/д')}")
-            response_parts.append(f"  • Статус: {escape_html(egrul.get('status', 'н/д'))}")
-            if egrul.get("registration_date"):
-                response_parts.append(f"  • Дата рег.: {egrul.get('registration_date')}")
-            response_parts.append("")
-
-        fin_source = (external_data.get("checko", {})
-                      or external_data.get("rusprofile", {})
-                      or external_data.get("bfo", {}))
-        if fin_source:
-            src_name = "Checko API" if fin_source.get("source") == "checko_api" else "Rusprofile"
-            response_parts.append(f"<b>💰 Финансы ({src_name}):</b>")
-            if fin_source.get("name"):
-                response_parts.append(f"  • Название: {escape_html(fin_source['name'])}")
-            if fin_source.get("okved_name"):
-                response_parts.append(f"  • ОКВЭД: {escape_html(fin_source['okved_name'])}")
-            if fin_source.get("authorized_capital"):
-                cap = fin_source["authorized_capital"]
-                cap_str = f"{cap / 1_000_000:.1f} млн" if cap >= 1_000_000 else f"{cap:,.0f}"
-                response_parts.append(f"  • Уставный капитал: {cap_str}")
-            if fin_source.get("employees"):
-                response_parts.append(f"  • Сотрудники: {fin_source['employees']}")
-            financials = fin_source.get("financials", {})
-            if financials:
-                for year in sorted(financials.keys(), key=lambda x: int(x), reverse=True)[:3]:
-                    yd = financials[year]
-                    rev = yd.get("revenue", 0)
-                    profit = yd.get("net_profit", 0)
-                    rev_str = f"{rev / 1_000_000:.1f} млн" if rev else "н/д"
-                    profit_str = f"{profit / 1_000_000:.1f} млн" if profit else "н/д"
-                    response_parts.append(f"  • {year}: выручка {rev_str}, прибыль {profit_str}")
-            else:
-                response_parts.append("  • Финансовые данные не найдены")
-            response_parts.append("")
-
-        moex = external_data.get("moex", {})
-        if moex and moex.get("has_quotes"):
-            response_parts.append("<b>📈 MOEX:</b>")
-            response_parts.append(f"  • Тикер: {moex.get('ticker', 'н/д')}")
-            if moex.get("last"):
-                response_parts.append(f"  • Цена: {moex['last']}")
-            if moex.get("marketcap"):
-                cap = moex["marketcap"]
-                response_parts.append(f"  • Капитализация: {cap / 1_000_000_000:.2f} млрд")
-            response_parts.append("")
-
-        news = external_data.get("news", {})
-        if news and news.get("total_count", 0) > 0:
-            response_parts.append(f"<b>📰 Упоминания в СМИ ({news['total_count']}):</b>")
-            for mention in news.get("mentions", [])[:3]:
-                src = mention.get("source", "").upper()
-                title = escape_html(mention.get("title", "")[:100])
-                response_parts.append(f"  • [{src}] {title}")
-            response_parts.append("")
-
-        # 5. ML scoring for external startup (if not in Skolkovo)
-        if not skolkovo_match and (fin_source or egrul):
-            try:
-                features = _extract_features_from_external(external_data)
-                if features:
-                    from scoring.ml_scoring import ml_analyze_startup
-                    analysis = ml_analyze_startup(features)
-                    if analysis:
-                        overall = analysis.get("ml_overall", 0)
-                        tl_map = {1: "🔴", 2: "🟡", 3: "🟢"}
-                        tl = tl_map.get(analysis.get("TrafficLight", 1), "🔴")
-                        response_parts.append(f"{tl} <b>ML-оценка (на основе внешних данных): {overall:.1f}/10</b>")
-                        response_parts.append(f"  • Заполнено признаков: {features.get('_filled', 0)}/39")
-                        response_parts.append(
-                            "<i>Точность зависит от полноты данных. "
-                            "Чем больше признаков заполнено, тем надёжнее оценка.</i>"
-                        )
-                        response_parts.append("")
+                ml_analysis = ml_analyze_startup(startup_for_ml)
             except Exception as e:
-                logger.warning(f"ML scoring для внешнего стартапа: {e}")
+                logger.warning("ML scoring: %s", e)
 
+        # 4. Build structured 6-block report
         if not skolkovo_match and not external_data:
-            response_parts.append("❌ Данные не найдены. Проверьте правильность ИНН.")
+            text = "❌ Данные не найдены. Проверьте правильность ИНН."
+        else:
+            from utils.check_report import build_full_report
+            text = build_full_report(
+                inn=inn,
+                company_name=company_name,
+                skolkovo_match=skolkovo_match,
+                external_data=external_data,
+                ml_analysis=ml_analysis,
+            )
 
-        # Send response
-        text = "\n".join(response_parts)
+        # Send response (split if > 4000 chars for Telegram limit)
         if len(text) > 4000:
             parts = [text[i:i + 4000] for i in range(0, len(text), 4000)]
             for part in parts:
@@ -317,6 +231,10 @@ def _extract_features_from_external(external_data: dict) -> dict:
     features["company_description"] = ""
     features["product_description"] = ""
     features["technologies"] = ""
+
+    # BFO financials for ratio computation (58 BFO features)
+    if financials:
+        features["bfo_financials"] = financials
 
     features["_filled"] = filled
     return features if filled >= 2 else {}

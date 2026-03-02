@@ -621,6 +621,8 @@ def _external_data_to_startup(external: Dict, name: str = "", inn: str = "") -> 
             startup[f"revenue_{year}"] = yd.get("revenue", 0) or 0
             startup[f"profit_{year}"] = yd.get("net_profit", 0) or 0
 
+    startup["bfo_financials"] = financials
+
     return startup
 
 

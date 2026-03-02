@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 
 from scoring.labeler import _parse_level, _parse_money, _count_patents, _count_items, _has_ai
+from scoring.bfo_ratios import ALL_BFO_FEATURE_NAMES, extract_bfo_features
 
 # Column mapping from Russian CSV headers to English
 COLUMN_MAP = {
@@ -192,6 +193,9 @@ def get_feature_names() -> list[str]:
         "len_technologies",
     ]
 
+    # BFO financial ratios (58)
+    names += ALL_BFO_FEATURE_NAMES
+
     return names
 
 
@@ -266,12 +270,40 @@ def extract_features(row: dict) -> np.ndarray:
     for col in ["company_description", "product_description", "technologies"]:
         feats.append(_safe_log1p(float(len(str(row.get(col, ""))))))
 
+    # BFO financial ratios (58 features)
+    bfo_data = row.get("bfo_financials", row.get("bfo", {}))
+    if isinstance(bfo_data, dict) and bfo_data:
+        int_keyed = {}
+        for k, v in bfo_data.items():
+            if isinstance(v, dict):
+                try:
+                    int_keyed[int(k)] = v
+                except (ValueError, TypeError):
+                    int_keyed[k] = v
+        bfo_feats = extract_bfo_features(int_keyed if int_keyed else bfo_data)
+    else:
+        bfo_feats = np.zeros(len(ALL_BFO_FEATURE_NAMES), dtype=np.float32)
+    feats.extend(bfo_feats.tolist())
+
     return np.array(feats, dtype=np.float32)
 
 
 # ---------------------------------------------------------------------------
 # Batch: build full feature matrix from CSV
 # ---------------------------------------------------------------------------
+
+def _load_bfo_map() -> dict:
+    """Load BFO enrichment data if available (inn -> financials)."""
+    import json
+    bfo_path = Path(__file__).resolve().parent.parent / "skolkovo_bfo.json"
+    if bfo_path.exists():
+        try:
+            with open(bfo_path, encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            pass
+    return {}
+
 
 def build_feature_matrix(
     csv_path: Union[str, Path],
@@ -296,7 +328,13 @@ def build_feature_matrix(
         lambda x: hashlib.md5(str(x).encode()).hexdigest()
     )
 
-    # Get proxy labels for targets
+    bfo_map = _load_bfo_map()
+    if bfo_map:
+        import logging
+        logging.getLogger(__name__).info(
+            "BFO enrichment: %d entries loaded from skolkovo_bfo.json", len(bfo_map)
+        )
+
     labels_df = label_dataframe(csv_path)
     label_map = {r["id"]: r for _, r in labels_df.iterrows()}
 
@@ -307,7 +345,13 @@ def build_feature_matrix(
 
     for _, row in df.iterrows():
         sid = row["id"]
-        feats = extract_features(row.to_dict())
+        row_dict = row.to_dict()
+
+        inn = str(row_dict.get("inn", "")).strip()
+        if inn and inn in bfo_map:
+            row_dict["bfo_financials"] = bfo_map[inn]
+
+        feats = extract_features(row_dict)
         X_list.append(feats)
         ids.append(sid)
 

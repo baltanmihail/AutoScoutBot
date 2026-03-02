@@ -22,20 +22,25 @@ from .news_parser import NewsParser
 logger = logging.getLogger(__name__)
 
 
-def _get_checko_key() -> str:
+def _get_checko_keys():
+    """Возвращает CHECKO_API_KEYS для ротации или одиночный ключ."""
     try:
-        from config import CHECKO_API_KEY
-        return CHECKO_API_KEY
+        from config import CHECKO_API_KEYS
+        return CHECKO_API_KEYS
     except Exception:
-        import os
-        return os.environ.get("CHECKO_API_KEY", "")
+        try:
+            from config import CHECKO_API_KEY
+            return CHECKO_API_KEY
+        except Exception:
+            import os
+            return os.environ.get("CHECKO_API_KEY", "")
 
 
 class ParserManager:
     """Runs all parsers concurrently for a given INN."""
 
     def __init__(self):
-        self.checko = CheckoParser(api_key=_get_checko_key())
+        self.checko = CheckoParser(api_key=_get_checko_keys())
         self.egrul = EGRULParser()
         self.moex = MOEXParser()
         self.news = NewsParser()

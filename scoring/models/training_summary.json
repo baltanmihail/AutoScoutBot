@@ -1,378 +1,378 @@
 {
   "engine": "xgboost",
-  "trained_at": "2026-03-02T01:29:11.783992",
+  "trained_at": "2026-03-02T13:35:28.954978",
   "n_samples": 5166,
-  "n_features": 39,
+  "n_features": 97,
   "targets": {
     "overall": {
-      "version": "20260302_012842",
+      "version": "20260302_133441",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.135,
-            "rmse": 0.2938,
-            "r2": 0.9713
+            "mae": 0.1339,
+            "rmse": 0.2905,
+            "r2": 0.9719
           },
           {
             "fold": 2,
-            "mae": 0.1392,
-            "rmse": 0.3254,
+            "mae": 0.1432,
+            "rmse": 0.3256,
             "r2": 0.9675
           },
           {
             "fold": 3,
-            "mae": 0.1373,
-            "rmse": 0.3199,
-            "r2": 0.9682
+            "mae": 0.1451,
+            "rmse": 0.3296,
+            "r2": 0.9663
           },
           {
             "fold": 4,
-            "mae": 0.1503,
-            "rmse": 0.3834,
-            "r2": 0.9536
+            "mae": 0.1555,
+            "rmse": 0.388,
+            "r2": 0.9525
           },
           {
             "fold": 5,
-            "mae": 0.1175,
-            "rmse": 0.2434,
-            "r2": 0.9826
+            "mae": 0.1282,
+            "rmse": 0.2583,
+            "r2": 0.9805
           }
         ],
-        "avg_mae": 0.1359,
-        "avg_rmse": 0.3132,
-        "avg_r2": 0.9686
+        "avg_mae": 0.1412,
+        "avg_rmse": 0.3184,
+        "avg_r2": 0.9677
       },
       "top_features": [
         {
-          "feature": "trl",
-          "importance": 0.249
-        },
-        {
           "feature": "has_revenue",
-          "importance": 0.2471
+          "importance": 0.3049
         },
         {
-          "feature": "mrl",
-          "importance": 0.1451
+          "feature": "trl",
+          "importance": 0.1812
         },
         {
           "feature": "irl",
-          "importance": 0.1093
+          "importance": 0.1377
         },
         {
           "feature": "max_revenue_log",
-          "importance": 0.0749
+          "importance": 0.0876
+        },
+        {
+          "feature": "mrl",
+          "importance": 0.0868
         }
       ]
     },
     "tech_maturity": {
-      "version": "20260302_012847",
+      "version": "20260302_133451",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1329,
-            "rmse": 0.4459,
-            "r2": 0.9647
+            "mae": 0.1416,
+            "rmse": 0.449,
+            "r2": 0.9642
           },
           {
             "fold": 2,
-            "mae": 0.1382,
-            "rmse": 0.4972,
-            "r2": 0.9572
+            "mae": 0.1498,
+            "rmse": 0.5,
+            "r2": 0.9567
           },
           {
             "fold": 3,
-            "mae": 0.1339,
-            "rmse": 0.4002,
-            "r2": 0.9736
+            "mae": 0.1449,
+            "rmse": 0.4103,
+            "r2": 0.9722
           },
           {
             "fold": 4,
-            "mae": 0.1489,
-            "rmse": 0.5056,
-            "r2": 0.9558
+            "mae": 0.1638,
+            "rmse": 0.5109,
+            "r2": 0.9548
           },
           {
             "fold": 5,
-            "mae": 0.1171,
-            "rmse": 0.3069,
-            "r2": 0.9842
+            "mae": 0.1398,
+            "rmse": 0.3342,
+            "r2": 0.9813
           }
         ],
-        "avg_mae": 0.1342,
-        "avg_rmse": 0.4312,
-        "avg_r2": 0.9671
+        "avg_mae": 0.148,
+        "avg_rmse": 0.4409,
+        "avg_r2": 0.9658
       },
       "top_features": [
         {
           "feature": "trl",
-          "importance": 0.4979
+          "importance": 0.3691
         },
         {
           "feature": "mrl",
-          "importance": 0.2283
+          "importance": 0.2277
         },
         {
           "feature": "irl",
-          "importance": 0.145
+          "importance": 0.1273
         },
         {
           "feature": "crl",
-          "importance": 0.0287
+          "importance": 0.0328
         },
         {
-          "feature": "product_count",
-          "importance": 0.0089
+          "feature": "bfo_zero_revenue",
+          "importance": 0.0321
         }
       ]
     },
     "innovation": {
-      "version": "20260302_012855",
+      "version": "20260302_133501",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1088,
-            "rmse": 0.2862,
-            "r2": 0.9811
+            "mae": 0.1212,
+            "rmse": 0.3045,
+            "r2": 0.9786
           },
           {
             "fold": 2,
-            "mae": 0.1119,
-            "rmse": 0.3612,
-            "r2": 0.9738
+            "mae": 0.1175,
+            "rmse": 0.363,
+            "r2": 0.9736
           },
           {
             "fold": 3,
-            "mae": 0.102,
-            "rmse": 0.3081,
-            "r2": 0.979
+            "mae": 0.1023,
+            "rmse": 0.3118,
+            "r2": 0.9784
           },
           {
             "fold": 4,
-            "mae": 0.117,
-            "rmse": 0.3779,
-            "r2": 0.9705
+            "mae": 0.1203,
+            "rmse": 0.373,
+            "r2": 0.9713
           },
           {
             "fold": 5,
-            "mae": 0.1041,
-            "rmse": 0.3859,
-            "r2": 0.9693
+            "mae": 0.1217,
+            "rmse": 0.4051,
+            "r2": 0.9661
           }
         ],
-        "avg_mae": 0.1088,
-        "avg_rmse": 0.3439,
-        "avg_r2": 0.9747
+        "avg_mae": 0.1166,
+        "avg_rmse": 0.3515,
+        "avg_r2": 0.9736
       },
       "top_features": [
         {
           "feature": "trl",
-          "importance": 0.3316
+          "importance": 0.2295
         },
         {
           "feature": "has_ai",
-          "importance": 0.2499
+          "importance": 0.1624
         },
         {
           "feature": "mrl",
-          "importance": 0.1494
+          "importance": 0.1493
+        },
+        {
+          "feature": "industry_count",
+          "importance": 0.1382
         },
         {
           "feature": "patent_count",
-          "importance": 0.0902
-        },
-        {
-          "feature": "len_technologies",
-          "importance": 0.0386
+          "importance": 0.0815
         }
       ]
     },
     "market_potential": {
-      "version": "20260302_012859",
+      "version": "20260302_133510",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1031,
-            "rmse": 0.3599,
-            "r2": 0.9682
+            "mae": 0.1178,
+            "rmse": 0.3567,
+            "r2": 0.9688
           },
           {
             "fold": 2,
-            "mae": 0.1008,
-            "rmse": 0.3363,
-            "r2": 0.974
+            "mae": 0.1166,
+            "rmse": 0.341,
+            "r2": 0.9733
           },
           {
             "fold": 3,
-            "mae": 0.1059,
-            "rmse": 0.3652,
-            "r2": 0.969
+            "mae": 0.124,
+            "rmse": 0.377,
+            "r2": 0.967
           },
           {
             "fold": 4,
-            "mae": 0.1177,
-            "rmse": 0.4712,
-            "r2": 0.9486
+            "mae": 0.1331,
+            "rmse": 0.4622,
+            "r2": 0.9505
           },
           {
             "fold": 5,
-            "mae": 0.0971,
-            "rmse": 0.2479,
-            "r2": 0.9869
+            "mae": 0.1198,
+            "rmse": 0.2676,
+            "r2": 0.9847
           }
         ],
-        "avg_mae": 0.1049,
-        "avg_rmse": 0.3561,
-        "avg_r2": 0.9693
+        "avg_mae": 0.1223,
+        "avg_rmse": 0.3609,
+        "avg_r2": 0.9689
       },
       "top_features": [
         {
-          "feature": "has_revenue",
-          "importance": 0.6001
+          "feature": "years_with_revenue",
+          "importance": 0.4045
         },
         {
           "feature": "irl",
-          "importance": 0.1729
+          "importance": 0.2247
         },
         {
-          "feature": "years_with_revenue",
-          "importance": 0.1178
+          "feature": "has_revenue",
+          "importance": 0.1613
         },
         {
           "feature": "industry_count",
-          "importance": 0.0373
+          "importance": 0.0471
         },
         {
           "feature": "max_revenue_log",
-          "importance": 0.0174
+          "importance": 0.038
         }
       ]
     },
     "team_readiness": {
-      "version": "20260302_012907",
+      "version": "20260302_133520",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.0641,
-            "rmse": 0.2364,
-            "r2": 0.9773
+            "mae": 0.0745,
+            "rmse": 0.2506,
+            "r2": 0.9744
           },
           {
             "fold": 2,
-            "mae": 0.0726,
-            "rmse": 0.2535,
-            "r2": 0.9748
+            "mae": 0.0801,
+            "rmse": 0.2643,
+            "r2": 0.9726
           },
           {
             "fold": 3,
-            "mae": 0.0787,
-            "rmse": 0.3111,
-            "r2": 0.9607
+            "mae": 0.0885,
+            "rmse": 0.317,
+            "r2": 0.9592
           },
           {
             "fold": 4,
-            "mae": 0.0901,
-            "rmse": 0.3558,
-            "r2": 0.9538
+            "mae": 0.1,
+            "rmse": 0.3573,
+            "r2": 0.9534
           },
           {
             "fold": 5,
-            "mae": 0.0664,
-            "rmse": 0.2395,
-            "r2": 0.9765
+            "mae": 0.0724,
+            "rmse": 0.2498,
+            "r2": 0.9744
           }
         ],
-        "avg_mae": 0.0744,
-        "avg_rmse": 0.2793,
-        "avg_r2": 0.9686
+        "avg_mae": 0.0831,
+        "avg_rmse": 0.2878,
+        "avg_r2": 0.9668
       },
       "top_features": [
         {
           "feature": "crl",
-          "importance": 0.8703
-        },
-        {
-          "feature": "irl",
-          "importance": 0.0232
+          "importance": 0.7462
         },
         {
           "feature": "max_revenue_log",
-          "importance": 0.0183
+          "importance": 0.0346
+        },
+        {
+          "feature": "irl",
+          "importance": 0.0184
         },
         {
           "feature": "mrl",
-          "importance": 0.0088
+          "importance": 0.0108
         },
         {
-          "feature": "log_revenue_2023",
-          "importance": 0.0058
+          "feature": "trl",
+          "importance": 0.0069
         }
       ]
     },
     "financial_health": {
-      "version": "20260302_012911",
+      "version": "20260302_133528",
       "cv_metrics": {
         "folds": [
           {
             "fold": 1,
-            "mae": 0.1321,
-            "rmse": 0.3963,
-            "r2": 0.9703
+            "mae": 0.1344,
+            "rmse": 0.4026,
+            "r2": 0.9693
           },
           {
             "fold": 2,
-            "mae": 0.1389,
-            "rmse": 0.3776,
-            "r2": 0.9735
+            "mae": 0.1435,
+            "rmse": 0.3859,
+            "r2": 0.9723
           },
           {
             "fold": 3,
-            "mae": 0.1376,
-            "rmse": 0.4028,
-            "r2": 0.97
+            "mae": 0.1429,
+            "rmse": 0.4072,
+            "r2": 0.9693
           },
           {
             "fold": 4,
-            "mae": 0.1505,
-            "rmse": 0.4602,
-            "r2": 0.9583
+            "mae": 0.1554,
+            "rmse": 0.4668,
+            "r2": 0.9571
           },
           {
             "fold": 5,
-            "mae": 0.1256,
-            "rmse": 0.3364,
+            "mae": 0.1354,
+            "rmse": 0.3358,
             "r2": 0.9787
           }
         ],
-        "avg_mae": 0.1369,
-        "avg_rmse": 0.3947,
-        "avg_r2": 0.9702
+        "avg_mae": 0.1423,
+        "avg_rmse": 0.3997,
+        "avg_r2": 0.9693
       },
       "top_features": [
         {
           "feature": "max_revenue_log",
-          "importance": 0.492
+          "importance": 0.6734
         },
         {
           "feature": "max_profit_log",
-          "importance": 0.1478
-        },
-        {
-          "feature": "has_revenue",
-          "importance": 0.1252
-        },
-        {
-          "feature": "revenue_stability",
-          "importance": 0.062
+          "importance": 0.0781
         },
         {
           "feature": "years_with_revenue",
-          "importance": 0.0351
+          "importance": 0.0286
+        },
+        {
+          "feature": "has_revenue",
+          "importance": 0.0254
+        },
+        {
+          "feature": "revenue_trend",
+          "importance": 0.0246
         }
       ]
     }

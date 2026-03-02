@@ -5,7 +5,9 @@ Endpoints used:
   /finances  -- full BFO financial statements by year + basic company info
   /company   -- detailed EGRUL: capital, OKVED, directors, risk factors (optional)
 
-Free tier: 100 requests/day.  Standard: 0.15 rub/req after first 100.
+Multi-key rotation: tries keys in order; on 402/403 (limit) switches to next.
+  - Old key: 100 req/day free (VK account, no paid)
+  - New key: 100 free + 0.15 rub/req after
 API docs: https://api.checko.ru/v2
 """
 from __future__ import annotations
@@ -13,7 +15,7 @@ from __future__ import annotations
 import logging
 import os
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional, Union
 
 from .base import BaseParser
 
@@ -38,35 +40,107 @@ BFO_CODES = {
 }
 
 
+def _normalize_keys(api_key: Optional[Union[str, List[dict]]] = None) -> List[dict]:
+    """Convert api_key/CHECKO_API_KEYS to list of {key, label, paid, price_per_request}."""
+    if api_key is None:
+        api_key = os.environ.get("CHECKO_API_KEY", "")
+    if isinstance(api_key, str):
+        return [{"key": api_key, "label": "default", "paid": False}] if api_key else []
+    if isinstance(api_key, list) and api_key:
+        return [
+            {
+                "key": k.get("key", ""),
+                "label": k.get("label", f"key_{i}"),
+                "paid": k.get("paid", False),
+                "price_per_request": k.get("price_per_request", 0.0),
+                "daily_limit": k.get("daily_limit", 100),
+            }
+            for i, k in enumerate(api_key)
+            if k.get("key")
+        ]
+    return []
+
+
 class CheckoParser(BaseParser):
-    """Fetch data via Checko.ru official API v2."""
+    """Fetch data via Checko.ru official API v2. Supports multi-key rotation."""
 
     SOURCE_NAME = "checko"
     API_BASE = "https://api.checko.ru/v2"
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[Union[str, List[dict]]] = None):
         super().__init__()
-        self.api_key = api_key or os.environ.get("CHECKO_API_KEY", "")
+        self._keys = _normalize_keys(api_key)
+        self._paid_requests = 0  # счётчик запросов на платном ключе (для оценки стоимости)
+        self._exhausted_key_indices: set[int] = set()  # ключи, у которых сработал лимит в этой сессии
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Статистика сессии: сколько запросов на платном ключе, оценка стоимости."""
+        return {"paid_requests": self._paid_requests}
+
+    def estimate_paid_cost(self) -> float:
+        """Оценка стоимости платных запросов (после 100 бесплатных на платном ключе)."""
+        if not self._keys:
+            return 0.0
+        paid_key = next((k for k in self._keys if k.get("paid")), None)
+        if not paid_key:
+            return 0.0
+        price = paid_key.get("price_per_request", 0.15)
+        free = paid_key.get("daily_limit", 100)
+        return max(0, self._paid_requests - free) * price
+
+    async def _request(self, endpoint: str, inn: str) -> tuple[Optional[dict], Optional[int]]:
+        """Выполнить запрос, перебирая ключи при 402/403. Возвращает (payload, status) или (None, None)."""
+        if not self._keys:
+            logger.warning("Checko API key not configured, skipping")
+            return None, None
+
+        client = await self._get_client()
+        last_error = None
+
+        for idx, key_info in enumerate(self._keys):
+            if idx in self._exhausted_key_indices:
+                continue
+            key = key_info["key"]
+            label = key_info.get("label", f"key_{idx}")
+
+            resp = await client.get(
+                f"{self.API_BASE}/{endpoint}",
+                params={"key": key, "inn": inn},
+            )
+
+            if resp.status_code in (402, 403):
+                logger.info(
+                    "Checko: лимит на ключе '%s' (%d), переключаемся на следующий",
+                    label, resp.status_code,
+                )
+                self._exhausted_key_indices.add(idx)
+                last_error = resp.status_code
+                continue
+
+            if resp.status_code == 404:
+                logger.info("Checko: INN %s not found", inn)
+                return None, 404
+
+            if resp.status_code != 200:
+                resp.raise_for_status()
+
+            if key_info.get("paid"):
+                self._paid_requests += 1
+
+            return resp.json(), resp.status_code
+
+        if last_error:
+            raise RuntimeError(f"Checko API limit: все ключи исчерпаны (последний: {last_error})")
+        return None, None
 
     async def fetch(self, inn: str) -> Dict[str, Any]:
-        if not self.api_key:
+        if not self._keys:
             logger.warning("Checko API key not configured, skipping")
             return {}
 
-        client = await self._get_client()
-
-        resp = await client.get(
-            f"{self.API_BASE}/finances",
-            params={"key": self.api_key, "inn": inn},
-        )
-        if resp.status_code == 402:
-            logger.warning("Checko: API rate limit reached (402)")
-            return {}
-        if resp.status_code == 404:
-            logger.info("Checko: INN %s not found", inn)
-            return {}
-        resp.raise_for_status()
-        payload = resp.json()
+        payload, status = await self._request("finances", inn)
+        if payload is None:
+            return {} if status == 404 else {}
 
         result: Dict[str, Any] = {
             "inn": inn,
@@ -153,13 +227,9 @@ class CheckoParser(BaseParser):
 
     async def fetch_company(self, inn: str) -> Dict[str, Any]:
         """Detailed company info (EGRUL, capital, OKVED, etc). Extra API request."""
-        if not self.api_key:
+        if not self._keys:
             return {}
-        client = await self._get_client()
-        resp = await client.get(
-            f"{self.API_BASE}/company",
-            params={"key": self.api_key, "inn": inn},
-        )
-        if resp.status_code != 200:
+        payload, _ = await self._request("company", inn)
+        if payload is None:
             return {}
-        return resp.json().get("data", {})
+        return payload.get("data", {})
