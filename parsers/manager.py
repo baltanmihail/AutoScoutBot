@@ -87,6 +87,15 @@ class ParserManager:
             else:
                 output[source_name] = result or {}
 
+        # Дополнительно: детальные данные компании из Checko /company (капитал, руководители, учредители, ОКВЭД)
+        if output.get("checko") and getattr(self.checko, "fetch_company", None):
+            try:
+                company_details = await self.checko.fetch_company(inn)
+                if company_details:
+                    output["checko"]["company_details"] = company_details
+            except Exception as e:
+                logger.debug("Checko /company для ИНН %s: %s", inn, e)
+
         filled = sum(1 for v in output.values() if v)
         logger.info(f"📊 ParserManager: {filled}/{len(output)} источников вернули данные для ИНН {inn}")
         return output

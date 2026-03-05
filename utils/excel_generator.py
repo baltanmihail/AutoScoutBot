@@ -129,8 +129,14 @@ def generate_csv(startups: list):
 
 
 def generate_excel(startups: list) -> io.BytesIO:
-    """Генерирует Excel файл с данными о стартапах"""
+    """
+    Генерирует расширенный Excel-отчёт с несколькими листами:
+    - Startups: сводная таблица по стартапам (как раньше).
+    - Metrics: числовые метрики для построения графиков.
+    - На листе Metrics автоматически строятся базовые диаграммы.
+    """
     data = []
+    metrics_rows = []
     for s in startups:
         name = s.get("name", "Название не указано")
         website = s.get("website", "")
@@ -192,6 +198,7 @@ def generate_excel(startups: list) -> io.BytesIO:
         if ai_recommendation:
             extended_argument += f"\n\nАналитический обзор:\n{ai_recommendation}"
         
+        # Основная строка для сводного листа
         data.append(
             {
                 "Название": name,
@@ -216,10 +223,83 @@ def generate_excel(startups: list) -> io.BytesIO:
                 "ОГРН": ogrn,
             }
         )
+
+        # Отдельная строка для числовых метрик и графиков
+        metrics_rows.append(
+            {
+                "Название": name,
+                "TRL": float(trl or 0),
+                "IRL": float(irl or 0),
+                "MRL": float(mrl or 0),
+                "CRL": float(crl or 0),
+                "Средняя прибыль (млн руб)": float(avg_profit or 0),
+                "Максимальная прибыль (млн руб)": float(max_profit or 0),
+                "Рентабельность (%)": float(profitability or 0),
+                "Патенты (score)": float(patent_count or 0),
+                "Схожесть с запросом (%)": float(similarity_percent or 0),
+            }
+        )
+
     df = pd.DataFrame(data)
+    metrics_df = pd.DataFrame(metrics_rows)
+
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine="xlsxwriter") as writer:
+        # Лист 1: сводная таблица
         df.to_excel(writer, index=False, sheet_name="Startups")
+
+        # Лист 2: числовые метрики (для графиков)
+        metrics_df.to_excel(writer, index=False, sheet_name="Metrics")
+
+        # Добавляем базовые диаграммы на лист Metrics
+        workbook = writer.book
+        metrics_ws = writer.sheets["Metrics"]
+
+        n_rows = len(metrics_df)
+        if n_rows > 0:
+            # Столбчатая диаграмма: максимальная прибыль по стартапам
+            chart_profit = workbook.add_chart({"type": "column"})
+            chart_profit.add_series(
+                {
+                    "name": "Макс. прибыль (млн руб)",
+                    "categories": ["Metrics", 1, 0, n_rows, 0],  # Название
+                    "values": ["Metrics", 1, 5, n_rows, 5],      # Максимальная прибыль
+                }
+            )
+            chart_profit.set_title({"name": "Максимальная прибыль по стартапам"})
+            chart_profit.set_x_axis({"name": "Стартап"})
+            chart_profit.set_y_axis({"name": "Макс. прибыль, млн руб"})
+            metrics_ws.insert_chart("K2", chart_profit)
+
+            # Диаграмма: уровни зрелости TRL/IRL/MRL/CRL (средние значения)
+            chart_levels = workbook.add_chart({"type": "column"})
+            for col_idx, col_name in enumerate(["TRL", "IRL", "MRL", "CRL"], start=1):
+                chart_levels.add_series(
+                    {
+                        "name": col_name,
+                        "categories": ["Metrics", 1, 0, n_rows, 0],
+                        "values": ["Metrics", 1, col_idx, n_rows, col_idx],
+                    }
+                )
+            chart_levels.set_title({"name": "Уровни зрелости (TRL/IRL/MRL/CRL)"})
+            chart_levels.set_x_axis({"name": "Стартап"})
+            chart_levels.set_y_axis({"name": "Уровень (1–9)"})
+            metrics_ws.insert_chart("K20", chart_levels)
+
+            # Диаграмма: карта совпадения с запросом
+            chart_similarity = workbook.add_chart({"type": "column"})
+            chart_similarity.add_series(
+                {
+                    "name": "Схожесть с запросом (%)",
+                    "categories": ["Metrics", 1, 0, n_rows, 0],
+                    "values": ["Metrics", 1, 9, n_rows, 9],
+                }
+            )
+            chart_similarity.set_title({"name": "Схожесть с запросом по стартапам"})
+            chart_similarity.set_x_axis({"name": "Стартап"})
+            chart_similarity.set_y_axis({"name": "Схожесть, %"})
+            metrics_ws.insert_chart("K38", chart_similarity)
+
     output.seek(0)
     return output
 

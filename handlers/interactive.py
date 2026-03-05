@@ -362,7 +362,10 @@ def register_interactive_handlers(
                 # Предлагаем экспорт
                 keyboard = InlineKeyboardMarkup(
                     inline_keyboard=[
-                        [InlineKeyboardButton(text="📤 Экспорт в Excel", callback_data="deep_export_excel")],
+                        [
+                            InlineKeyboardButton(text="📤 Excel", callback_data="deep_export_excel"),
+                            InlineKeyboardButton(text="📄 Word (docx)", callback_data="deep_export_docx"),
+                        ],
                         [InlineKeyboardButton(text="◀️ Назад к результатам", callback_data="action_back_to_results")],
                     ]
                 )
@@ -378,6 +381,29 @@ def register_interactive_handlers(
                 await query.message.edit_text(f"❌ Ошибка при проведении анализа: {str(e)}")
         
         await query.answer()
+
+    @router.callback_query(F.data == "deep_export_docx")
+    async def deep_export_docx_callback(query: types.CallbackQuery, state: FSMContext):
+        """Экспорт отчёта глубокого анализа в Word (docx)."""
+        await query.answer()
+        data = await state.get_data()
+        analysis = data.get("deep_analysis")
+        if not analysis:
+            await query.message.answer("❌ Нет данных отчёта. Сначала выполните «Глубокий анализ».")
+            return
+        try:
+            from utils.docx_report import build_deep_analysis_docx
+            buf = build_deep_analysis_docx(analysis)
+            raw_name = (analysis.get("startup_name", "startup") or "startup").strip()
+            safe_name = "".join(c if c.isalnum() or c in " _-" else "_" for c in raw_name)[:50]
+            filename = f"report_{safe_name or 'startup'}.docx"
+            await query.message.answer_document(
+                document=BufferedInputFile(buf.read(), filename=filename),
+                caption="📄 Отчёт по результатам глубокого анализа (Word)",
+            )
+        except Exception as e:
+            logger.exception("Ошибка экспорта в docx: %s", e)
+            await query.message.answer(f"❌ Не удалось сформировать документ: {e}")
 
     @router.callback_query(F.data == "action_back_to_results")
     async def action_back_to_results(query: types.CallbackQuery, state: FSMContext):

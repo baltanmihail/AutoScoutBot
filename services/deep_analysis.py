@@ -227,6 +227,7 @@ class DeepAnalysisService:
 
         try:
             from parsers.manager import ParserManager
+            from scoring.bfo_ratios import compute_ratios_for_year, compute_dynamic_ratios
 
             mgr = ParserManager()
             raw = await mgr.fetch_all(inn=inn, company_name=company_name)
@@ -235,8 +236,31 @@ class DeepAnalysisService:
             # BFO -- financial data
             bfo = raw.get("bfo", {})
             if bfo:
-                external["financial_data"] = bfo.get("financials", {})
+                fin = bfo.get("financials", {})
+                external["financial_data"] = fin
                 external["sources"].append({"name": "БФО ФНС", "key": "bfo"})
+
+                # Расчёт финансовых коэффициентов и динамики (для Risk-модуля)
+                if isinstance(fin, dict) and fin:
+                    # Преобразуем ключи годов в int
+                    int_keyed = {}
+                    for k, v in fin.items():
+                        if isinstance(v, dict):
+                            try:
+                                int_keyed[int(k)] = v
+                            except (ValueError, TypeError):
+                                int_keyed[k] = v
+                    if int_keyed:
+                        years = sorted(int_keyed.keys())
+                        latest_year = max(y for y in years if isinstance(y, int))
+                        latest_data = int_keyed[latest_year]
+                        static = compute_ratios_for_year(latest_data)
+                        dynamic = compute_dynamic_ratios(int_keyed, target_year=latest_year)
+                        external["financial_ratios"] = {
+                            "latest_year": latest_year,
+                            "static": static,
+                            "dynamic": dynamic,
+                        }
 
             # EGRUL -- legal status
             egrul = raw.get("egrul", {})
@@ -373,25 +397,229 @@ class DeepAnalysisService:
         return recommendations
     
     def _identify_risks(self, analysis: Dict) -> List[str]:
-        """Выявление рисков"""
-        risks = []
-        
+        """Выявление рисков (технологических, финансовых, рыночных, командных) с учётом динамики.
+
+        Одновременно формирует структурированную карту рисков analysis['risk_map'].
+        """
+        risks: List[str] = []
+        risk_map: List[Dict[str, str]] = []
+
+        def add_risk(name: str, r_type: str, probability: str, impact: str, urgency: str, comment: str) -> None:
+            risks.append(name)
+            risk_map.append(
+                {
+                    "name": name,
+                    "type": r_type,
+                    "probability": probability,
+                    "impact": impact,
+                    "urgency": urgency,
+                    "comment": comment,
+                }
+            )
+
         internal = analysis.get("internal_analysis", {})
         tech = internal.get("technology_analysis", {})
         finance = internal.get("financial_analysis", {})
-        
+        external = analysis.get("external_analysis", {})
+        fin_ratios = external.get("financial_ratios", {})
+        static = fin_ratios.get("static", {}) if isinstance(fin_ratios, dict) else {}
+        dynamic = fin_ratios.get("dynamic", {}) if isinstance(fin_ratios, dict) else {}
+
         # Технологические риски
         if tech.get("trl", 0) < 3:
-            risks.append("Низкий уровень технологической зрелости (TRL < 3)")
-        
-        # Финансовые риски
+            add_risk(
+                "Низкий уровень технологической зрелости (TRL < 3)",
+                "технологический",
+                "средняя",
+                "высокая",
+                "среднесрочная",
+                "Высокая неопределённость результата исследований и риски невыполнения roadmap.",
+            )
+        if tech.get("irl", 0) < 3:
+            add_risk(
+                "Слабая инвестиционная готовность (IRL < 3)",
+                "технологический/инвестиционный",
+                "средняя",
+                "средняя",
+                "среднесрочная",
+                "Отсутствует подтверждённый интерес инвесторов, сделка на ранней стадии готовности.",
+            )
+        if tech.get("mrl", 0) < 3:
+            add_risk(
+                "Низкая производственная готовность (MRL < 3)",
+                "операционный",
+                "средняя",
+                "высокая",
+                "среднесрочная",
+                "Масштабирование производства может потребовать существенных инвестиций и времени.",
+            )
+
+        # Финансовые риски (по внутренним данным)
         if finance.get("avg_profit", 0) <= 0:
-            risks.append("Отсутствие подтвержденной прибыли")
-        
+            add_risk(
+                "Отсутствие подтверждённой прибыли по историческим данным",
+                "финансовый",
+                "средняя",
+                "высокая",
+                "среднесрочная",
+                "Бизнес-модель пока не демонстрирует устойчивую прибыльность, высок риск дофинансирования.",
+            )
+
+        # Финансовые риски (по БФО и динамике)
+        if static:
+            if static.get("negative_equity", 0) == 1.0:
+                add_risk(
+                    "Отрицательный собственный капитал",
+                    "финансовый",
+                    "высокая",
+                    "высокая",
+                    "срочная",
+                    "Собственный капитал отрицателен — при шоках высок риск банкротства и требований кредиторов.",
+                )
+            if static.get("overlevered", 0) == 1.0:
+                add_risk(
+                    "Чрезмерная долговая нагрузка",
+                    "финансовый",
+                    "высокая",
+                    "высокая",
+                    "срочная",
+                    "Debt/Equity значительно выше оптимального уровня, чувствительность к росту ставок и падению выручки повышена.",
+                )
+            if static.get("negative_working_capital", 0) == 1.0:
+                add_risk(
+                    "Отрицательный оборотный капитал",
+                    "финансовый",
+                    "средняя",
+                    "высокая",
+                    "срочная",
+                    "Оборотные активы не покрывают краткосрочные обязательства, риск кассовых разрывов.",
+                )
+            if static.get("zero_revenue", 0) == 1.0:
+                add_risk(
+                    "Отсутствие выручки по БФО (pre-revenue)",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "среднесрочная",
+                    "Проект на стадии разработки без подтверждённого денежного потока.",
+                )
+            if static.get("loss_making", 0) == 1.0:
+                add_risk(
+                    "Убыточность по последнему периоду",
+                    "финансовый",
+                    "средняя",
+                    "высокая",
+                    "среднесрочная",
+                    "При сохранении текущей динамики возможен быстрый расход капитала и необходимость допэмиссий.",
+                )
+
+            altman = static.get("altman_z", 0.0)
+            if altman < 1.81:
+                add_risk(
+                    f"Z-Альтмана = {altman:.2f} — красная зона",
+                    "финансовый",
+                    "высокая",
+                    "высокая",
+                    "срочная",
+                    "Высокая вероятность банкротства по модели Альтмана при сохранении текущей структуры баланса.",
+                )
+            elif altman < 2.99:
+                add_risk(
+                    f"Z-Альтмана = {altman:.2f} — серая зона",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "среднесрочная",
+                    "Компания чувствительна к ухудшению рыночной конъюнктуры, требуется мониторинг.",
+                )
+
+            taffler = static.get("taffler_z", 0.0)
+            if taffler < 0.2:
+                add_risk(
+                    f"Z-Таффлера = {taffler:.2f}",
+                    "финансовый",
+                    "высокая",
+                    "высокая",
+                    "срочная",
+                    "Модель Таффлера указывает на высокую вероятность неплатёжеспособности.",
+                )
+
+        if dynamic:
+            rev_yoy = dynamic.get("revenue_yoy", 0.0)
+            rev_cagr = dynamic.get("revenue_cagr", 0.0)
+            profit_trend = dynamic.get("profit_trend", 0.0)
+            years_rev = int(dynamic.get("years_with_revenue", 0))
+            years_prof = int(dynamic.get("years_profitable", 0))
+            years_data = int(dynamic.get("years_of_data", 0))
+
+            if years_data >= 2 and rev_cagr < 0:
+                add_risk(
+                    "Отрицательный CAGR выручки",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "среднесрочная",
+                    "Долгосрочный тренд выручки отрицательный — рынок/модель требуют переоценки.",
+                )
+            if rev_yoy < 0:
+                add_risk(
+                    "Снижение выручки в последнем году (отрицательный YoY)",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "срочная",
+                    "Последний год показал падение выручки, важно проверить причины и устойчивость клиентской базы.",
+                )
+            if profit_trend < 0:
+                add_risk(
+                    "Негативный тренд прибыли",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "среднесрочная",
+                    "Прибыль снижается относительно ранних лет, маржа и структура затрат требуют внимания.",
+                )
+            if years_prof < years_data / 2 and years_data > 0:
+                add_risk(
+                    "Меньше половины лет прибыльные",
+                    "финансовый",
+                    "средняя",
+                    "средняя",
+                    "среднесрочная",
+                    "Доля прибыльных лет низкая — бизнес-модель пока нестабильна.",
+                )
+
         # Риски команды
         if internal.get("team_analysis", {}).get("crl", 0) < 3:
-            risks.append("Слабая готовность команды (CRL < 3)")
-        
+            add_risk(
+                "Слабая готовность команды (CRL < 3)",
+                "командный",
+                "средняя",
+                "средняя",
+                "среднесрочная",
+                "Команда на ранней стадии зрелости, высок риск ошибок исполнения и нехватки экспертизы.",
+            )
+
+        # Репутационные / новостные риски
+        news_mentions = external.get("news_mentions", [])
+        if news_mentions:
+            negative_news = 0
+            for m in news_mentions:
+                title = (m.get("title", "") or "").lower()
+                if any(word in title for word in ["банкрот", "дело", "суд", "штраф", "прокуратур", "мошеннич"]):
+                    negative_news += 1
+            if negative_news > 0:
+                add_risk(
+                    f"Негативные упоминания в СМИ ({negative_news})",
+                    "репутационный/регуляторный",
+                    "средняя",
+                    "средняя",
+                    "срочная",
+                    "В новостях присутствуют негативные сюжеты (суды, штрафы, расследования) — требуется дополнительный DD.",
+                )
+
+        # Сохраняем карту рисков в анализе для последующего использования (бот, docx, Excel)
+        analysis["risk_map"] = risk_map
         return risks
     
     def _identify_opportunities(self, analysis: Dict, user_request: str) -> List[str]:

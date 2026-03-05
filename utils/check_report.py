@@ -166,6 +166,59 @@ def build_block_1_card(
     return lines
 
 
+def build_block_1b_company_details(checko: dict) -> List[str]:
+    """Block 1b: Данные компании из Checko (капитал, руководители, учредители, ОКВЭД)."""
+    details = checko.get("company_details") or {}
+    # Используем и верхний уровень checko (из /finances), и company_details (из /company)
+    capital = (
+        details.get("УставныйКапитал") or details.get("Capital") or details.get("УК")
+        or checko.get("authorized_capital") or checko.get("capital")
+    )
+    directors = details.get("Руководитель") or details.get("Director") or details.get("Directors")
+    founders = details.get("Учредители") or details.get("Founders") or details.get("Учредитель")
+    okved_list = details.get("ОКВЭД") or details.get("OKVED") or details.get("Okved")
+
+    lines: List[str] = []
+    if not any([capital, directors, founders, okved_list]):
+        return []
+
+    lines.append("┃ 📌 <b>РЕКВИЗИТЫ И КОНТАКТЫ (Checko)</b>")
+
+    if capital is not None and str(capital).strip():
+        try:
+            cap_val = float(capital)
+            lines.append(f"┃  Уставный капитал: {_fmt_money(cap_val)}")
+        except (TypeError, ValueError):
+            lines.append(f"┃  Уставный капитал: {escape_html(str(capital)[:60])}")
+
+    if directors:
+        if isinstance(directors, list):
+            for d in directors[:3]:
+                name = d.get("name") or d.get("ФИО") or d.get("Name") or str(d)[:50]
+                lines.append(f"┃  Руководитель: {escape_html(str(name)[:60])}")
+        else:
+            lines.append(f"┃  Руководитель: {escape_html(str(directors)[:80])}")
+
+    if founders:
+        if isinstance(founders, list):
+            for f in founders[:5]:
+                name = f.get("name") or f.get("ФИО") or f.get("Name") or str(f)[:50]
+                lines.append(f"┃  Учредитель: {escape_html(str(name)[:60])}")
+        else:
+            lines.append(f"┃  Учредители: {escape_html(str(founders)[:120])}")
+
+    if okved_list:
+        if isinstance(okved_list, list):
+            for o in okved_list[:3]:
+                code = o.get("code") or o.get("Код") or ""
+                name = o.get("name") or o.get("Описание") or str(o)
+                lines.append(f"┃  ОКВЭД: {escape_html(str(code)[:20])} — {escape_html(str(name)[:50])}")
+        else:
+            lines.append(f"┃  ОКВЭД: {escape_html(str(okved_list)[:100])}")
+
+    return lines
+
+
 def build_block_2_financials(financials: dict, source_hint: str = "") -> List[str]:
     """Block 2: Исходные данные — сырая отчётность (БФО). source_hint: 'ФНС' or 'Checko'."""
     if not financials:
@@ -462,6 +515,12 @@ def build_full_report(
     block1 = build_block_1_card(skolkovo_match, egrul, checko, inn, bfo=bfo)
     parts.extend(block1)
     parts.append("┠───────────────────────────────")
+
+    # Block 1b: данные компании из Checko /company (капитал, руководители, учредители)
+    block1b = build_block_1b_company_details(checko)
+    if block1b:
+        parts.extend(block1b)
+        parts.append("┠───────────────────────────────")
 
     # Block 2
     block2 = build_block_2_financials(financials, source_hint=financials_source)

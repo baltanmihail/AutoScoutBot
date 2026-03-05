@@ -155,7 +155,8 @@ def register_check_startup_handlers(
         # 6. Save external startup to DB for future retraining
         if inn and external_data and not skolkovo_match:
             try:
-                _save_external_startup(inn, external_data)
+                ratios = _compute_ratios_from_external(external_data)
+                _save_external_startup(inn, external_data, ratios=ratios)
             except Exception as e:
                 logger.warning("Не удалось сохранить внешний стартап в БД: %s", e)
 
@@ -257,12 +258,39 @@ def _extract_features_from_external(external_data: dict) -> dict:
     return features if filled >= 2 else {}
 
 
-def _save_external_startup(inn: str, external_data: dict) -> None:
+def _compute_ratios_from_external(external_data: dict):
+    """Считает расчётные коэффициенты (ликвидность, Z-Альтман и т.д.) из объединённых БФО Checko+BFO."""
+    checko = external_data.get("checko", {})
+    bfo = external_data.get("bfo", {})
+    merged = {}
+    for source in (checko.get("financials") or {}, bfo.get("financials") or {}):
+        for k, v in source.items():
+            key = str(k)
+            if key not in merged and isinstance(v, dict) and v:
+                merged[key] = v
+    if not merged:
+        return None
+    try:
+        from scoring.bfo_ratios import compute_ratios_for_year, compute_dynamic_ratios
+        years = sorted(merged.keys(), key=lambda x: int(x))
+        latest_year = str(max(int(y) for y in years))
+        latest_data = merged[latest_year]
+        int_keyed = {int(k): v for k, v in merged.items()}
+        static = compute_ratios_for_year(latest_data)
+        dynamic = compute_dynamic_ratios(int_keyed)
+        return {"latest_year": latest_year, "static": static, "dynamic": dynamic}
+    except Exception as e:
+        logger.debug("Расчёт коэффициентов для сохранения: %s", e)
+        return None
+
+
+def _save_external_startup(inn: str, external_data: dict, ratios: dict | None = None) -> None:
     """
     Сохранение данных внешнего стартапа в SQLite для последующего дообучения ML.
 
     Каждый `/check` пополняет таблицу external_startups, которая потом
     используется в scoring/retrain.py для Semi-Supervised дообучения.
+    ratios: результат расчёта коэффициентов (static + dynamic) для истории и аналитики.
     """
     import sqlite3
     import os
@@ -285,10 +313,16 @@ def _save_external_startup(inn: str, external_data: dict) -> None:
             features_filled_count INTEGER DEFAULT 0,
             ml_overall REAL,
             raw_data_json TEXT DEFAULT '{}',
+            ratios_json TEXT DEFAULT '{}',
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    # Миграция: добавить ratios_json, если таблица уже была создана без неё
+    try:
+        cursor.execute("ALTER TABLE external_startups ADD COLUMN ratios_json TEXT DEFAULT '{}'")
+    except sqlite3.OperationalError:
+        pass
 
     egrul = external_data.get("egrul", {})
     bfo = external_data.get("bfo", {})
@@ -312,11 +346,12 @@ def _save_external_startup(inn: str, external_data: dict) -> None:
         except Exception:
             pass
 
+    ratios_json_str = json.dumps(ratios, ensure_ascii=False) if ratios else "{}"
     cursor.execute("""
         INSERT INTO external_startups
             (inn, ogrn, name, status_egrul, registration_date,
-             features_json, features_filled_count, ml_overall, raw_data_json)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+             features_json, features_filled_count, ml_overall, raw_data_json, ratios_json)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(inn) DO UPDATE SET
             name = excluded.name,
             ogrn = excluded.ogrn,
@@ -326,6 +361,7 @@ def _save_external_startup(inn: str, external_data: dict) -> None:
             features_filled_count = excluded.features_filled_count,
             ml_overall = excluded.ml_overall,
             raw_data_json = excluded.raw_data_json,
+            ratios_json = excluded.ratios_json,
             updated_at = CURRENT_TIMESTAMP
     """, (
         inn,
@@ -337,6 +373,7 @@ def _save_external_startup(inn: str, external_data: dict) -> None:
         filled,
         ml_overall,
         json.dumps(external_data, ensure_ascii=False, default=str),
+        ratios_json_str,
     ))
 
     conn.commit()

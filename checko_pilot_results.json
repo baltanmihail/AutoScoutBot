@@ -1,0 +1,3030 @@
+[
+  {
+    "inn": "9709108868",
+    "name": "ЗЕЛЕНЫЕ ХОДОКИ",
+    "external": {
+      "checko": {
+        "inn": "9709108868",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЗЕЛЕНЫЕ ХОДОКИ\"",
+        "short_name": "ООО \"ЗЕЛЕНЫЕ ХОДОКИ\"",
+        "ogrn": "1247700265845",
+        "registration_date": "2024-03-26",
+        "year_founded": 2024,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "109544, г. Москва, вн. тер. г. муниципальный округ Таганский, ул. Рогожский Вал, д. 11, кв. 40",
+        "financials": {
+          "2024": {
+            "revenue": 116000.0,
+            "cost_of_sales": 6336000.0,
+            "net_profit": -6341000.0,
+            "total_assets": 1298000.0,
+            "total_liabilities": 1298000.0,
+            "equity": -6330000.0,
+            "cash": 19000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9709108868",
+        "ogrn": "1247700265845",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЗЕЛЕНЫЕ ХОДОКИ\"",
+        "full_name": "ООО \"ЗЕЛЕНЫЕ ХОДОКИ\"",
+        "status": "",
+        "registration_date": "26.03.2024",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7729088084",
+    "name": "МАРАФОН",
+    "external": {
+      "checko": {
+        "inn": "7729088084",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"МАРАФОН\"",
+        "short_name": "ООО \"МАРАФОН\"",
+        "ogrn": "1027739813947",
+        "registration_date": "1993-04-05",
+        "year_founded": 1993,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "119330, г. Москва, ул. Мосфильмовская, д. 17 б, мансарда 1, помещ. III, комната 10А",
+        "financials": {
+          "2015": {
+            "revenue": 75562000.0,
+            "cost_of_sales": 68092000.0,
+            "gross_profit": 7470000.0,
+            "operating_profit": 1708000.0,
+            "net_profit": 807000.0,
+            "total_assets": 34542000.0,
+            "total_liabilities": 34542000.0,
+            "equity": 5943000.0,
+            "current_assets": 33821000.0,
+            "current_liabilities": 28599000.0,
+            "non_current_assets": 721000.0,
+            "fixed_assets": 721000.0,
+            "cash": 4656000.0,
+            "retained_earnings": 5933000.0
+          },
+          "2016": {
+            "revenue": 48935000.0,
+            "cost_of_sales": 39508000.0,
+            "gross_profit": 9427000.0,
+            "operating_profit": 2775000.0,
+            "net_profit": 883000.0,
+            "total_assets": 118939000.0,
+            "total_liabilities": 118939000.0,
+            "equity": 6827000.0,
+            "current_assets": 118939000.0,
+            "current_liabilities": 112112000.0,
+            "cash": 71211000.0,
+            "retained_earnings": 6817000.0
+          },
+          "2017": {
+            "revenue": 160964000.0,
+            "cost_of_sales": 150170000.0,
+            "gross_profit": 10794000.0,
+            "operating_profit": 7808000.0,
+            "net_profit": 4493000.0,
+            "total_assets": 91454000.0,
+            "total_liabilities": 91454000.0,
+            "equity": 4199000.0,
+            "current_assets": 68952000.0,
+            "current_liabilities": 87255000.0,
+            "non_current_assets": 22502000.0,
+            "cash": 43778000.0,
+            "retained_earnings": 4189000.0
+          },
+          "2018": {
+            "revenue": 49916000.0,
+            "cost_of_sales": -43791000.0,
+            "gross_profit": 6125000.0,
+            "operating_profit": 1731000.0,
+            "net_profit": 659000.0,
+            "total_assets": 76830000.0,
+            "total_liabilities": 76830000.0,
+            "equity": 1985000.0,
+            "current_assets": 41900000.0,
+            "current_liabilities": 74845000.0,
+            "non_current_assets": 34930000.0,
+            "cash": 5924000.0,
+            "retained_earnings": 1975000.0
+          },
+          "2019": {
+            "revenue": 85457000.0,
+            "cost_of_sales": 77016000.0,
+            "gross_profit": 8441000.0,
+            "operating_profit": 3636000.0,
+            "net_profit": 2178000.0,
+            "total_assets": 74896000.0,
+            "total_liabilities": 74896000.0,
+            "equity": 4105000.0,
+            "current_assets": 42834000.0,
+            "current_liabilities": 70791000.0,
+            "non_current_assets": 32062000.0,
+            "cash": 1825000.0,
+            "retained_earnings": 4095000.0
+          },
+          "2020": {
+            "revenue": 61970000.0,
+            "cost_of_sales": 54366000.0,
+            "gross_profit": 7604000.0,
+            "operating_profit": 2199000.0,
+            "net_profit": 3104000.0,
+            "total_assets": 74556000.0,
+            "total_liabilities": 74556000.0,
+            "equity": 7209000.0,
+            "current_assets": 51864000.0,
+            "current_liabilities": 67347000.0,
+            "non_current_assets": 22692000.0,
+            "cash": 19831000.0,
+            "retained_earnings": 7199000.0
+          },
+          "2021": {
+            "revenue": 98368000.0,
+            "cost_of_sales": 87871000.0,
+            "gross_profit": 10497000.0,
+            "operating_profit": 1780000.0,
+            "net_profit": 1781000.0,
+            "total_assets": 121962000.0,
+            "total_liabilities": 121962000.0,
+            "equity": 6132000.0,
+            "current_assets": 94512000.0,
+            "current_liabilities": 108284000.0,
+            "non_current_assets": 27450000.0,
+            "fixed_assets": 3635000.0,
+            "cash": 52205000.0,
+            "retained_earnings": 6122000.0
+          },
+          "2022": {
+            "revenue": 142370000.0,
+            "cost_of_sales": 113281000.0,
+            "gross_profit": 29089000.0,
+            "operating_profit": 17247000.0,
+            "net_profit": 8026000.0,
+            "total_assets": 99853000.0,
+            "total_liabilities": 99853000.0,
+            "equity": 14159000.0,
+            "current_assets": 61315000.0,
+            "current_liabilities": 83853000.0,
+            "non_current_assets": 38539000.0,
+            "fixed_assets": 12389000.0,
+            "cash": 21315000.0,
+            "retained_earnings": 14149000.0
+          },
+          "2023": {
+            "revenue": 114699000.0,
+            "cost_of_sales": 89987000.0,
+            "gross_profit": 24712000.0,
+            "operating_profit": 10747000.0,
+            "net_profit": 4810000.0,
+            "total_assets": 117846000.0,
+            "total_liabilities": 117846000.0,
+            "equity": 19001000.0,
+            "current_assets": 66501000.0,
+            "current_liabilities": 98845000.0,
+            "non_current_assets": 51345000.0,
+            "fixed_assets": 12098000.0,
+            "cash": 16131000.0,
+            "retained_earnings": 18991000.0
+          },
+          "2024": {
+            "revenue": 309874000.0,
+            "cost_of_sales": 257069000.0,
+            "gross_profit": 52805000.0,
+            "operating_profit": 35408000.0,
+            "net_profit": 29039000.0,
+            "total_assets": 139371000.0,
+            "total_liabilities": 139371000.0,
+            "equity": 42174000.0,
+            "current_assets": 94838000.0,
+            "current_liabilities": 97197000.0,
+            "non_current_assets": 44533000.0,
+            "fixed_assets": 13648000.0,
+            "cash": 13417000.0,
+            "retained_earnings": 42164000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7729088084",
+        "ogrn": "1027739813947",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"МАРАФОН\"",
+        "full_name": "ООО \"МАРАФОН\"",
+        "status": "",
+        "registration_date": "18.12.2002",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7325145393",
+    "name": "ЗЕБРЕЙНС",
+    "external": {
+      "checko": {
+        "inn": "7325145393",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЗЕБРЕЙНС\"",
+        "short_name": "ООО \"ЗЕБРЕЙНС\"",
+        "ogrn": "1167325059990",
+        "registration_date": "2016-05-10",
+        "year_founded": 2016,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "432071, Ульяновская область, г. о. город Ульяновск, г. Ульяновск, ул. Федерации, д. 86",
+        "financials": {
+          "2016": {
+            "revenue": 13979000.0,
+            "cost_of_sales": 11793000.0,
+            "gross_profit": 2186000.0,
+            "operating_profit": 2186000.0,
+            "net_profit": 1699000.0,
+            "total_assets": 2917000.0,
+            "total_liabilities": 2917000.0,
+            "equity": 1709000.0,
+            "current_assets": 2917000.0,
+            "current_liabilities": 1208000.0,
+            "cash": 15000.0
+          },
+          "2017": {
+            "revenue": 35948000.0,
+            "cost_of_sales": 32710000.0,
+            "gross_profit": 3238000.0,
+            "operating_profit": 3238000.0,
+            "net_profit": 2857000.0,
+            "total_assets": 8371000.0,
+            "total_liabilities": 8371000.0,
+            "equity": 2672000.0,
+            "current_assets": 8371000.0,
+            "current_liabilities": 5699000.0,
+            "cash": 327000.0
+          },
+          "2018": {
+            "revenue": 58974000.0,
+            "cost_of_sales": 54629000.0,
+            "gross_profit": 4345000.0,
+            "operating_profit": 4345000.0,
+            "net_profit": 3240000.0,
+            "total_assets": 11032000.0,
+            "total_liabilities": 11032000.0,
+            "equity": 4311000.0,
+            "current_assets": 10361000.0,
+            "current_liabilities": 4760000.0,
+            "non_current_assets": 670000.0,
+            "fixed_assets": 670000.0,
+            "cash": 752000.0
+          },
+          "2019": {
+            "revenue": 126007000.0,
+            "cost_of_sales": 105545000.0,
+            "net_profit": 19091000.0,
+            "total_assets": 41994000.0,
+            "total_liabilities": 41994000.0,
+            "equity": 23421000.0,
+            "fixed_assets": 2745000.0,
+            "cash": 15000.0
+          },
+          "2020": {
+            "revenue": 180608000.0,
+            "cost_of_sales": 148355000.0,
+            "net_profit": 31619000.0,
+            "total_assets": 86012000.0,
+            "total_liabilities": 86012000.0,
+            "equity": 46203000.0,
+            "fixed_assets": 4121000.0,
+            "cash": 2274000.0
+          },
+          "2021": {
+            "revenue": 306588000.0,
+            "cost_of_sales": 296229000.0,
+            "net_profit": 6503000.0,
+            "total_assets": 79634000.0,
+            "total_liabilities": 79634000.0,
+            "equity": 39303000.0,
+            "fixed_assets": 3227000.0,
+            "cash": 7366000.0
+          },
+          "2022": {
+            "revenue": 507129000.0,
+            "cost_of_sales": 443216000.0,
+            "net_profit": 62521000.0,
+            "total_assets": 150064000.0,
+            "total_liabilities": 150064000.0,
+            "equity": 90036000.0,
+            "fixed_assets": 4239000.0,
+            "cash": 49076000.0
+          },
+          "2023": {
+            "revenue": 430317000.0,
+            "cost_of_sales": 425983000.0,
+            "net_profit": 4253000.0,
+            "total_assets": 138882000.0,
+            "total_liabilities": 138882000.0,
+            "equity": 82289000.0,
+            "fixed_assets": 2234000.0,
+            "cash": 11287000.0
+          },
+          "2024": {
+            "revenue": 479600000.0,
+            "cost_of_sales": 462631000.0,
+            "net_profit": 20274000.0,
+            "total_assets": 146201000.0,
+            "total_liabilities": 146201000.0,
+            "equity": 82899000.0,
+            "fixed_assets": 940000.0,
+            "cash": 1310000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7325145393",
+        "ogrn": "1167325059990",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЗЕБРЕЙНС\"",
+        "full_name": "ООО \"ЗЕБРЕЙНС\"",
+        "status": "",
+        "registration_date": "10.05.2016",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "3702271550",
+    "name": "ДОЛУНЦ ИНЖИНИРИНГ",
+    "external": {
+      "checko": {
+        "inn": "3702271550",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДОЛУНЦ ИНЖИНИРИНГ\"",
+        "short_name": "ООО \"ДОЛУНЦ ИНЖИНИРИНГ\"",
+        "ogrn": "1223700007827",
+        "registration_date": "2022-09-07",
+        "year_founded": 2022,
+        "status": "Не действует",
+        "is_active": true,
+        "okved_name": "Деятельность, связанная с использованием вычислительной техники и информационных технологий, прочая",
+        "address": "153000, Ивановская область, г. о. Иваново, г. Иваново, ул. Красной Армии, д. 20Б",
+        "financials": {
+          "2022": {
+            "cost_of_sales": 231000.0,
+            "net_profit": 93000.0,
+            "total_assets": 103000.0,
+            "total_liabilities": 103000.0,
+            "equity": 103000.0,
+            "cash": 98000.0
+          },
+          "2023": {
+            "cost_of_sales": 599000.0,
+            "net_profit": -102000.0,
+            "total_assets": 5000.0,
+            "total_liabilities": 5000.0,
+            "equity": 1000.0
+          },
+          "2024": {
+            "net_profit": -1000.0
+          },
+          "2025": {
+            "cost_of_sales": 59000.0,
+            "net_profit": -18000.0,
+            "equity": -18000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "3702271550",
+        "ogrn": "1223700007827",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДОЛУНЦ ИНЖИНИРИНГ\"",
+        "full_name": "ООО \"ДОЛУНЦ ИНЖИНИРИНГ\"",
+        "status": "",
+        "registration_date": "07.09.2022",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "5051010870",
+    "name": "НПО ЦЭГ",
+    "external": {
+      "checko": {
+        "inn": "5051010870",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАУЧНО-ПРОИЗВОДСТВЕННОЕ ОБЪЕДИНЕНИЕ \"ЦЕНТР ОЦЕНКИ ЭКСПЛУАТАЦИОННОЙ ГОДНОСТИ\"",
+        "short_name": "ООО \"НПО \"ЦЭГ\"",
+        "ogrn": "1085074000285",
+        "registration_date": "2008-01-16",
+        "year_founded": 2008,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "142100, Московская область, г. о. Подольск, г. Подольск, пр-кт Ленина, д. 146/66, эт./пом./комн. 2/3/202",
+        "financials": {
+          "2015": {
+            "revenue": 12431000.0,
+            "cost_of_sales": 4129000.0,
+            "gross_profit": 8302000.0,
+            "operating_profit": 2544000.0,
+            "net_profit": 480000.0,
+            "total_assets": 42640000.0,
+            "total_liabilities": 42640000.0,
+            "equity": 5433000.0,
+            "current_assets": 6520000.0,
+            "current_liabilities": 37207000.0,
+            "non_current_assets": 36120000.0,
+            "cash": 2235000.0,
+            "retained_earnings": 5333000.0
+          },
+          "2016": {
+            "revenue": 21150000.0,
+            "cost_of_sales": 645000.0,
+            "gross_profit": 20505000.0,
+            "operating_profit": 18785000.0,
+            "net_profit": 18402000.0,
+            "total_assets": 55040000.0,
+            "total_liabilities": 55040000.0,
+            "equity": 23835000.0,
+            "current_assets": 12159000.0,
+            "current_liabilities": 31205000.0,
+            "non_current_assets": 42881000.0,
+            "fixed_assets": 3016000.0,
+            "cash": 9470000.0,
+            "retained_earnings": 23735000.0
+          },
+          "2017": {
+            "revenue": 23907000.0,
+            "cost_of_sales": 8155000.0,
+            "gross_profit": 15752000.0,
+            "operating_profit": 8423000.0,
+            "net_profit": 13263000.0,
+            "total_assets": 41867000.0,
+            "total_liabilities": 41867000.0,
+            "equity": 37097000.0,
+            "current_assets": 1154000.0,
+            "current_liabilities": 4770000.0,
+            "non_current_assets": 40713000.0,
+            "fixed_assets": 6407000.0,
+            "cash": 121000.0,
+            "retained_earnings": 36997000.0
+          },
+          "2018": {
+            "revenue": 6488000.0,
+            "cost_of_sales": 6146000.0,
+            "gross_profit": 342000.0,
+            "operating_profit": -6245000.0,
+            "net_profit": 2811000.0,
+            "total_assets": 57531000.0,
+            "total_liabilities": 57531000.0,
+            "equity": 39906000.0,
+            "current_assets": 22760000.0,
+            "current_liabilities": 17625000.0,
+            "non_current_assets": 34771000.0,
+            "fixed_assets": 4008000.0,
+            "cash": 13000.0,
+            "retained_earnings": 39806000.0
+          },
+          "2019": {
+            "revenue": 15065000.0,
+            "cost_of_sales": 3350000.0,
+            "gross_profit": 11715000.0,
+            "operating_profit": 3461000.0,
+            "net_profit": 13514000.0,
+            "total_assets": 57332000.0,
+            "total_liabilities": 57332000.0,
+            "equity": 53419000.0,
+            "current_assets": 28421000.0,
+            "current_liabilities": 3913000.0,
+            "non_current_assets": 28911000.0,
+            "fixed_assets": 1732000.0,
+            "cash": 46000.0,
+            "retained_earnings": 53319000.0
+          },
+          "2020": {
+            "revenue": 32203000.0,
+            "cost_of_sales": 3292000.0,
+            "gross_profit": 28911000.0,
+            "operating_profit": 12895000.0,
+            "net_profit": 35278000.0,
+            "total_assets": 93897000.0,
+            "total_liabilities": 93897000.0,
+            "equity": 88697000.0,
+            "current_assets": 69432000.0,
+            "current_liabilities": 5200000.0,
+            "non_current_assets": 24465000.0,
+            "fixed_assets": 937000.0,
+            "cash": 679000.0,
+            "retained_earnings": 88597000.0
+          },
+          "2021": {
+            "revenue": 85041000.0,
+            "cost_of_sales": 45657000.0,
+            "gross_profit": 39384000.0,
+            "operating_profit": 18920000.0,
+            "net_profit": 11845000.0,
+            "total_assets": 274473000.0,
+            "total_liabilities": 274473000.0,
+            "equity": 100541000.0,
+            "current_assets": 122874000.0,
+            "current_liabilities": 173932000.0,
+            "non_current_assets": 151599000.0,
+            "fixed_assets": 12594000.0,
+            "cash": 387000.0,
+            "retained_earnings": 100441000.0
+          },
+          "2022": {
+            "revenue": 176572000.0,
+            "cost_of_sales": 115699000.0,
+            "gross_profit": 60873000.0,
+            "operating_profit": 40797000.0,
+            "net_profit": 20396000.0,
+            "total_assets": 275355000.0,
+            "total_liabilities": 275355000.0,
+            "equity": 120937000.0,
+            "current_assets": 126235000.0,
+            "current_liabilities": 154418000.0,
+            "non_current_assets": 149120000.0,
+            "fixed_assets": 9963000.0,
+            "cash": 22996000.0,
+            "retained_earnings": 120837000.0
+          },
+          "2023": {
+            "revenue": 231530000.0,
+            "cost_of_sales": 141672000.0,
+            "gross_profit": 89858000.0,
+            "operating_profit": 53237000.0,
+            "net_profit": 36758000.0,
+            "total_assets": 231706000.0,
+            "total_liabilities": 231706000.0,
+            "equity": 157694000.0,
+            "current_assets": 77824000.0,
+            "current_liabilities": 74012000.0,
+            "non_current_assets": 153882000.0,
+            "fixed_assets": 10618000.0,
+            "cash": 3249000.0,
+            "retained_earnings": 157594000.0
+          },
+          "2024": {
+            "revenue": 187683000.0,
+            "cost_of_sales": 88765000.0,
+            "gross_profit": 98918000.0,
+            "operating_profit": 38166000.0,
+            "net_profit": 31909000.0,
+            "total_assets": 226715000.0,
+            "total_liabilities": 226715000.0,
+            "equity": 189603000.0,
+            "current_assets": 83569000.0,
+            "current_liabilities": 37112000.0,
+            "non_current_assets": 143145000.0,
+            "fixed_assets": 7437000.0,
+            "cash": 19264000.0,
+            "retained_earnings": 189503000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "5051010870",
+        "ogrn": "1085074000285",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАУЧНО-ПРОИЗВОДСТВЕННОЕ ОБЪЕДИНЕНИЕ \"ЦЕНТР ОЦЕНКИ ЭКСПЛУАТАЦИОННОЙ ГОДНОСТИ\"",
+        "full_name": "ООО \"НПО \"ЦЭГ\"",
+        "status": "",
+        "registration_date": "16.01.2008",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "9715375131",
+    "name": "БРИО МРС",
+    "external": {
+      "checko": {
+        "inn": "9715375131",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"БРИО МРС\"",
+        "short_name": "ООО \"БРИО МРС\"",
+        "ogrn": "1207700018570",
+        "registration_date": "2020-01-23",
+        "year_founded": 2020,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "125124, г. Москва, вн. тер. г. муниципальный округ Беговой, ул. 3-я Ямского Поля, д. 2, к. 7",
+        "financials": {
+          "2020": {
+            "operating_profit": -2406000.0,
+            "net_profit": -2595000.0,
+            "total_assets": 48847000.0,
+            "total_liabilities": 48847000.0,
+            "equity": -2360000.0,
+            "current_assets": 30163000.0,
+            "current_liabilities": 1772000.0,
+            "non_current_assets": 18684000.0,
+            "fixed_assets": 2186000.0,
+            "cash": 816000.0,
+            "retained_earnings": -2595000.0
+          },
+          "2021": {
+            "revenue": 4995000.0,
+            "cost_of_sales": 2139000.0,
+            "gross_profit": 2856000.0,
+            "operating_profit": -6539000.0,
+            "net_profit": -8436000.0,
+            "total_assets": 64691000.0,
+            "total_liabilities": 64691000.0,
+            "equity": -10796000.0,
+            "current_assets": 4700000.0,
+            "current_liabilities": 18495000.0,
+            "non_current_assets": 59991000.0,
+            "fixed_assets": 1762000.0,
+            "cash": 1845000.0,
+            "retained_earnings": -11031000.0
+          },
+          "2022": {
+            "revenue": 4214000.0,
+            "cost_of_sales": 1026000.0,
+            "gross_profit": 3188000.0,
+            "operating_profit": -9698000.0,
+            "net_profit": -12306000.0,
+            "total_assets": 112665000.0,
+            "total_liabilities": 112665000.0,
+            "equity": -23102000.0,
+            "current_assets": 3711000.0,
+            "current_liabilities": 70950000.0,
+            "non_current_assets": 108955000.0,
+            "fixed_assets": 1012000.0,
+            "cash": 38000.0,
+            "retained_earnings": -23337000.0
+          },
+          "2023": {
+            "revenue": 45582000.0,
+            "cost_of_sales": 1399000.0,
+            "gross_profit": 44183000.0,
+            "operating_profit": 27000000.0,
+            "net_profit": 23790000.0,
+            "total_assets": 206681000.0,
+            "total_liabilities": 206681000.0,
+            "equity": 688000.0,
+            "current_assets": 47440000.0,
+            "current_liabilities": 133302000.0,
+            "non_current_assets": 159241000.0,
+            "fixed_assets": 342000.0,
+            "cash": 61000.0,
+            "retained_earnings": 453000.0
+          },
+          "2024": {
+            "revenue": 79834000.0,
+            "cost_of_sales": 41677000.0,
+            "gross_profit": 38157000.0,
+            "operating_profit": 14233000.0,
+            "net_profit": 10445000.0,
+            "total_assets": 223904000.0,
+            "total_liabilities": 223904000.0,
+            "equity": 11133000.0,
+            "current_assets": 17176000.0,
+            "current_liabilities": 132531000.0,
+            "non_current_assets": 206727000.0,
+            "fixed_assets": 120000.0,
+            "cash": 44000.0,
+            "retained_earnings": 10898000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9715375131",
+        "ogrn": "1207700018570",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"БРИО МРС\"",
+        "full_name": "ООО \"БРИО МРС\"",
+        "status": "",
+        "registration_date": "23.01.2020",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "4706075407",
+    "name": "ФАИБ",
+    "external": {
+      "checko": {
+        "inn": "4706075407",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ФАИБ\"",
+        "short_name": "ООО \"ФАИБ\"",
+        "ogrn": "1244700007441",
+        "registration_date": "2024-03-04",
+        "year_founded": 2024,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "188660, Ленинградская область, м. р-н Всеволожский, г. п. Бугровское, г. Бугры, ул. Шекспира, д. 7, помещ. 51Н",
+        "financials": {}
+      },
+      "egrul": {
+        "inn": "4706075407",
+        "ogrn": "1244700007441",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ФАИБ\"",
+        "full_name": "ООО \"ФАИБ\"",
+        "status": "",
+        "registration_date": "04.03.2024",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "9724189999",
+    "name": "ДСР",
+    "external": {
+      "checko": {
+        "inn": "9724189999",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДИДЖИТАЛ СЕКЬЮРИТИ РЕСЕРЧ\"",
+        "short_name": "ООО \"ДСР\"",
+        "ogrn": "1247700343230",
+        "registration_date": "2024-04-25",
+        "year_founded": 2024,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Деятельность по обработке данных, предоставление услуг по размещению информации и связанная с этим деятельность",
+        "address": "115408, г. Москва, вн. тер. г. муниципальный округ Братеево, ул. Борисовские Пруды, д. 34, к. 1, помещ. 2/1",
+        "financials": {
+          "2024": {
+            "revenue": 7000.0,
+            "cost_of_sales": 15000.0,
+            "net_profit": -10000.0,
+            "total_assets": 41000.0,
+            "total_liabilities": 41000.0,
+            "equity": 40000.0,
+            "cash": 41000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9724189999",
+        "ogrn": "1247700343230",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДИДЖИТАЛ СЕКЬЮРИТИ РЕСЕРЧ\"",
+        "full_name": "ООО \"ДСР\"",
+        "status": "",
+        "registration_date": "25.04.2024",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7725328391",
+    "name": "ДОМОПУЛЬТ",
+    "external": {
+      "checko": {
+        "inn": "7725328391",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДОМОПУЛЬТ\"",
+        "short_name": "ООО \"ДОМОПУЛЬТ\"",
+        "ogrn": "1167746794490",
+        "registration_date": "2016-08-23",
+        "year_founded": 2016,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "119021, г. Москва, вн. тер. г. муниципальный округ Хамовники, бульвар Зубовский, д. 17, стр. 1, офис С 432/434",
+        "financials": {
+          "2016": {
+            "cost_of_sales": 896000.0,
+            "gross_profit": -896000.0,
+            "operating_profit": -1112000.0,
+            "net_profit": -1135000.0,
+            "total_assets": 648000.0,
+            "total_liabilities": 648000.0,
+            "equity": 475000.0,
+            "current_assets": 648000.0,
+            "current_liabilities": 173000.0,
+            "cash": 438000.0,
+            "retained_earnings": -1135000.0
+          },
+          "2017": {
+            "revenue": 5053000.0,
+            "cost_of_sales": 7608000.0,
+            "gross_profit": -2555000.0,
+            "operating_profit": -16460000.0,
+            "net_profit": -13859000.0,
+            "total_assets": 24597000.0,
+            "total_liabilities": 24597000.0,
+            "equity": 22561000.0,
+            "current_assets": 4648000.0,
+            "current_liabilities": 2036000.0,
+            "non_current_assets": 19949000.0,
+            "fixed_assets": 390000.0,
+            "cash": 1181000.0,
+            "retained_earnings": -14769000.0
+          },
+          "2018": {
+            "revenue": 13609000.0,
+            "cost_of_sales": 10977000.0,
+            "gross_profit": 2632000.0,
+            "operating_profit": -18870000.0,
+            "net_profit": -16655000.0,
+            "total_assets": 41887000.0,
+            "total_liabilities": 41887000.0,
+            "equity": 38456000.0,
+            "current_assets": 6809000.0,
+            "current_liabilities": 3381000.0,
+            "non_current_assets": 35078000.0,
+            "fixed_assets": 361000.0,
+            "cash": 929000.0,
+            "retained_earnings": -31424000.0
+          },
+          "2019": {
+            "revenue": 22362000.0,
+            "cost_of_sales": 21290000.0,
+            "gross_profit": 1072000.0,
+            "operating_profit": -10879000.0,
+            "net_profit": -9245000.0,
+            "total_assets": 55973000.0,
+            "total_liabilities": 55973000.0,
+            "equity": 53051000.0,
+            "current_assets": 6693000.0,
+            "current_liabilities": 2898000.0,
+            "non_current_assets": 49280000.0,
+            "fixed_assets": 91000.0,
+            "cash": 383000.0,
+            "retained_earnings": -40669000.0
+          },
+          "2020": {
+            "revenue": 39984000.0,
+            "cost_of_sales": 49445000.0,
+            "gross_profit": 12854000.0,
+            "operating_profit": -9561000.0,
+            "net_profit": -11024000.0,
+            "total_assets": 62269000.0,
+            "total_liabilities": 62269000.0,
+            "equity": 44940000.0,
+            "current_assets": 12098000.0,
+            "current_liabilities": 17306000.0,
+            "non_current_assets": 58113000.0,
+            "fixed_assets": 105000.0,
+            "retained_earnings": -51710000.0
+          },
+          "2021": {
+            "revenue": 45648000.0,
+            "cost_of_sales": 75835000.0,
+            "net_profit": -31746000.0,
+            "total_assets": 80642000.0,
+            "total_liabilities": 80642000.0,
+            "equity": 66408000.0,
+            "fixed_assets": 810000.0
+          },
+          "2022": {
+            "revenue": 45246000.0,
+            "cost_of_sales": 65251000.0,
+            "net_profit": -21674000.0,
+            "total_assets": 85856000.0,
+            "total_liabilities": 85856000.0,
+            "equity": 49735000.0,
+            "fixed_assets": 261000.0,
+            "cash": 119000.0
+          },
+          "2023": {
+            "revenue": 137102000.0,
+            "cost_of_sales": 64313000.0,
+            "net_profit": 63979000.0,
+            "total_assets": 121642000.0,
+            "total_liabilities": 121642000.0,
+            "equity": 113714000.0,
+            "fixed_assets": 159000.0,
+            "cash": 1896000.0
+          },
+          "2024": {
+            "revenue": 109227000.0,
+            "cost_of_sales": 91739000.0,
+            "net_profit": 15756000.0,
+            "total_assets": 131836000.0,
+            "total_liabilities": 131836000.0,
+            "equity": 129514000.0,
+            "fixed_assets": 87000.0,
+            "cash": 594000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7725328391",
+        "ogrn": "1167746794490",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДОМОПУЛЬТ\"",
+        "full_name": "ООО \"ДОМОПУЛЬТ\"",
+        "status": "",
+        "registration_date": "23.08.2016",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7814725714",
+    "name": "ПРОАКТИОН",
+    "external": {
+      "checko": {
+        "inn": "7814725714",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПРОАКТИОН\"",
+        "short_name": "ООО \"ПРОАКТИОН\"",
+        "ogrn": "1187847099956",
+        "registration_date": "2018-04-09",
+        "year_founded": 2018,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "121205, г. Москва, вн. тер. г. муниципальный округ Можайский, тер. Инновационного Центра Сколково, ул. Нобеля, д. 5, помещ. IV, ком. 64, РМ 3",
+        "financials": {
+          "2018": {
+            "revenue": 9543000.0,
+            "cost_of_sales": 11113000.0,
+            "gross_profit": -1570000.0,
+            "operating_profit": -1570000.0,
+            "net_profit": 4934000.0,
+            "total_assets": 6215000.0,
+            "total_liabilities": 6215000.0,
+            "equity": 4945000.0,
+            "current_assets": 6216000.0,
+            "current_liabilities": 1270000.0,
+            "cash": 6022000.0
+          },
+          "2019": {
+            "revenue": 34376000.0,
+            "cost_of_sales": 39403000.0,
+            "net_profit": -527000.0,
+            "total_assets": 2713000.0,
+            "total_liabilities": 2713000.0,
+            "equity": 653000.0,
+            "cash": 2352000.0
+          },
+          "2020": {
+            "revenue": 45282000.0,
+            "cost_of_sales": 42039000.0,
+            "net_profit": 986000.0,
+            "total_assets": 9535000.0,
+            "total_liabilities": 9535000.0,
+            "equity": 7972000.0,
+            "cash": 7753000.0
+          },
+          "2021": {
+            "revenue": 52325000.0,
+            "cost_of_sales": 70313000.0,
+            "net_profit": -17891000.0,
+            "total_assets": 40627000.0,
+            "total_liabilities": 40627000.0,
+            "equity": 13083000.0,
+            "fixed_assets": 175000.0,
+            "cash": 33224000.0
+          },
+          "2022": {
+            "revenue": 63148000.0,
+            "cost_of_sales": 57934000.0,
+            "net_profit": 18383000.0,
+            "total_assets": 44818000.0,
+            "total_liabilities": 44818000.0,
+            "equity": 31467000.0,
+            "fixed_assets": 105000.0,
+            "cash": 15600000.0
+          },
+          "2023": {
+            "revenue": 72568000.0,
+            "cost_of_sales": 74072000.0,
+            "net_profit": 4084000.0,
+            "total_assets": 43601000.0,
+            "total_liabilities": 43601000.0,
+            "equity": 35496000.0,
+            "fixed_assets": 35000.0,
+            "cash": 9461000.0
+          },
+          "2024": {
+            "revenue": 78441000.0,
+            "cost_of_sales": 76597000.0,
+            "net_profit": 869000.0,
+            "total_assets": 41565000.0,
+            "total_liabilities": 41565000.0,
+            "equity": 36366000.0,
+            "cash": 7444000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7814725714",
+        "ogrn": "1187847099956",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПРОАКТИОН\"",
+        "full_name": "ООО \"ПРОАКТИОН\"",
+        "status": "",
+        "registration_date": "09.04.2018",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "5473000870",
+    "name": "ПИК",
+    "external": {
+      "checko": {
+        "inn": "5473000870",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПРОМЫШЛЕННО-ИННОВАЦИОННАЯ КОМПАНИЯ\"",
+        "short_name": "ООО \"ПИК\"",
+        "ogrn": "1215400044672",
+        "registration_date": "2021-10-25",
+        "year_founded": 2021,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "630058, Новосибирская область, г. о. город Новосибирск, г. Новосибирск, ул. Плотинная, зд. 5/1, помещ. 306, 307, 313",
+        "financials": {
+          "2021": {
+            "total_assets": 100000.0,
+            "total_liabilities": 100000.0,
+            "equity": 100000.0,
+            "cash": 9000.0
+          },
+          "2022": {
+            "revenue": 1308000.0,
+            "cost_of_sales": 1492000.0,
+            "net_profit": -204000.0,
+            "total_assets": 92000.0,
+            "total_liabilities": 92000.0,
+            "equity": -105000.0,
+            "cash": 13000.0
+          },
+          "2023": {
+            "revenue": 49078000.0,
+            "cost_of_sales": 37737000.0,
+            "net_profit": 11497000.0,
+            "total_assets": 25269000.0,
+            "total_liabilities": 25269000.0,
+            "equity": 11392000.0,
+            "fixed_assets": 543000.0,
+            "cash": 38000.0
+          },
+          "2024": {
+            "revenue": 74925000.0,
+            "cost_of_sales": 64887000.0,
+            "net_profit": 11650000.0,
+            "total_assets": 29200000.0,
+            "total_liabilities": 29200000.0,
+            "equity": 23041000.0,
+            "fixed_assets": 3718000.0,
+            "cash": 74000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "5473000870",
+        "ogrn": "1215400044672",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПРОМЫШЛЕННО-ИННОВАЦИОННАЯ КОМПАНИЯ\"",
+        "full_name": "ООО \"ПИК\"",
+        "status": "",
+        "registration_date": "25.10.2021",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "1001137458",
+    "name": "СИТИЛИНК",
+    "external": {
+      "checko": {
+        "inn": "1001137458",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"СИТИЛИНК\"",
+        "short_name": "ООО \"СИТИЛИНК\"",
+        "ogrn": "1021000533245",
+        "registration_date": "2002-04-26",
+        "year_founded": 2002,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Деятельность в области связи на базе проводных технологий",
+        "address": "185002, Республика Карелия, г. Петрозаводск, ул. Чапаева (Перевалка р-н), д. 44",
+        "financials": {
+          "2015": {
+            "revenue": 243064000.0,
+            "cost_of_sales": 224344000.0,
+            "gross_profit": 18720000.0,
+            "operating_profit": 18720000.0,
+            "net_profit": 9386000.0,
+            "total_assets": 72630000.0,
+            "total_liabilities": 72630000.0,
+            "equity": 13982000.0,
+            "current_assets": 36023000.0,
+            "current_liabilities": 23126000.0,
+            "non_current_assets": 36607000.0,
+            "fixed_assets": 36591000.0,
+            "cash": 8286000.0,
+            "retained_earnings": 13961000.0
+          },
+          "2016": {
+            "revenue": 257600000.0,
+            "cost_of_sales": 222405000.0,
+            "gross_profit": 35195000.0,
+            "operating_profit": 35195000.0,
+            "net_profit": 23471000.0,
+            "total_assets": 80946000.0,
+            "total_liabilities": 80946000.0,
+            "equity": 30557000.0,
+            "current_assets": 47442000.0,
+            "current_liabilities": 39223000.0,
+            "non_current_assets": 33504000.0,
+            "fixed_assets": 33484000.0,
+            "cash": 3355000.0,
+            "retained_earnings": 30536000.0
+          },
+          "2017": {
+            "revenue": 277240000.0,
+            "cost_of_sales": 245426000.0,
+            "gross_profit": 31814000.0,
+            "operating_profit": 31814000.0,
+            "net_profit": 23854000.0,
+            "total_assets": 122402000.0,
+            "total_liabilities": 122402000.0,
+            "equity": 33412000.0,
+            "current_assets": 88826000.0,
+            "current_liabilities": 28991000.0,
+            "non_current_assets": 33576000.0,
+            "fixed_assets": 30952000.0,
+            "cash": 5455000.0,
+            "retained_earnings": 33391000.0
+          },
+          "2018": {
+            "revenue": 318790000.0,
+            "cost_of_sales": 301788000.0,
+            "gross_profit": 17002000.0,
+            "operating_profit": 17002000.0,
+            "net_profit": 7382000.0,
+            "total_assets": 104893000.0,
+            "total_liabilities": 104893000.0,
+            "equity": 40794000.0,
+            "current_assets": 64981000.0,
+            "current_liabilities": 35851000.0,
+            "non_current_assets": 39912000.0,
+            "fixed_assets": 37257000.0,
+            "cash": 6446000.0,
+            "retained_earnings": 40773000.0
+          },
+          "2019": {
+            "revenue": 371358000.0,
+            "cost_of_sales": 296806000.0,
+            "gross_profit": 74552000.0,
+            "operating_profit": 74552000.0,
+            "net_profit": 104535000.0,
+            "total_assets": 189880000.0,
+            "total_liabilities": 189880000.0,
+            "equity": 137925000.0,
+            "current_assets": 61830000.0,
+            "current_liabilities": 51702000.0,
+            "non_current_assets": 128050000.0,
+            "fixed_assets": 77507000.0,
+            "cash": 4695000.0,
+            "retained_earnings": 137904000.0
+          },
+          "2020": {
+            "revenue": 428541000.0,
+            "cost_of_sales": 339531000.0,
+            "gross_profit": 89010000.0,
+            "operating_profit": 89010000.0,
+            "net_profit": 64411000.0,
+            "total_assets": 236149000.0,
+            "total_liabilities": 236149000.0,
+            "equity": 192338000.0,
+            "current_assets": 45487000.0,
+            "current_liabilities": 38703000.0,
+            "non_current_assets": 190662000.0,
+            "fixed_assets": 148978000.0,
+            "cash": 3373000.0,
+            "retained_earnings": 192317000.0
+          },
+          "2021": {
+            "revenue": 500171000.0,
+            "cost_of_sales": 383884000.0,
+            "gross_profit": 116287000.0,
+            "operating_profit": 57058000.0,
+            "net_profit": 36862000.0,
+            "total_assets": 287862000.0,
+            "total_liabilities": 287862000.0,
+            "equity": 227851000.0,
+            "current_assets": 62198000.0,
+            "current_liabilities": 53711000.0,
+            "non_current_assets": 225664000.0,
+            "fixed_assets": 189823000.0,
+            "cash": 4271000.0,
+            "retained_earnings": 227830000.0
+          },
+          "2022": {
+            "revenue": 574527000.0,
+            "cost_of_sales": 438164000.0,
+            "gross_profit": 136363000.0,
+            "operating_profit": 59064000.0,
+            "net_profit": 44708000.0,
+            "total_assets": 611165000.0,
+            "total_liabilities": 611166000.0,
+            "equity": 272559000.0,
+            "current_assets": 129196000.0,
+            "current_liabilities": 173508000.0,
+            "non_current_assets": 481969000.0,
+            "fixed_assets": 325397000.0,
+            "cash": 9929000.0,
+            "retained_earnings": 272538000.0
+          },
+          "2023": {
+            "revenue": 718108000.0,
+            "cost_of_sales": 564109000.0,
+            "gross_profit": 153999000.0,
+            "operating_profit": 74791000.0,
+            "net_profit": 31789000.0,
+            "total_assets": 568814000.0,
+            "total_liabilities": 568814000.0,
+            "equity": 304347000.0,
+            "current_assets": 102012000.0,
+            "current_liabilities": 119022000.0,
+            "non_current_assets": 466802000.0,
+            "fixed_assets": 320952000.0,
+            "cash": 7421000.0,
+            "retained_earnings": 304326000.0
+          },
+          "2024": {
+            "revenue": 814697000.0,
+            "cost_of_sales": 625207000.0,
+            "gross_profit": 189490000.0,
+            "operating_profit": 96641000.0,
+            "net_profit": 35059000.0,
+            "total_assets": 541676000.0,
+            "total_liabilities": 541676000.0,
+            "equity": 339406000.0,
+            "current_assets": 125416000.0,
+            "current_liabilities": 87502000.0,
+            "non_current_assets": 416260000.0,
+            "fixed_assets": 293593000.0,
+            "cash": 10166000.0,
+            "retained_earnings": 339385000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "1001137458",
+        "ogrn": "1021000533245",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"СИТИЛИНК\"",
+        "full_name": "ООО \"СИТИЛИНК\"",
+        "status": "",
+        "registration_date": "02.12.2002",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "2463116609",
+    "name": "РТС",
+    "external": {
+      "checko": {
+        "inn": "2463116609",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"РАДИОТЕХНИЧЕСКИЕ СИСТЕМЫ\"",
+        "short_name": "ООО \"РТС\"",
+        "ogrn": "1192468003386",
+        "registration_date": "2019-01-30",
+        "year_founded": 2019,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "660001, Красноярский край, г. о. город Красноярск, г. Красноярск, ул. Ладо Кецховели, д. 22А, помещ. 367",
+        "financials": {
+          "2019": {
+            "revenue": 107000.0,
+            "cost_of_sales": 96000.0,
+            "gross_profit": 82000.0,
+            "operating_profit": 11000.0,
+            "net_profit": 1000.0,
+            "total_assets": 835000.0,
+            "total_liabilities": 835000.0,
+            "equity": 12000.0,
+            "current_assets": 837000.0,
+            "current_liabilities": 792000.0,
+            "cash": 719000.0
+          },
+          "2020": {
+            "revenue": 2135000.0,
+            "cost_of_sales": 1922000.0,
+            "net_profit": 182000.0,
+            "total_assets": 2048000.0,
+            "total_liabilities": 2048000.0,
+            "equity": 196000.0,
+            "cash": 1245000.0
+          },
+          "2021": {
+            "revenue": 21299000.0,
+            "cost_of_sales": 13271000.0,
+            "net_profit": 7676000.0,
+            "total_assets": 18007000.0,
+            "total_liabilities": 18007000.0,
+            "equity": 7872000.0,
+            "fixed_assets": 130000.0,
+            "cash": 4452000.0
+          },
+          "2022": {
+            "revenue": 30700000.0,
+            "cost_of_sales": 19621000.0,
+            "net_profit": 9812000.0,
+            "total_assets": 19605000.0,
+            "total_liabilities": 19605000.0,
+            "equity": 15356000.0,
+            "fixed_assets": 10000.0,
+            "cash": 1494000.0
+          },
+          "2023": {
+            "revenue": 6397000.0,
+            "cost_of_sales": 9770000.0,
+            "total_assets": 28340000.0,
+            "total_liabilities": 28340000.0,
+            "equity": 12451000.0,
+            "fixed_assets": 166000.0,
+            "cash": 3785000.0
+          },
+          "2024": {
+            "revenue": 18058000.0,
+            "cost_of_sales": 18203000.0,
+            "net_profit": 109000.0,
+            "total_assets": 36793000.0,
+            "total_liabilities": 36793000.0,
+            "equity": 12560000.0,
+            "fixed_assets": 76000.0,
+            "cash": 657000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "2463116609",
+        "ogrn": "1192468003386",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"РАДИОТЕХНИЧЕСКИЕ СИСТЕМЫ\"",
+        "full_name": "ООО \"РТС\"",
+        "status": "",
+        "registration_date": "30.01.2019",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "9731072215",
+    "name": "ФИСТЕХ",
+    "external": {
+      "checko": {
+        "inn": "9731072215",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ФИСТЕХ\"",
+        "short_name": "ООО \"ФИСТЕХ\"",
+        "ogrn": "1207700416109",
+        "registration_date": "2020-11-05",
+        "year_founded": 2020,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "121205, г. Москва, бульвар Большой (Инновационного Центра Сколково Тер), д. 30, стр. 1, эт/пом/рм 2/225/225-4",
+        "financials": {
+          "2020": {
+            "net_profit": -2000.0,
+            "total_assets": 8000.0,
+            "total_liabilities": 8000.0,
+            "equity": 8000.0,
+            "current_assets": 8000.0,
+            "cash": 8000.0,
+            "retained_earnings": -2000.0
+          },
+          "2021": {
+            "net_profit": -2000.0,
+            "total_assets": 8000.0,
+            "total_liabilities": 8000.0,
+            "equity": 8000.0,
+            "current_assets": 8000.0,
+            "cash": 8000.0,
+            "retained_earnings": -2000.0
+          },
+          "2022": {
+            "cost_of_sales": 18000.0,
+            "gross_profit": -18000.0,
+            "operating_profit": -18000.0,
+            "net_profit": -1461000.0,
+            "total_assets": 68969000.0,
+            "total_liabilities": 68969000.0,
+            "equity": -1452000.0,
+            "current_assets": 54828000.0,
+            "current_liabilities": 70421000.0,
+            "non_current_assets": 14141000.0,
+            "fixed_assets": 723000.0,
+            "cash": 54644000.0,
+            "retained_earnings": -1462000.0
+          },
+          "2023": {
+            "cost_of_sales": 15000.0,
+            "gross_profit": -15000.0,
+            "operating_profit": -15000.0,
+            "net_profit": -116000.0,
+            "total_assets": 61136000.0,
+            "total_liabilities": 61136000.0,
+            "equity": -1568000.0,
+            "current_assets": 52462000.0,
+            "current_liabilities": 50204000.0,
+            "non_current_assets": 8674000.0,
+            "fixed_assets": 565000.0,
+            "cash": 30100000.0,
+            "retained_earnings": -1578000.0
+          },
+          "2024": {
+            "cost_of_sales": 219000.0,
+            "gross_profit": -219000.0,
+            "operating_profit": -219000.0,
+            "net_profit": -276000.0,
+            "total_assets": 60656000.0,
+            "total_liabilities": 60656000.0,
+            "equity": -1844000.0,
+            "current_assets": 29661000.0,
+            "current_liabilities": 50000000.0,
+            "non_current_assets": 30995000.0,
+            "fixed_assets": 421000.0,
+            "cash": 10984000.0,
+            "retained_earnings": -1854000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9731072215",
+        "ogrn": "1207700416109",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ФИСТЕХ\"",
+        "full_name": "ООО \"ФИСТЕХ\"",
+        "status": "",
+        "registration_date": "05.11.2020",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "5905070469",
+    "name": "ЦОЖ",
+    "external": {
+      "checko": {
+        "inn": "5905070469",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЦИФРОВОЙ ОМБУДСМЕН ЖИТЕЛЯ\"",
+        "short_name": "ООО \"ЦОЖ\"",
+        "ogrn": "1225900002690",
+        "registration_date": "2022-02-10",
+        "year_founded": 2022,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "614066, Пермский край, г. о. Пермский, г. Пермь, Космонавтов шоссе, д. 111Д, офис 106",
+        "financials": {
+          "2022": {
+            "revenue": 87000.0,
+            "cost_of_sales": 2676000.0,
+            "net_profit": -2705000.0,
+            "total_assets": 18128000.0,
+            "total_liabilities": 18128000.0,
+            "equity": 15235000.0,
+            "cash": 7236000.0
+          },
+          "2023": {
+            "revenue": 100000.0,
+            "cost_of_sales": 11587000.0,
+            "net_profit": -11580000.0,
+            "total_assets": 20508000.0,
+            "total_liabilities": 20508000.0,
+            "equity": 16353000.0,
+            "cash": 2491000.0
+          },
+          "2024": {
+            "revenue": 400000.0,
+            "cost_of_sales": 2831000.0,
+            "net_profit": 17107000.0,
+            "total_assets": 50444000.0,
+            "total_liabilities": 50444000.0,
+            "equity": 44107000.0,
+            "cash": 436000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "5905070469",
+        "ogrn": "1225900002690",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЦИФРОВОЙ ОМБУДСМЕН ЖИТЕЛЯ\"",
+        "full_name": "ООО \"ЦОЖ\"",
+        "status": "",
+        "registration_date": "10.02.2022",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7810875035",
+    "name": "БТЗ",
+    "external": {
+      "checko": {
+        "inn": "7810875035",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"БАЛТИЙСКИЙ ТУРБИННЫЙ ЗАВОД\"",
+        "short_name": "ООО \"БТЗ\"",
+        "ogrn": "1127847352093",
+        "registration_date": "2012-07-04",
+        "year_founded": 2012,
+        "status": "Юридическим лицом принято решение об изменении места нахождения",
+        "is_active": false,
+        "okved_name": "Ремонт электрического оборудования",
+        "address": "196128, г. Санкт-Петербург, ул. Варшавская, д. 23, корп. лит 2 а, пом. 9-Н",
+        "financials": {
+          "2015": {
+            "net_profit": -9000.0,
+            "total_assets": 50000.0,
+            "total_liabilities": 50000.0,
+            "equity": 10000.0,
+            "current_assets": 50000.0,
+            "current_liabilities": 40000.0,
+            "cash": 29000.0,
+            "retained_earnings": -5000.0
+          },
+          "2016": {
+            "total_assets": 50000.0,
+            "total_liabilities": 50000.0,
+            "equity": 10000.0,
+            "current_assets": 50000.0,
+            "current_liabilities": 40000.0,
+            "cash": 29000.0,
+            "retained_earnings": -5000.0
+          },
+          "2017": {
+            "net_profit": -11000.0,
+            "total_assets": 33000.0,
+            "total_liabilities": 33000.0,
+            "equity": -11000.0,
+            "current_assets": 33000.0,
+            "current_liabilities": 44000.0,
+            "cash": 7000.0,
+            "retained_earnings": -26000.0
+          },
+          "2018": {
+            "net_profit": -3000.0,
+            "total_assets": 30000.0,
+            "total_liabilities": 30000.0,
+            "equity": -14000.0,
+            "current_assets": 30000.0,
+            "current_liabilities": 44000.0,
+            "cash": 5000.0,
+            "retained_earnings": -29000.0
+          },
+          "2019": {
+            "total_assets": 30000.0,
+            "total_liabilities": 30000.0,
+            "equity": -14000.0,
+            "current_assets": 30000.0,
+            "current_liabilities": 44000.0,
+            "cash": 5000.0,
+            "retained_earnings": -29000.0
+          },
+          "2020": {
+            "total_assets": 30000.0,
+            "total_liabilities": 30000.0,
+            "equity": -14000.0,
+            "cash": 5000.0
+          },
+          "2021": {
+            "total_assets": 30000.0,
+            "total_liabilities": 30000.0,
+            "equity": -14000.0,
+            "cash": 5000.0
+          },
+          "2024": {
+            "total_assets": 20367000.0,
+            "total_liabilities": 20367000.0,
+            "cash": 15000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7810875035",
+        "ogrn": "1127847352093",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"БАЛТИЙСКИЙ ТУРБИННЫЙ ЗАВОД\"",
+        "full_name": "ООО \"БТЗ\"",
+        "status": "",
+        "registration_date": "04.07.2012",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "3525438181",
+    "name": "ДИ ДИ ЭС МАЙКРОЛАБ",
+    "external": {
+      "checko": {
+        "inn": "3525438181",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДИ ДИ ЭС МАЙКРОЛАБ\"",
+        "short_name": "ООО \"ДИ ДИ ЭС МАЙКРОЛАБ\"",
+        "ogrn": "1193525007280",
+        "registration_date": "2019-03-05",
+        "year_founded": 2019,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "160001, Вологодская область, г. Вологда, ул. Кирова, д. 29, офис 204",
+        "financials": {
+          "2019": {
+            "revenue": 640000.0,
+            "cost_of_sales": 490000.0,
+            "gross_profit": 150000.0,
+            "operating_profit": 150000.0,
+            "net_profit": 150000.0,
+            "total_assets": 130000.0,
+            "total_liabilities": 130000.0,
+            "equity": 130000.0,
+            "current_assets": 130000.0,
+            "cash": 110000.0,
+            "retained_earnings": 120000.0
+          },
+          "2020": {
+            "total_assets": 285000.0,
+            "total_liabilities": 285000.0,
+            "equity": 10000.0,
+            "current_assets": 285000.0,
+            "current_liabilities": 275000.0
+          },
+          "2021": {
+            "revenue": 6097000.0,
+            "gross_profit": 6097000.0,
+            "operating_profit": 34000.0,
+            "net_profit": 34000.0,
+            "total_assets": 2020000.0,
+            "total_liabilities": 2020000.0,
+            "equity": -42000.0,
+            "current_assets": 2020000.0,
+            "current_liabilities": 2062000.0,
+            "retained_earnings": -52000.0
+          },
+          "2022": {
+            "revenue": 40670000.0,
+            "gross_profit": 40670000.0,
+            "operating_profit": 40077000.0,
+            "net_profit": 40074000.0,
+            "total_assets": 40100000.0,
+            "total_liabilities": 40100000.0,
+            "equity": 40095000.0,
+            "current_assets": 40100000.0,
+            "current_liabilities": 5000.0,
+            "retained_earnings": 40085000.0
+          },
+          "2023": {
+            "revenue": 134000000.0,
+            "cost_of_sales": 5807000.0,
+            "gross_profit": 134000000.0,
+            "operating_profit": 128193000.0,
+            "net_profit": 128193000.0,
+            "total_assets": 174100000.0,
+            "total_liabilities": 174100000.0,
+            "equity": 168288000.0,
+            "current_assets": 174100000.0,
+            "current_liabilities": 5812000.0,
+            "retained_earnings": 168278000.0
+          },
+          "2024": {
+            "revenue": 19000000.0,
+            "cost_of_sales": 141039000.0,
+            "net_profit": -151739000.0,
+            "total_assets": 16565000.0,
+            "total_liabilities": 16565000.0,
+            "equity": 16550000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "3525438181",
+        "ogrn": "1193525007280",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ДИ ДИ ЭС МАЙКРОЛАБ\"",
+        "full_name": "ООО \"ДИ ДИ ЭС МАЙКРОЛАБ\"",
+        "status": "",
+        "registration_date": "05.03.2019",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7751177678",
+    "name": "КИПНЕТ",
+    "external": {
+      "checko": {
+        "inn": "7751177678",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"КИПНЕТ\"",
+        "short_name": "ООО \"КИПНЕТ\"",
+        "ogrn": "1207700093479",
+        "registration_date": "2020-03-02",
+        "year_founded": 2020,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Предоставление посреднических услуг при купле-продаже недвижимого имущества за вознаграждение или на договорной основе",
+        "address": "108820, г. Москва, Коммунарка район, п. Завода Мосрентген, д. 6, кв. 60",
+        "financials": {
+          "2020": {
+            "revenue": 10911000.0,
+            "gross_profit": 10911000.0,
+            "operating_profit": 4505000.0,
+            "net_profit": 3941000.0,
+            "total_assets": 4423000.0,
+            "total_liabilities": 4423000.0,
+            "equity": 3970000.0,
+            "current_assets": 4423000.0,
+            "current_liabilities": 453000.0,
+            "cash": 3822000.0,
+            "retained_earnings": 3957000.0
+          },
+          "2021": {
+            "revenue": 39602000.0,
+            "gross_profit": 39602000.0,
+            "operating_profit": 850000.0,
+            "net_profit": 497000.0,
+            "total_assets": 6641000.0,
+            "total_liabilities": 6641000.0,
+            "equity": 4422000.0,
+            "current_assets": 6641000.0,
+            "current_liabilities": 2219000.0,
+            "cash": 1047000.0,
+            "retained_earnings": 4409000.0
+          },
+          "2022": {
+            "revenue": 83171000.0,
+            "gross_profit": 83171000.0,
+            "operating_profit": 5066000.0,
+            "net_profit": 4277000.0,
+            "total_assets": 18046000.0,
+            "total_liabilities": 18046000.0,
+            "equity": 11305000.0,
+            "current_assets": 17577000.0,
+            "current_liabilities": 6741000.0,
+            "non_current_assets": 469000.0,
+            "fixed_assets": 469000.0,
+            "cash": 1300000.0,
+            "retained_earnings": 10823000.0
+          },
+          "2023": {
+            "revenue": 105785000.0,
+            "gross_profit": 105785000.0,
+            "operating_profit": 14897000.0,
+            "net_profit": 13767000.0,
+            "total_assets": 44710000.0,
+            "total_liabilities": 44710000.0,
+            "equity": 19883000.0,
+            "current_assets": 44672000.0,
+            "current_liabilities": 24827000.0,
+            "non_current_assets": 38000.0,
+            "fixed_assets": 38000.0,
+            "cash": 738000.0,
+            "retained_earnings": 19870000.0
+          },
+          "2024": {
+            "revenue": 140671000.0,
+            "gross_profit": 140671000.0,
+            "operating_profit": 3966000.0,
+            "net_profit": 3726000.0,
+            "total_assets": 22992000.0,
+            "total_liabilities": 22992000.0,
+            "equity": 20815000.0,
+            "current_assets": 22992000.0,
+            "current_liabilities": 2177000.0,
+            "cash": 1997000.0,
+            "retained_earnings": 20802000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7751177678",
+        "ogrn": "1207700093479",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"КИПНЕТ\"",
+        "full_name": "ООО \"КИПНЕТ\"",
+        "status": "",
+        "registration_date": "02.03.2020",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "5408028837",
+    "name": "АКАДЕМЛАЗЕРМАШ",
+    "external": {
+      "checko": {
+        "inn": "5408028837",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"АКАДЕМЛАЗЕРМАШ\"",
+        "short_name": "ООО \"АКАДЕМЛАЗЕРМАШ\"",
+        "ogrn": "1215400002751",
+        "registration_date": "2021-01-28",
+        "year_founded": 2021,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "630090, Новосибирская область, г. о. город Новосибирск, г. Новосибирск, пр-кт Академика Коптюга, д. 1",
+        "financials": {
+          "2021": {
+            "revenue": 1679000.0,
+            "cost_of_sales": 1685000.0,
+            "net_profit": -30000.0,
+            "total_assets": 349000.0,
+            "total_liabilities": 349000.0,
+            "equity": -20000.0,
+            "cash": 339000.0
+          },
+          "2022": {
+            "cost_of_sales": 33000.0,
+            "net_profit": -58000.0,
+            "total_assets": 9000.0,
+            "total_liabilities": 9000.0,
+            "equity": -78000.0,
+            "cash": 9000.0
+          },
+          "2023": {
+            "revenue": 3000000.0,
+            "cost_of_sales": 607000.0,
+            "net_profit": 2166000.0,
+            "total_assets": 2295000.0,
+            "total_liabilities": 2295000.0,
+            "equity": 2088000.0,
+            "cash": 2295000.0
+          },
+          "2024": {
+            "cost_of_sales": 2084000.0,
+            "net_profit": -2075000.0,
+            "total_assets": 13000.0,
+            "total_liabilities": 13000.0,
+            "equity": 13000.0,
+            "cash": 5000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "5408028837",
+        "ogrn": "1215400002751",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"АКАДЕМЛАЗЕРМАШ\"",
+        "full_name": "ООО \"АКАДЕМЛАЗЕРМАШ\"",
+        "status": "",
+        "registration_date": "28.01.2021",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "9729084157",
+    "name": "НИЦ БУЛАТ",
+    "external": {
+      "checko": {
+        "inn": "9729084157",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАУЧНО-ИССЛЕДОВАТЕЛЬСКИЙ ЦЕНТР \"БУЛАТ\"",
+        "short_name": "ООО \"НИЦ \"БУЛАТ\"",
+        "ogrn": "1177746492330",
+        "registration_date": "2017-05-18",
+        "year_founded": 2017,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "121205, г. Москва, ул. Нобеля (Инновационного Центра Сколково Тер), д. 7, этаж 4, пом. 37",
+        "financials": {
+          "2017": {
+            "revenue": 3444000.0,
+            "cost_of_sales": 3125000.0,
+            "gross_profit": 319000.0,
+            "operating_profit": -6718000.0,
+            "net_profit": 2073000.0,
+            "total_assets": 265281000.0,
+            "total_liabilities": 265281000.0,
+            "equity": 2083000.0,
+            "current_assets": 265281000.0,
+            "current_liabilities": 263198000.0,
+            "cash": 93000.0,
+            "retained_earnings": 2073000.0
+          },
+          "2018": {
+            "revenue": 162067000.0,
+            "cost_of_sales": 114944000.0,
+            "gross_profit": 47123000.0,
+            "operating_profit": 3942000.0,
+            "net_profit": 3835000.0,
+            "total_assets": 121420000.0,
+            "total_liabilities": 121420000.0,
+            "equity": 5918000.0,
+            "current_assets": 113146000.0,
+            "current_liabilities": 115335000.0,
+            "non_current_assets": 8274000.0,
+            "fixed_assets": 7084000.0,
+            "cash": 926000.0,
+            "retained_earnings": 5908000.0
+          },
+          "2019": {
+            "revenue": 188645000.0,
+            "cost_of_sales": 80382000.0,
+            "gross_profit": 108263000.0,
+            "operating_profit": 331000.0,
+            "net_profit": 663000.0,
+            "total_assets": 71937000.0,
+            "total_liabilities": 71937000.0,
+            "equity": 6581000.0,
+            "current_assets": 52673000.0,
+            "current_liabilities": 65355000.0,
+            "non_current_assets": 19264000.0,
+            "fixed_assets": 13722000.0,
+            "cash": 388000.0,
+            "retained_earnings": 6571000.0
+          },
+          "2020": {
+            "revenue": 277248000.0,
+            "cost_of_sales": 102803000.0,
+            "gross_profit": 174445000.0,
+            "operating_profit": 26655000.0,
+            "net_profit": 45000.0,
+            "total_assets": 22492000.0,
+            "total_liabilities": 22492000.0,
+            "equity": 6627000.0,
+            "current_assets": 7438000.0,
+            "current_liabilities": 15865000.0,
+            "non_current_assets": 15054000.0,
+            "fixed_assets": 10689000.0,
+            "cash": 313000.0,
+            "retained_earnings": 6617000.0
+          },
+          "2021": {
+            "revenue": 240300000.0,
+            "cost_of_sales": 78417000.0,
+            "gross_profit": 161883000.0,
+            "operating_profit": -333000.0,
+            "net_profit": 1000.0,
+            "total_assets": 16361000.0,
+            "total_liabilities": 16361000.0,
+            "equity": 6628000.0,
+            "current_assets": 5983000.0,
+            "current_liabilities": 9733000.0,
+            "non_current_assets": 10378000.0,
+            "fixed_assets": 7323000.0,
+            "cash": 406000.0,
+            "retained_earnings": 6618000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9729084157",
+        "ogrn": "1177746492330",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАУЧНО-ИССЛЕДОВАТЕЛЬСКИЙ ЦЕНТР \"БУЛАТ\"",
+        "full_name": "ООО \"НИЦ \"БУЛАТ\"",
+        "status": "",
+        "registration_date": "18.05.2017",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "5038179652",
+    "name": "МП-И",
+    "external": {
+      "checko": {
+        "inn": "5038179652",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"М ПРО-ИНЖИНИРИНГ\"",
+        "short_name": "ООО \"МП-И\"",
+        "ogrn": "1235000076079",
+        "registration_date": "2023-06-15",
+        "year_founded": 2023,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "141282, Московская область, г. о. Пушкинский, г. Ивантеевка, ул. Толмачева, д. 49, стр. 4, офис 6",
+        "financials": {
+          "2023": {
+            "cost_of_sales": 236000.0,
+            "net_profit": -280000.0,
+            "total_assets": 861000.0,
+            "total_liabilities": 861000.0,
+            "equity": 820000.0,
+            "cash": 737000.0
+          },
+          "2024": {
+            "cost_of_sales": 822000.0,
+            "net_profit": -803000.0,
+            "total_assets": 642000.0,
+            "total_liabilities": 642000.0,
+            "equity": 18000.0,
+            "cash": 94000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "5038179652",
+        "ogrn": "1235000076079",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"М ПРО-ИНЖИНИРИНГ\"",
+        "full_name": "ООО \"МП-И\"",
+        "status": "",
+        "registration_date": "15.06.2023",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "6321369143",
+    "name": "ЛАДУГА",
+    "external": {
+      "checko": {
+        "inn": "6321369143",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЛАДУГА\"",
+        "short_name": "ООО \"ЛАДУГА\"",
+        "ogrn": "1146320022551",
+        "registration_date": "2014-11-24",
+        "year_founded": 2014,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "445043, Самарская область, г. о. Тольятти, г. Тольятти, Южное шоссе, д. 161, ком. 89",
+        "financials": {
+          "2015": {
+            "revenue": 2260000.0,
+            "cost_of_sales": 1183000.0,
+            "gross_profit": 1077000.0,
+            "operating_profit": 1077000.0,
+            "net_profit": 913000.0,
+            "total_assets": 1069000.0,
+            "total_liabilities": 1069000.0,
+            "equity": 922000.0,
+            "current_assets": 1069000.0,
+            "current_liabilities": 145000.0,
+            "cash": 1029000.0
+          },
+          "2016": {
+            "revenue": 1715000.0,
+            "cost_of_sales": 1398000.0,
+            "gross_profit": 317000.0,
+            "operating_profit": 317000.0,
+            "net_profit": 296000.0,
+            "total_assets": 668000.0,
+            "total_liabilities": 668000.0,
+            "equity": 607000.0,
+            "current_assets": 668000.0,
+            "current_liabilities": 59000.0,
+            "cash": 253000.0
+          },
+          "2017": {
+            "revenue": 38175000.0,
+            "cost_of_sales": 18629000.0,
+            "gross_profit": 19546000.0,
+            "operating_profit": 19546000.0,
+            "net_profit": 17162000.0,
+            "total_assets": 19267000.0,
+            "total_liabilities": 19267000.0,
+            "equity": 17099000.0,
+            "current_assets": 19267000.0,
+            "current_liabilities": 2166000.0,
+            "cash": 357000.0
+          },
+          "2018": {
+            "revenue": 29830000.0,
+            "cost_of_sales": 15713000.0,
+            "gross_profit": 14117000.0,
+            "operating_profit": 14117000.0,
+            "net_profit": 14278000.0,
+            "total_assets": 30857000.0,
+            "total_liabilities": 30857000.0,
+            "equity": 30401000.0,
+            "current_assets": 23830000.0,
+            "current_liabilities": 454000.0,
+            "non_current_assets": 7027000.0,
+            "fixed_assets": 7027000.0,
+            "cash": 394000.0
+          },
+          "2019": {
+            "revenue": 51001000.0,
+            "cost_of_sales": 14528000.0,
+            "net_profit": 37316000.0,
+            "total_assets": 68632000.0,
+            "total_liabilities": 68632000.0,
+            "equity": 63217000.0,
+            "fixed_assets": 16934000.0,
+            "cash": 69000.0
+          },
+          "2020": {
+            "revenue": 17623000.0,
+            "cost_of_sales": 26063000.0,
+            "net_profit": -8098000.0,
+            "total_assets": 67176000.0,
+            "total_liabilities": 67176000.0,
+            "equity": 52632000.0,
+            "fixed_assets": 16980000.0,
+            "cash": 516000.0
+          },
+          "2021": {
+            "revenue": 42834000.0,
+            "cost_of_sales": 31138000.0,
+            "net_profit": 11888000.0,
+            "total_assets": 76528000.0,
+            "total_liabilities": 76528000.0,
+            "equity": 64518000.0,
+            "fixed_assets": 16980000.0,
+            "cash": 966000.0
+          },
+          "2022": {
+            "revenue": 28473000.0,
+            "cost_of_sales": 43967000.0,
+            "net_profit": -23940000.0,
+            "total_assets": 58285000.0,
+            "total_liabilities": 58285000.0,
+            "equity": 40580000.0,
+            "fixed_assets": 16980000.0,
+            "cash": 18676000.0
+          },
+          "2023": {
+            "revenue": 69119000.0,
+            "cost_of_sales": 71077000.0,
+            "net_profit": 3157000.0,
+            "total_assets": 74721000.0,
+            "total_liabilities": 74721000.0,
+            "equity": 51302000.0,
+            "fixed_assets": 15850000.0,
+            "cash": 30432000.0
+          },
+          "2024": {
+            "revenue": 184701000.0,
+            "cost_of_sales": 126330000.0,
+            "net_profit": 78718000.0,
+            "total_assets": 89861000.0,
+            "total_liabilities": 89861000.0,
+            "equity": 71014000.0,
+            "fixed_assets": 170000.0,
+            "cash": 8478000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "6321369143",
+        "ogrn": "1146320022551",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ЛАДУГА\"",
+        "full_name": "ООО \"ЛАДУГА\"",
+        "status": "",
+        "registration_date": "24.11.2014",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7813397210",
+    "name": "ТЕТРАСОФТ",
+    "external": {
+      "checko": {
+        "inn": "7813397210",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТЕТРАСОФТ\"",
+        "short_name": "ООО \"ТЕТРАСОФТ\"",
+        "ogrn": "1079847095250",
+        "registration_date": "2007-11-21",
+        "year_founded": 2007,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Деятельность, связанная с использованием вычислительной техники и информационных технологий, прочая",
+        "address": "197022, г. Санкт-Петербург, вн. тер. г. муниципальный округ Аптекарский Остров, Аптекарская набережная, д. 18, стр. 1, помещ. 13-Н, ком. 18",
+        "financials": {
+          "2015": {
+            "revenue": 84709000.0,
+            "cost_of_sales": 31588000.0,
+            "gross_profit": 53121000.0,
+            "operating_profit": 53121000.0,
+            "net_profit": 50824000.0,
+            "total_assets": 46190000.0,
+            "total_liabilities": 46190000.0,
+            "equity": 44463000.0,
+            "current_assets": 45715000.0,
+            "current_liabilities": 1727000.0,
+            "non_current_assets": 475000.0,
+            "fixed_assets": 475000.0,
+            "cash": 6254000.0
+          },
+          "2016": {
+            "revenue": 76604000.0,
+            "cost_of_sales": 25807000.0,
+            "gross_profit": 50797000.0,
+            "operating_profit": 50797000.0,
+            "net_profit": 48537000.0,
+            "total_assets": 44294000.0,
+            "total_liabilities": 44294000.0,
+            "equity": 43901000.0,
+            "current_assets": 43642000.0,
+            "current_liabilities": 393000.0,
+            "non_current_assets": 652000.0,
+            "fixed_assets": 652000.0,
+            "cash": 5638000.0
+          },
+          "2017": {
+            "revenue": 44140000.0,
+            "cost_of_sales": 12799000.0,
+            "gross_profit": 31341000.0,
+            "operating_profit": 31341000.0,
+            "net_profit": 29435000.0,
+            "total_assets": 23108000.0,
+            "total_liabilities": 23108000.0,
+            "equity": 23054000.0,
+            "current_assets": 22804000.0,
+            "current_liabilities": 53000.0,
+            "non_current_assets": 304000.0,
+            "fixed_assets": 304000.0,
+            "cash": 5728000.0
+          },
+          "2018": {
+            "revenue": 45990000.0,
+            "cost_of_sales": 12934000.0,
+            "gross_profit": 33142000.0,
+            "operating_profit": 33142000.0,
+            "net_profit": 31389000.0,
+            "total_assets": 25529000.0,
+            "total_liabilities": 25529000.0,
+            "equity": 24940000.0,
+            "current_assets": 25554000.0,
+            "current_liabilities": 583000.0,
+            "non_current_assets": 54000.0,
+            "fixed_assets": 54000.0,
+            "cash": 6842000.0
+          },
+          "2019": {
+            "revenue": 59021000.0,
+            "cost_of_sales": 20440000.0,
+            "net_profit": 36060000.0,
+            "total_assets": 33478000.0,
+            "total_liabilities": 33478000.0,
+            "equity": 32738000.0,
+            "fixed_assets": 48000.0,
+            "cash": 1319000.0
+          },
+          "2020": {
+            "revenue": 61027000.0,
+            "cost_of_sales": 27844000.0,
+            "net_profit": 30042000.0,
+            "total_assets": 40998000.0,
+            "total_liabilities": 40998000.0,
+            "equity": 26882000.0,
+            "fixed_assets": 25000.0,
+            "cash": 331000.0
+          },
+          "2021": {
+            "revenue": 89995000.0,
+            "cost_of_sales": 63547000.0,
+            "net_profit": 24423000.0,
+            "total_assets": 39201000.0,
+            "total_liabilities": 39201000.0,
+            "equity": 37756000.0,
+            "fixed_assets": 275000.0,
+            "cash": 10500000.0
+          },
+          "2022": {
+            "revenue": 92783000.0,
+            "cost_of_sales": 76520000.0,
+            "net_profit": 25539000.0,
+            "total_assets": 47608000.0,
+            "total_liabilities": 47608000.0,
+            "equity": 42347000.0,
+            "fixed_assets": 345000.0,
+            "cash": 17843000.0
+          },
+          "2023": {
+            "revenue": 157401000.0,
+            "cost_of_sales": 110141000.0,
+            "net_profit": 46420000.0,
+            "total_assets": 49053000.0,
+            "total_liabilities": 49053000.0,
+            "equity": 45961000.0,
+            "fixed_assets": 442000.0,
+            "cash": 274000.0
+          },
+          "2024": {
+            "revenue": 167770000.0,
+            "cost_of_sales": 127762000.0,
+            "net_profit": 36303000.0,
+            "total_assets": 84409000.0,
+            "total_liabilities": 84409000.0,
+            "equity": 82264000.0,
+            "fixed_assets": 773000.0,
+            "cash": 1055000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7813397210",
+        "ogrn": "1079847095250",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТЕТРАСОФТ\"",
+        "full_name": "ООО \"ТЕТРАСОФТ\"",
+        "status": "",
+        "registration_date": "21.11.2007",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "2921129153",
+    "name": "АСТРА",
+    "external": {
+      "checko": {
+        "inn": "2921129153",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"АСТРА\"",
+        "short_name": "ООО \"АСТРА\"",
+        "ogrn": "1232900004039",
+        "registration_date": "2023-06-21",
+        "year_founded": 2023,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "163503, Архангельская область, м. о. Приморский, д. Новинки, д. 50",
+        "financials": {
+          "2023": {
+            "cost_of_sales": 2000.0,
+            "net_profit": -4000.0,
+            "total_assets": 805000.0,
+            "total_liabilities": 805000.0,
+            "equity": 5000.0,
+            "cash": 5000.0
+          },
+          "2024": {
+            "cost_of_sales": 20000.0,
+            "net_profit": -26000.0,
+            "total_assets": 17000.0,
+            "total_liabilities": 17000.0,
+            "equity": -16000.0,
+            "cash": 3000.0
+          },
+          "2025": {
+            "revenue": 91000.0,
+            "cost_of_sales": 43000.0,
+            "net_profit": 27000.0,
+            "total_assets": 271000.0,
+            "total_liabilities": 271000.0,
+            "equity": 10000.0,
+            "cash": 2000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "2921129153",
+        "ogrn": "1232900004039",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"АСТРА\"",
+        "full_name": "ООО \"АСТРА\"",
+        "status": "",
+        "registration_date": "21.06.2023",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "6829163992",
+    "name": "ТИККИТ",
+    "external": {
+      "checko": {
+        "inn": "6829163992",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТИККИТ\"",
+        "short_name": "ООО \"ТИККИТ\"",
+        "ogrn": "1226800003154",
+        "registration_date": "2022-07-11",
+        "year_founded": 2022,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "392000, Тамбовская область, г. о. город Тамбов, г. Тамбов, ул. Интернациональная, д. 16Б, офис 22",
+        "financials": {
+          "2022": {
+            "revenue": 52000000.0,
+            "cost_of_sales": 1043000.0,
+            "net_profit": 50073000.0,
+            "total_assets": 51239000.0,
+            "total_liabilities": 51239000.0,
+            "equity": 50083000.0,
+            "cash": 2227000.0
+          },
+          "2023": {
+            "revenue": 23127000.0,
+            "cost_of_sales": 15524000.0,
+            "net_profit": 8274000.0,
+            "total_assets": 83200000.0,
+            "total_liabilities": 83200000.0,
+            "equity": 58356000.0,
+            "cash": 368000.0
+          },
+          "2024": {
+            "revenue": 28319000.0,
+            "cost_of_sales": 15559000.0,
+            "net_profit": 12744000.0,
+            "total_assets": 72890000.0,
+            "total_liabilities": 72890000.0,
+            "equity": 71101000.0,
+            "cash": 1530000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "6829163992",
+        "ogrn": "1226800003154",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТИККИТ\"",
+        "full_name": "ООО \"ТИККИТ\"",
+        "status": "",
+        "registration_date": "11.07.2022",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "2224208217",
+    "name": "ТРУБИМ - ИНЖИНИРИНГ",
+    "external": {
+      "checko": {
+        "inn": "2224208217",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТРУБИМ - ИНЖИНИРИНГ\"",
+        "short_name": "ООО \"ТРУБИМ - ИНЖИНИРИНГ\"",
+        "ogrn": "1212200005995",
+        "registration_date": "2021-02-26",
+        "year_founded": 2021,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Деятельность, связанная с использованием вычислительной техники и информационных технологий, прочая",
+        "address": "656002, Алтайский край, г. о. город Барнаул, г. Барнаул, ул. 1905 Года, д. 25, офис 19",
+        "financials": {
+          "2021": {
+            "revenue": 4958000.0,
+            "cost_of_sales": 2706000.0,
+            "gross_profit": 4958000.0,
+            "operating_profit": 2252000.0,
+            "net_profit": 1797000.0,
+            "total_assets": 4126000.0,
+            "total_liabilities": 4126000.0,
+            "equity": 2097000.0,
+            "current_assets": 4126000.0,
+            "current_liabilities": 1701000.0,
+            "cash": 343000.0,
+            "retained_earnings": 1797000.0
+          },
+          "2022": {
+            "revenue": 2192000.0,
+            "cost_of_sales": 8180000.0,
+            "net_profit": -6022000.0,
+            "total_assets": 643000.0,
+            "total_liabilities": 643000.0,
+            "equity": -5108000.0,
+            "cash": 218000.0
+          },
+          "2023": {
+            "revenue": 17598000.0,
+            "cost_of_sales": 22907000.0,
+            "net_profit": -5448000.0,
+            "total_assets": 2175000.0,
+            "total_liabilities": 2175000.0,
+            "equity": -10556000.0,
+            "fixed_assets": 109000.0,
+            "cash": 502000.0
+          },
+          "2024": {
+            "revenue": 65707000.0,
+            "cost_of_sales": 37674000.0,
+            "net_profit": 27436000.0,
+            "total_assets": 27958000.0,
+            "total_liabilities": 27958000.0,
+            "equity": 16881000.0,
+            "fixed_assets": 64000.0,
+            "cash": 10381000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "2224208217",
+        "ogrn": "1212200005995",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ТРУБИМ - ИНЖИНИРИНГ\"",
+        "full_name": "ООО \"ТРУБИМ - ИНЖИНИРИНГ\"",
+        "status": "",
+        "registration_date": "26.02.2021",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "2540267676",
+    "name": "ПИДЖЕЙСИ ЛАБ",
+    "external": {
+      "checko": {
+        "inn": "2540267676",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПИДЖЕЙСИ ЛАБ\"",
+        "short_name": "ООО \"ПИДЖЕЙСИ ЛАБ\"",
+        "ogrn": "1222500006189",
+        "registration_date": "2022-03-24",
+        "year_founded": 2022,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "690012, Приморский край, г. о. Владивостокский, г. Владивосток, ул. Надибаидзе, д. 28, кв. 823",
+        "financials": {
+          "2022": {
+            "revenue": 10600000.0,
+            "cost_of_sales": 11396000.0,
+            "net_profit": -902000.0,
+            "total_assets": 2214000.0,
+            "total_liabilities": 2214000.0,
+            "equity": -892000.0,
+            "cash": 1548000.0
+          },
+          "2023": {
+            "revenue": 8800000.0,
+            "cost_of_sales": 10443000.0,
+            "net_profit": -1736000.0,
+            "total_assets": 460000.0,
+            "total_liabilities": 460000.0,
+            "equity": -2628000.0,
+            "cash": 280000.0
+          },
+          "2024": {
+            "revenue": 14000000.0,
+            "cost_of_sales": 19060000.0,
+            "net_profit": -183000.0,
+            "total_assets": 335000.0,
+            "total_liabilities": 335000.0,
+            "equity": -2811000.0,
+            "cash": 1000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "2540267676",
+        "ogrn": "1222500006189",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"ПИДЖЕЙСИ ЛАБ\" ",
+        "full_name": "ООО \"ПИДЖЕЙСИ ЛАБ\"",
+        "status": "",
+        "registration_date": "24.03.2022",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "7704378521",
+    "name": "СОВРЕМЕННЫЕ РЕШЕНИЯ",
+    "external": {
+      "checko": {
+        "inn": "7704378521",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"СОВРЕМЕННЫЕ РЕШЕНИЯ\"",
+        "short_name": "ООО \"СОВРЕМЕННЫЕ РЕШЕНИЯ\"",
+        "ogrn": "5167746291576",
+        "registration_date": "2016-11-03",
+        "year_founded": 2016,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Разработка компьютерного программного обеспечения",
+        "address": "117218, г. Москва, вн. тер. г. муниципальный округ Котловка, ул. Кржижановского, д. 29, к. 2",
+        "financials": {
+          "2016": {
+            "revenue": 502000.0,
+            "cost_of_sales": 47000.0,
+            "gross_profit": 502000.0,
+            "operating_profit": 455000.0,
+            "net_profit": 384000.0,
+            "total_assets": 472000.0,
+            "total_liabilities": 472000.0,
+            "equity": 404000.0,
+            "current_assets": 472000.0,
+            "current_liabilities": 68000.0,
+            "cash": 471000.0,
+            "retained_earnings": 384000.0
+          },
+          "2017": {
+            "operating_profit": -456000.0,
+            "net_profit": -494000.0,
+            "total_assets": 15000.0,
+            "total_liabilities": 15000.0,
+            "equity": -85000.0,
+            "current_assets": 15000.0,
+            "cash": 9000.0,
+            "retained_earnings": -105000.0
+          },
+          "2018": {
+            "revenue": 127968000.0,
+            "cost_of_sales": 86444000.0,
+            "gross_profit": 41524000.0,
+            "operating_profit": 38158000.0,
+            "net_profit": 29644000.0,
+            "total_assets": 132945000.0,
+            "total_liabilities": 132945000.0,
+            "equity": 29559000.0,
+            "current_assets": 129633000.0,
+            "current_liabilities": 103386000.0,
+            "non_current_assets": 3312000.0,
+            "fixed_assets": 93000.0,
+            "cash": 129322000.0,
+            "retained_earnings": 29539000.0
+          },
+          "2019": {
+            "revenue": 183741000.0,
+            "cost_of_sales": 175935000.0,
+            "gross_profit": 7806000.0,
+            "operating_profit": 945000.0,
+            "net_profit": 1660000.0,
+            "total_assets": 146919000.0,
+            "total_liabilities": 146919000.0,
+            "equity": 31219000.0,
+            "current_assets": 111593000.0,
+            "current_liabilities": 115700000.0,
+            "non_current_assets": 35326000.0,
+            "fixed_assets": 639000.0,
+            "cash": 110437000.0,
+            "retained_earnings": 31199000.0
+          },
+          "2020": {
+            "revenue": 26203000.0,
+            "cost_of_sales": 13539000.0,
+            "gross_profit": 12664000.0,
+            "operating_profit": 778000.0,
+            "net_profit": 304000.0,
+            "total_assets": 67468000.0,
+            "total_liabilities": 67468000.0,
+            "equity": 31523000.0,
+            "current_assets": 2252000.0,
+            "current_liabilities": 35946000.0,
+            "non_current_assets": 65216000.0,
+            "fixed_assets": 1824000.0,
+            "cash": 779000.0,
+            "retained_earnings": 31503000.0
+          },
+          "2021": {
+            "revenue": 12890000.0,
+            "cost_of_sales": 7389000.0,
+            "gross_profit": 5501000.0,
+            "operating_profit": 1355000.0,
+            "net_profit": 477000.0,
+            "total_assets": 110266000.0,
+            "total_liabilities": 110266000.0,
+            "equity": 31767000.0,
+            "current_assets": 30628000.0,
+            "current_liabilities": 78499000.0,
+            "non_current_assets": 79639000.0,
+            "fixed_assets": 686000.0,
+            "cash": 940000.0,
+            "retained_earnings": 31747000.0
+          },
+          "2022": {
+            "revenue": 172546000.0,
+            "cost_of_sales": 61007000.0,
+            "gross_profit": 111539000.0,
+            "operating_profit": 62953000.0,
+            "net_profit": 61783000.0,
+            "total_assets": 217588000.0,
+            "total_liabilities": 217588000.0,
+            "equity": 93551000.0,
+            "current_assets": 150629000.0,
+            "current_liabilities": 124037000.0,
+            "non_current_assets": 66959000.0,
+            "fixed_assets": 85000.0,
+            "cash": 3699000.0,
+            "retained_earnings": 93531000.0
+          },
+          "2023": {
+            "revenue": 203000000.0,
+            "cost_of_sales": 72903000.0,
+            "gross_profit": 130097000.0,
+            "operating_profit": 70596000.0,
+            "net_profit": 70172000.0,
+            "total_assets": 144831000.0,
+            "total_liabilities": 144831000.0,
+            "equity": 68964000.0,
+            "current_assets": 52691000.0,
+            "current_liabilities": 75867000.0,
+            "non_current_assets": 92140000.0,
+            "fixed_assets": 3000.0,
+            "cash": 8317000.0,
+            "retained_earnings": 68944000.0
+          },
+          "2024": {
+            "revenue": 320000000.0,
+            "cost_of_sales": 2798000.0,
+            "gross_profit": 317202000.0,
+            "operating_profit": 298656000.0,
+            "net_profit": 297269000.0,
+            "total_assets": 277455000.0,
+            "total_liabilities": 277455000.0,
+            "equity": 251983000.0,
+            "current_assets": 166711000.0,
+            "current_liabilities": 25473000.0,
+            "non_current_assets": 110745000.0,
+            "fixed_assets": 3000.0,
+            "cash": 66395000.0,
+            "retained_earnings": 251963000.0
+          },
+          "2025": {
+            "revenue": 400000000.0,
+            "cost_of_sales": 99399000.0,
+            "gross_profit": 300601000.0,
+            "operating_profit": 249923000.0,
+            "net_profit": 249219000.0,
+            "total_assets": 315033000.0,
+            "total_liabilities": 315033000.0,
+            "equity": 261201000.0,
+            "current_assets": 208324000.0,
+            "current_liabilities": 53831000.0,
+            "non_current_assets": 106709000.0,
+            "fixed_assets": 3000.0,
+            "cash": 3438000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "7704378521",
+        "ogrn": "5167746291576",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"СОВРЕМЕННЫЕ РЕШЕНИЯ\"",
+        "full_name": "ООО \"СОВРЕМЕННЫЕ РЕШЕНИЯ\"",
+        "status": "",
+        "registration_date": "03.11.2016",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "2311359029",
+    "name": "НАКИТ ЙОК РУС",
+    "external": {
+      "checko": {
+        "inn": "2311359029",
+        "source": "checko_api",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАКИТ ЙОК РУС\"",
+        "short_name": "ООО \"НАКИТ ЙОК РУС\"",
+        "ogrn": "1242300001052",
+        "registration_date": "2024-01-16",
+        "year_founded": 2024,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Деятельность по обработке данных, предоставление услуг по размещению информации и связанная с этим деятельность",
+        "address": "350067, Краснодарский край, г. о. город Краснодар, г. Краснодар, ул. Душистая, д. 30, к. 3, помещ. 4/19",
+        "financials": {
+          "2024": {
+            "cost_of_sales": 530000.0,
+            "net_profit": -542000.0,
+            "total_assets": 78000.0,
+            "total_liabilities": 78000.0,
+            "equity": -542000.0,
+            "cash": 3000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "2311359029",
+        "ogrn": "1242300001052",
+        "name": "ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ \"НАКИТ ЙОК РУС\"",
+        "full_name": "ООО \"НАКИТ ЙОК РУС\"",
+        "status": "",
+        "registration_date": "16.01.2024",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  },
+  {
+    "inn": "9731122988",
+    "name": "БЕСПИЛОТНЫЕ ИННОВАЦИИ",
+    "external": {
+      "checko": {
+        "inn": "9731122988",
+        "source": "checko_api",
+        "name": "АКЦИОНЕРНОЕ ОБЩЕСТВО \"БЕСПИЛОТНЫЕ ИННОВАЦИИ\"",
+        "short_name": "АО \"БЕСПИЛОТНЫЕ ИННОВАЦИИ\"",
+        "ogrn": "1237700718650",
+        "registration_date": "2023-10-24",
+        "year_founded": 2023,
+        "status": "Действует",
+        "is_active": true,
+        "okved_name": "Научные исследования и разработки в области естественных и технических наук прочие",
+        "address": "121205, г. Москва, вн. тер. г. муниципальный округ Можайский, тер. Инновационного Центра Сколково, ул. Луговая, д. 4, стр. 6",
+        "financials": {
+          "2024": {
+            "revenue": 8629000.0,
+            "cost_of_sales": 8650000.0,
+            "gross_profit": -21000.0,
+            "operating_profit": -21000.0,
+            "net_profit": -152000.0,
+            "total_assets": 12409000.0,
+            "total_liabilities": 12409000.0,
+            "equity": -122000.0,
+            "current_assets": 12409000.0,
+            "current_liabilities": 12532000.0,
+            "cash": 7481000.0,
+            "retained_earnings": -137000.0
+          }
+        }
+      },
+      "egrul": {
+        "inn": "9731122988",
+        "ogrn": "1237700718650",
+        "name": "АКЦИОНЕРНОЕ ОБЩЕСТВО \"БЕСПИЛОТНЫЕ ИННОВАЦИИ\"",
+        "full_name": "АО \"БЕСПИЛОТНЫЕ ИННОВАЦИИ\"",
+        "status": "",
+        "registration_date": "24.10.2023",
+        "address": "",
+        "is_active": false
+      },
+      "bfo": {},
+      "moex": {},
+      "news": {
+        "mentions": [],
+        "total_count": 0
+      }
+    }
+  }
+]

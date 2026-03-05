@@ -1,5 +1,24 @@
 # Пакетный сбор внешних данных и сравнение с эталоном Сколково
 
+## Быстрый запуск конвейера (п.2 плана)
+
+Из **корня проекта** (где лежит `SkolkovoStartups.csv` и `config`):
+
+```bash
+# 1. Собрать внешние данные (выборка 100 стартапов, задержка 1 сек)
+python scripts/batch_external_fetch.py --limit 100 --output external_batch.jsonl
+
+# 2. Дообучение по JSONL (сначала dry-run, чтобы не менять модели)
+python -m scoring.retrain --jsonl external_batch.jsonl --csv SkolkovoStartups.csv --dry-run --min-external 10
+
+# 3. Реальное дообучение (если dry-run устроил)
+python -m scoring.retrain --jsonl external_batch.jsonl --csv SkolkovoStartups.csv --min-external 10
+```
+
+БФО и данные компании подтягиваются через Checko API (`/finances` + `/company`). Нужен `CHECKO_API_KEY` в окружении или в `config`.
+
+---
+
 ## Цель
 
 Собрать по **всем** (или выборке) стартапам из базы Сколково данные из внешних источников (ЕГРЮЛ, БФО ФНС, Checko, MOEX, новости), сохранить в отдельное хранилище, затем:
