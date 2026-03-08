@@ -15,6 +15,54 @@ from utils.formatters import escape_html
 from utils.excel_generator import generate_csv, generate_excel
 from logger import logger
 
+_BFO_MAP: dict = {}
+
+
+def _get_bfo_map() -> dict:
+    global _BFO_MAP
+    if not _BFO_MAP:
+        try:
+            import json
+            from pathlib import Path
+            bfo_path = Path(__file__).resolve().parent.parent / "skolkovo_bfo.json"
+            if bfo_path.exists():
+                with open(bfo_path, encoding="utf-8") as f:
+                    _BFO_MAP = json.load(f)
+        except Exception:
+            pass
+    return _BFO_MAP
+
+
+def _bfo_mini_block(inn: str) -> str:
+    """Build compact BFO bankruptcy/liquidity line for a search card."""
+    bfo_map = _get_bfo_map()
+    financials = bfo_map.get(inn)
+    if not financials:
+        return ""
+    try:
+        from scoring.bfo_ratios import compute_ratios_for_year
+        years = sorted(financials.keys(), key=int)
+        latest = financials[years[-1]]
+        r = compute_ratios_for_year(latest)
+        parts = []
+        az = r.get("altman_z", 0)
+        if az:
+            tag = "🟢" if az > 2.99 else ("🟡" if az > 1.81 else "🔴")
+            parts.append(f"{tag} Altman Z: {az:.2f}")
+        tz = r.get("taffler_z", 0)
+        if tz:
+            tag = "🟢" if tz > 0.3 else ("🟡" if tz > 0.2 else "🔴")
+            parts.append(f"{tag} Taffler Z: {tz:.2f}")
+        cr = r.get("current_ratio", 0)
+        if cr:
+            tag = "🟢" if cr >= 2 else ("🟡" if cr >= 1 else "🔴")
+            parts.append(f"{tag} Ликвидность: {cr:.2f}")
+        if parts:
+            return "  • " + " | ".join(parts) + "\n"
+    except Exception:
+        pass
+    return ""
+
 
 def _clean_description(text: str) -> str:
     """Clean raw company descriptions: normalize whitespace, remove bullet artifacts."""
@@ -446,6 +494,13 @@ async def start_search_func(
                     "ℹ️ Для подробной 4-фазной оценки зрелости (TRL/IRL/MRL/CRL), "
                     "финансовых рисков и возможностей используйте «Глубокий анализ».\n\n"
                 )
+
+                # BFO bankruptcy/liquidity indicators
+                inn = s.get("inn", "")
+                if inn:
+                    bfo_line = _bfo_mini_block(str(inn))
+                    if bfo_line:
+                        text_response += f"<b>🏦 Финансовая устойчивость:</b>\n{bfo_line}\n"
 
                 # AI recommendation (Pro/Max) -- increased limit to 3000 chars
                 ai_recommendation = analysis.get('AIRecommendation', '')
