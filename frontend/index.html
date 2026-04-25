@@ -1,69 +1,118 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoScout Radar | AI Venture Scouting</title>
+  <title>AutoScout Web | AI Venture Scouting</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+            }
+          }
+        }
+      }
+    }
+  </script>
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
     [v-cloak] { display: none; }
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    }
+    .text-gradient {
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-image: linear-gradient(to right, #60a5fa, #a78bfa);
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white flex flex-col min-h-screen" id="app">
+<body class="bg-slate-950 text-slate-300 font-sans antialiased selection:bg-brand-500 selection:text-white flex flex-col min-h-screen relative" id="app">
+  
+  <!-- Background effects -->
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+    <div class="absolute top-40 -left-40 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+  </div>
 
   <!-- Header -->
-  <header class="bg-white border-b border-slate-200">
+  <header class="glass sticky top-0 z-40 border-b border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <div class="flex-shrink-0 flex items-center">
-          <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          <span class="ml-2 text-xl font-bold text-slate-900">AutoScout<span class="text-blue-600">Radar</span></span>
+          <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30">
+            A
+          </div>
+          <span class="ml-3 text-xl font-bold text-white tracking-tight">AutoScout<span class="text-blue-400 font-normal"> Web</span></span>
         </div>
         
         <!-- Navigation -->
         <nav class="hidden md:flex space-x-8">
-          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">О платформе</a>
-          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Технологии (ML)</a>
-          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Тарифы</a>
+          <a href="#" class="text-slate-300 hover:text-white font-medium transition-colors">О платформе</a>
+          <a href="#" class="text-slate-300 hover:text-white font-medium transition-colors">Технологии // ML</a>
+          <a href="#" class="text-slate-300 hover:text-white font-medium transition-colors">Тарифы</a>
         </nav>
         
         <!-- Auth Buttons -->
         <div class="flex items-center space-x-4" v-if="!isLoggedIn" v-cloak>
-          <button @click="showLogin = true" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Войти</button>
-          <button @click="showLogin = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+          <button @click="showLogin = true" class="text-slate-300 hover:text-white font-medium transition-colors">Войти</button>
+          <button @click="showLogin = true" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:shadow-[0_0_25px_rgba(37,99,235,0.6)]">
             Начать работу
           </button>
         </div>
         <div class="flex items-center space-x-4" v-else v-cloak>
-          <span class="text-sm font-medium text-slate-600">{{ userEmail }}</span>
-          <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+          <span class="text-sm font-medium text-slate-400">{{ userEmail }}</span>
+          <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">
             Панель управления
           </a>
-          <button @click="logout" class="text-slate-500 hover:text-red-500 font-medium transition-colors">Выйти</button>
+          <button @click="logout" class="text-slate-400 hover:text-red-400 font-medium transition-colors">Выйти</button>
         </div>
       </div>
     </div>
   </header>
 
   <!-- Hero Section -->
-  <main class="flex-grow">
+  <main class="flex-grow relative z-10 flex items-center">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-      <div class="text-center max-w-3xl mx-auto">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
-          Автоматизированный <span class="text-blue-600">ML-комплаенс</span> стартапов на ранних стадиях
+      <div class="text-center max-w-4xl mx-auto">
+        <div class="inline-flex items-center px-3 py-1 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-sm font-medium mb-8">
+          <span class="flex h-2 w-2 rounded-full bg-blue-500 mr-2 animate-pulse"></span>
+          AI Venture Scouting Engine
+        </div>
+        <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-white mb-8 leading-tight">
+          Автоматизированный <br/>
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">ML-комплаенс</span> стартапов
         </h1>
-        <p class="text-lg md:text-xl text-slate-600 mb-10">
+        <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
           Снижаем транзакционные издержки венчурных сделок за счет интеграции государственных данных (БФО, ЕГРЮЛ) и градиентного бустинга. Точный расчет TRL, CRL и прогнозирование банкротства с объяснимостью SHAP.
         </p>
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <button @click="showLogin = true" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-8 py-3 rounded-xl transition-colors shadow-md">
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
+          <button @click="showLogin = true" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
             Для инвесторов
           </button>
-          <button @click="showLogin = true" class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-lg font-semibold px-8 py-3 rounded-xl transition-colors shadow-sm">
+          <button @click="showLogin = true" class="w-full sm:w-auto glass hover:bg-white/10 text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all">
             Для фаундеров
           </button>
         </div>
@@ -72,25 +121,28 @@
   </main>
 
   <!-- Footer -->
-  <footer class="bg-white border-t border-slate-200 mt-auto">
+  <footer class="glass relative z-10 border-t border-white/10 mt-auto">
     <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center">
-        <span class="text-slate-500 text-sm">© 2026 AutoScout Radar. Разработка: МГТУ им. Н.Э. Баумана.</span>
+        <span class="text-slate-500 text-sm">© 2026 AutoScout Web. Разработка: МГТУ им. Н.Э. Баумана.</span>
       </div>
       <div class="flex space-x-6">
-        <a href="#" class="text-slate-400 hover:text-slate-600">Privacy Policy</a>
-        <a href="#" class="text-slate-400 hover:text-slate-600">Terms of Service</a>
+        <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
+        <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Terms of Service</a>
       </div>
     </div>
   </footer>
 
   <!-- Login/Register Modal -->
-  <div v-if="showLogin" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" v-cloak>
-    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden" @click.stop>
+  <div v-if="showLogin" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" v-cloak>
+    <div class="glass-card rounded-2xl w-full max-w-md overflow-hidden border border-white/10 relative" @click.stop>
+      <!-- Decorative glow -->
+      <div class="absolute -top-20 -right-20 w-40 h-40 bg-blue-500 rounded-full mix-blend-screen filter blur-[64px] opacity-30"></div>
+      
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 class="text-lg font-bold text-slate-900">{{ isRegistering ? 'Регистрация' : 'Вход в систему' }}</h3>
-        <button @click="showLogin = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+      <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center relative z-10">
+        <h3 class="text-2xl font-bold text-white tracking-tight">{{ isRegistering ? 'Регистрация' : 'Вход в систему' }}</h3>
+        <button @click="showLogin = false" class="text-slate-400 hover:text-white transition-colors">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -98,38 +150,38 @@
       </div>
       
       <!-- Modal Body -->
-      <div class="p-6">
-        <form @submit.prevent="submitAuth" class="space-y-4">
+      <div class="p-8 relative z-10">
+        <form @submit.prevent="submitAuth" class="space-y-5">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
-            <input v-model="email" type="email" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
+            <input v-model="email" type="email" required class="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1">Пароль</label>
-            <input v-model="password" type="password" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+            <label class="block text-sm font-medium text-slate-300 mb-2">Пароль</label>
+            <input v-model="password" type="password" required class="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
           </div>
           
-          <div v-if="isRegistering" class="pt-2 border-t border-slate-100 mt-2">
-            <label class="block text-sm font-medium text-slate-700 mb-2">Ваша роль</label>
+          <div v-if="isRegistering" class="pt-4 border-t border-white/10 mt-4">
+            <label class="block text-sm font-medium text-slate-300 mb-3">Ваша роль</label>
             <div class="grid grid-cols-2 gap-4">
-              <label class="border rounded-lg p-3 cursor-pointer flex flex-col items-center gap-2 hover:bg-slate-50 transition-colors" :class="{'border-blue-500 bg-blue-50 ring-1 ring-blue-500': role === 'investor'}">
+              <label class="border rounded-xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all" :class="role === 'investor' ? 'border-blue-500 bg-blue-500/10' : 'border-white/10 bg-slate-900/30 hover:bg-slate-800/50'">
                 <input type="radio" v-model="role" value="investor" class="sr-only">
-                <span class="font-medium text-slate-900">Инвестор</span>
-                <span class="text-xs text-slate-500 text-center">Ищу проекты для инвестиций</span>
+                <span class="font-medium text-white">Инвестор</span>
+                <span class="text-xs text-slate-400 text-center">Ищу проекты</span>
               </label>
-              <label class="border rounded-lg p-3 cursor-pointer flex flex-col items-center gap-2 hover:bg-slate-50 transition-colors" :class="{'border-blue-500 bg-blue-50 ring-1 ring-blue-500': role === 'startup'}">
+              <label class="border rounded-xl p-4 cursor-pointer flex flex-col items-center gap-2 transition-all" :class="role === 'startup' ? 'border-blue-500 bg-blue-500/10' : 'border-white/10 bg-slate-900/30 hover:bg-slate-800/50'">
                 <input type="radio" v-model="role" value="startup" class="sr-only">
-                <span class="font-medium text-slate-900">Стартап</span>
-                <span class="text-xs text-slate-500 text-center">Ищу инвестиции, Pitch Deck</span>
+                <span class="font-medium text-white">Стартап</span>
+                <span class="text-xs text-slate-400 text-center">Ищу инвестиции</span>
               </label>
             </div>
           </div>
           
-          <div v-if="errorMessage" class="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+          <div v-if="errorMessage" class="p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl">
             {{ errorMessage }}
           </div>
 
-          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm mt-4 flex justify-center items-center">
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] mt-6 flex justify-center items-center">
             <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -137,14 +189,23 @@
             {{ isRegistering ? 'Создать аккаунт' : 'Войти' }}
           </button>
         </form>
+
+        <div class="mt-6 pt-6 border-t border-white/10">
+          <div class="text-center text-sm text-slate-400 mb-4">Или войдите через</div>
+          <button class="w-full glass hover:bg-white/10 text-white font-medium py-3 rounded-xl transition-all flex justify-center items-center gap-2">
+            <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Telegram 
+            <span class="ml-1 text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">Скоро</span>
+          </button>
+        </div>
       </div>
       
       <!-- Modal Footer -->
-      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 text-center">
-        <p class="text-sm text-slate-600">
+      <div class="px-8 py-5 bg-slate-900/80 border-t border-white/10 text-center relative z-10">
+        <p class="text-sm text-slate-400">
           {{ isRegistering ? 'Уже есть аккаунт?' : 'Нет аккаунта?' }}
-          <button @click="isRegistering = !isRegistering; errorMessage = ''" class="text-blue-600 font-medium hover:underline focus:outline-none">
-            {{ isRegistering ? 'Войти' : 'Зарегистрироваться' }}
+          <button @click="isRegistering = !isRegistering; errorMessage = ''" class="text-blue-400 font-medium hover:text-blue-300 transition-colors focus:outline-none ml-1">
+            {{ isRegistering ? 'Войти' : 'Регистрация' }}
           </button>
         </p>
       </div>
@@ -166,7 +227,6 @@
         const isLoggedIn = ref(false);
         const userEmail = ref('');
 
-        // Проверка токена при загрузке
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
           const storedEmail = localStorage.getItem('user_email');
@@ -198,7 +258,6 @@
               throw new Error(data.detail || 'Ошибка авторизации');
             }
 
-            // Сохраняем стейт
             localStorage.setItem('auth_token', data.token);
             localStorage.setItem('user_email', data.email);
             localStorage.setItem('user_role', data.role);
@@ -207,10 +266,7 @@
             userEmail.value = data.email;
             showLogin.value = false;
             
-            // Сбрасываем форму
             password.value = '';
-            
-            // Если вошли успешно, перенаправляем на дашборд
             window.location.href = '/dashboard.html';
 
           } catch (error) {
