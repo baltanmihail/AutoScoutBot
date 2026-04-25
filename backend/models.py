@@ -242,6 +242,22 @@ except ImportError:
 # Users & Payments (mirroring existing SQLite schema)
 # ---------------------------------------------------------------------------
 
+class WebUser(Base):
+    """Пользователи Web-платформы (SaaS)."""
+    __tablename__ = "web_users"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    email = Column(String(255), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    role = Column(String(50), default="investor")  # 'investor', 'startup', 'expert', 'admin'
+    first_name = Column(String(255), default="")
+    last_name = Column(String(255), default="")
+    company_name = Column(String(255), default="")
+    
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+
 class User(Base):
     __tablename__ = "users"
 

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoScout Radar | AI Venture Scouting</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    [v-cloak] { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased selection:bg-blue-600 selection:text-white flex flex-col min-h-screen" id="app">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex-shrink-0 flex items-center">
+          <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span class="ml-2 text-xl font-bold text-slate-900">AutoScout<span class="text-blue-600">Radar</span></span>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="hidden md:flex space-x-8">
+          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">О платформе</a>
+          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Технологии (ML)</a>
+          <a href="#" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Тарифы</a>
+        </nav>
+        
+        <!-- Auth Buttons -->
+        <div class="flex items-center space-x-4" v-if="!isLoggedIn" v-cloak>
+          <button @click="showLogin = true" class="text-slate-600 hover:text-blue-600 font-medium transition-colors">Войти</button>
+          <button @click="showLogin = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+            Начать работу
+          </button>
+        </div>
+        <div class="flex items-center space-x-4" v-else v-cloak>
+          <span class="text-sm font-medium text-slate-600">{{ userEmail }}</span>
+          <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+            Панель управления
+          </a>
+          <button @click="logout" class="text-slate-500 hover:text-red-500 font-medium transition-colors">Выйти</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-grow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div class="text-center max-w-3xl mx-auto">
+        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 mb-6">
+          Автоматизированный <span class="text-blue-600">ML-комплаенс</span> стартапов на ранних стадиях
+        </h1>
+        <p class="text-lg md:text-xl text-slate-600 mb-10">
+          Снижаем транзакционные издержки венчурных сделок за счет интеграции государственных данных (БФО, ЕГРЮЛ) и градиентного бустинга. Точный расчет TRL, CRL и прогнозирование банкротства с объяснимостью SHAP.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <button @click="showLogin = true" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold px-8 py-3 rounded-xl transition-colors shadow-md">
+            Для инвесторов
+          </button>
+          <button @click="showLogin = true" class="w-full sm:w-auto bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-lg font-semibold px-8 py-3 rounded-xl transition-colors shadow-sm">
+            Для фаундеров
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center">
+        <span class="text-slate-500 text-sm">© 2026 AutoScout Radar. Разработка: МГТУ им. Н.Э. Баумана.</span>
+      </div>
+      <div class="flex space-x-6">
+        <a href="#" class="text-slate-400 hover:text-slate-600">Privacy Policy</a>
+        <a href="#" class="text-slate-400 hover:text-slate-600">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Login/Register Modal -->
+  <div v-if="showLogin" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" v-cloak>
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden" @click.stop>
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 class="text-lg font-bold text-slate-900">{{ isRegistering ? 'Регистрация' : 'Вход в систему' }}</h3>
+        <button @click="showLogin = false" class="text-slate-400 hover:text-slate-600 transition-colors">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-6">
+        <form @submit.prevent="submitAuth" class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+            <input v-model="email" type="email" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1">Пароль</label>
+            <input v-model="password" type="password" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
+          </div>
+          
+          <div v-if="isRegistering" class="pt-2 border-t border-slate-100 mt-2">
+            <label class="block text-sm font-medium text-slate-700 mb-2">Ваша роль</label>
+            <div class="grid grid-cols-2 gap-4">
+              <label class="border rounded-lg p-3 cursor-pointer flex flex-col items-center gap-2 hover:bg-slate-50 transition-colors" :class="{'border-blue-500 bg-blue-50 ring-1 ring-blue-500': role === 'investor'}">
+                <input type="radio" v-model="role" value="investor" class="sr-only">
+                <span class="font-medium text-slate-900">Инвестор</span>
+                <span class="text-xs text-slate-500 text-center">Ищу проекты для инвестиций</span>
+              </label>
+              <label class="border rounded-lg p-3 cursor-pointer flex flex-col items-center gap-2 hover:bg-slate-50 transition-colors" :class="{'border-blue-500 bg-blue-50 ring-1 ring-blue-500': role === 'startup'}">
+                <input type="radio" v-model="role" value="startup" class="sr-only">
+                <span class="font-medium text-slate-900">Стартап</span>
+                <span class="text-xs text-slate-500 text-center">Ищу инвестиции, Pitch Deck</span>
+              </label>
+            </div>
+          </div>
+          
+          <div v-if="errorMessage" class="p-3 bg-red-50 text-red-700 text-sm rounded-lg border border-red-100">
+            {{ errorMessage }}
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-lg transition-colors shadow-sm mt-4 flex justify-center items-center">
+            <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isRegistering ? 'Создать аккаунт' : 'Войти' }}
+          </button>
+        </form>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 text-center">
+        <p class="text-sm text-slate-600">
+          {{ isRegistering ? 'Уже есть аккаунт?' : 'Нет аккаунта?' }}
+          <button @click="isRegistering = !isRegistering; errorMessage = ''" class="text-blue-600 font-medium hover:underline focus:outline-none">
+            {{ isRegistering ? 'Войти' : 'Зарегистрироваться' }}
+          </button>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const showLogin = ref(false);
+        const isRegistering = ref(false);
+        const email = ref('');
+        const password = ref('');
+        const role = ref('investor');
+        const isLoading = ref(false);
+        const errorMessage = ref('');
+        const isLoggedIn = ref(false);
+        const userEmail = ref('');
+
+        // Проверка токена при загрузке
+        onMounted(() => {
+          const token = localStorage.getItem('auth_token');
+          const storedEmail = localStorage.getItem('user_email');
+          if (token && storedEmail) {
+            isLoggedIn.value = true;
+            userEmail.value = storedEmail;
+          }
+        });
+
+        const submitAuth = async () => {
+          isLoading.value = true;
+          errorMessage.value = '';
+          
+          const endpoint = isRegistering.value ? '/api/auth/register' : '/api/auth/login';
+          const payload = isRegistering.value 
+            ? { email: email.value, password: password.value, role: role.value }
+            : { email: email.value, password: password.value };
+
+          try {
+            const response = await fetch(endpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.detail || 'Ошибка авторизации');
+            }
+
+            // Сохраняем стейт
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('user_email', data.email);
+            localStorage.setItem('user_role', data.role);
+            
+            isLoggedIn.value = true;
+            userEmail.value = data.email;
+            showLogin.value = false;
+            
+            // Сбрасываем форму
+            password.value = '';
+            
+            // Если вошли успешно, перенаправляем на дашборд
+            window.location.href = '/dashboard.html';
+
+          } catch (error) {
+            errorMessage.value = error.message;
+          } finally {
+            isLoading.value = false;
+          }
+        };
+
+        const logout = () => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_email');
+          localStorage.removeItem('user_role');
+          isLoggedIn.value = false;
+          userEmail.value = '';
+        };
+
+        return {
+          showLogin,
+          isRegistering,
+          email,
+          password,
+          role,
+          isLoading,
+          errorMessage,
+          isLoggedIn,
+          userEmail,
+          submitAuth,
+          logout
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>

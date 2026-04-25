@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoScout Radar | Панель Управления</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    [v-cloak] { display: none; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen" id="app">
+
+  <!-- Sidebar & Topbar Layout -->
+  <div class="flex h-screen overflow-hidden bg-slate-50" v-cloak>
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col transition-all">
+      <div class="h-16 flex items-center px-6 border-b border-slate-200">
+        <svg class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        <span class="ml-2 text-xl font-bold text-slate-900">AutoScout<span class="text-blue-600">Radar</span></span>
+      </div>
+      
+      <div class="flex-1 overflow-y-auto py-4">
+        <nav class="space-y-1 px-3">
+          <a href="#" class="bg-blue-50 text-blue-700 hover:bg-blue-100 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <svg class="text-blue-500 mr-3 flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Главная (Скаутинг)
+          </a>
+
+          <a href="#" class="text-slate-600 hover:bg-slate-50 hover:text-slate-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <svg class="text-slate-400 group-hover:text-slate-500 mr-3 flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Watchlist / Портфель
+          </a>
+          
+          <a href="#" class="text-slate-600 hover:bg-slate-50 hover:text-slate-900 group flex items-center px-3 py-2 text-sm font-medium rounded-md">
+            <svg class="text-slate-400 group-hover:text-slate-500 mr-3 flex-shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Фин. моделирование (IRR/NPV)
+          </a>
+        </nav>
+      </div>
+      
+      <div class="border-t border-slate-200 p-4">
+        <div class="flex items-center justify-between">
+          <div class="text-sm font-medium text-slate-700 truncate mr-2">{{ userEmail }}</div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 uppercase">
+            {{ userRole }}
+          </span>
+        </div>
+        <button @click="logout" class="mt-4 w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none">
+          Выйти
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+      <!-- Topbar -->
+      <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+        <h1 class="text-2xl font-bold text-slate-900">Инвестиционный Радар</h1>
+        <div class="flex items-center">
+          <div class="relative">
+            <input type="text" class="w-64 pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Поиск стартапов (ИНН, название)...">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Dashboard Body -->
+      <div class="flex-1 overflow-y-auto p-6">
+        
+        <!-- Metrics Cards -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+          <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-blue-100 rounded-md p-3">
+                  <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-slate-500 truncate">Проанализировано стартапов</dt>
+                    <dd class="text-2xl font-semibold text-slate-900">5,166</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-green-100 rounded-md p-3">
+                  <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-slate-500 truncate">С высоким ML-скором (>7)</dt>
+                    <dd class="text-2xl font-semibold text-slate-900">142</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white overflow-hidden shadow-sm rounded-xl border border-slate-200">
+            <div class="p-5">
+              <div class="flex items-center">
+                <div class="flex-shrink-0 bg-red-100 rounded-md p-3">
+                  <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div class="ml-5 w-0 flex-1">
+                  <dl>
+                    <dt class="text-sm font-medium text-slate-500 truncate">Обнаружено Risk-факторов</dt>
+                    <dd class="text-2xl font-semibold text-slate-900">3,420</dd>
+                  </dl>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Startups Table Placeholder -->
+        <div class="bg-white shadow-sm rounded-xl border border-slate-200 overflow-hidden">
+          <div class="px-6 py-5 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-lg leading-6 font-medium text-slate-900">Рекомендованные стартапы (Demo Data)</h3>
+            <button class="text-sm text-blue-600 font-medium hover:underline">Фильтры</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+              <thead class="bg-slate-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Компания / ИНН</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Отрасль</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ML Скор</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Риски (Альтман/TRL)</th>
+                  <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Действия</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-slate-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">Н</div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-slate-900">ООО "НейроТех"</div>
+                        <div class="text-sm text-slate-500">ИНН 7701234567</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">AI / Биомед</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <span class="text-sm font-bold text-green-600 mr-2">8.4</span>
+                      <div class="w-16 bg-slate-200 rounded-full h-2">
+                        <div class="bg-green-500 h-2 rounded-full" style="width: 84%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">TRL 7</span>
+                    <span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-800">Z-Score 1.8</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-blue-600 hover:text-blue-900">Анализ (SHAP)</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">Ф</div>
+                      <div class="ml-4">
+                        <div class="text-sm font-medium text-slate-900">ООО "ФинПлатформа"</div>
+                        <div class="text-sm text-slate-500">ИНН 7722334455</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">FinTech</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                      <span class="text-sm font-bold text-yellow-600 mr-2">5.2</span>
+                      <div class="w-16 bg-slate-200 rounded-full h-2">
+                        <div class="bg-yellow-500 h-2 rounded-full" style="width: 52%"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Кассовый разрыв</span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <a href="#" class="text-blue-600 hover:text-blue-900">Анализ (SHAP)</a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userEmail = ref('');
+        const userRole = ref('');
+
+        onMounted(() => {
+          const token = localStorage.getItem('auth_token');
+          if (!token) {
+            window.location.href = '/index.html'; // Редирект на логин если нет токена
+            return;
+          }
+          userEmail.value = localStorage.getItem('user_email') || 'investor@example.com';
+          userRole.value = localStorage.getItem('user_role') || 'investor';
+        });
+
+        const logout = () => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_email');
+          localStorage.removeItem('user_role');
+          window.location.href = '/index.html';
+        };
+
+        return {
+          userEmail,
+          userRole,
+          logout
+        }
+      }
+    }).mount('#app')
+  </script>
+</body>
+</html>
