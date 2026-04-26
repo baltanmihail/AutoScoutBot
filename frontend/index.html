@@ -238,12 +238,12 @@
 
   <!-- Login/Register Modal -->
   <div v-if="showLogin" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" v-cloak>
-    <div class="glass-card rounded-2xl w-full max-w-md overflow-hidden border border-white/10 relative" @click.stop>
+    <div class="glass-card rounded-2xl w-full max-w-md max-h-[90vh] flex flex-col overflow-hidden border border-white/10 relative" @click.stop>
       <!-- Decorative glow -->
       <div class="absolute -top-20 -right-20 w-40 h-40 bg-blue-500 rounded-full mix-blend-screen filter blur-[64px] opacity-30"></div>
       
       <!-- Modal Header -->
-      <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center relative z-10">
+      <div class="px-8 py-6 border-b border-white/10 flex justify-between items-center relative z-10 shrink-0">
         <h3 class="text-2xl font-bold text-white tracking-tight">{{ isRegistering ? 'Регистрация' : 'Вход в систему' }}</h3>
         <button @click="showLogin = false" class="text-slate-400 hover:text-white transition-colors">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -253,7 +253,7 @@
       </div>
       
       <!-- Modal Body -->
-      <div class="p-8 relative z-10">
+      <div class="p-8 relative z-10 overflow-y-auto">
         <form @submit.prevent="submitAuth" class="space-y-5">
           <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
@@ -313,7 +313,7 @@
       </div>
       
       <!-- Modal Footer -->
-      <div class="px-8 py-5 bg-slate-900/80 border-t border-white/10 text-center relative z-10">
+      <div class="px-8 py-5 bg-slate-900/80 border-t border-white/10 text-center relative z-10 shrink-0">
         <p class="text-sm text-slate-400">
           {{ isRegistering ? 'Уже есть аккаунт?' : 'Нет аккаунта?' }}
           <button @click="isRegistering = !isRegistering; errorMessage = ''" class="text-blue-400 font-medium hover:text-blue-300 transition-colors focus:outline-none ml-1">
