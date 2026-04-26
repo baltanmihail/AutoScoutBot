@@ -80,8 +80,8 @@
       
       <div class="flex-1 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto py-2 md:py-6 px-2 md:px-0">
         <nav class="flex md:flex-col flex-row space-x-2 md:space-x-0 md:space-y-2 px-2 md:px-4">
-          <a href="javascript:void(0)" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(37,99,235,0.1)] whitespace-nowrap">
-            <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <a href="/dashboard.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             Главная
@@ -102,8 +102,8 @@
             <span class="md:hidden">Фин. Модель</span>
           </a>
 
-          <a href="javascript:void(0)" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
-            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <a href="javascript:void(0)" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(37,99,235,0.1)] whitespace-nowrap">
+            <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
             Профиль
@@ -442,17 +442,24 @@
   </div>
 
   <script>
-    const { createApp, ref, onMounted } = Vue;
+    const { createApp, ref, reactive, onMounted } = Vue;
 
     createApp({
       setup() {
         const userEmail = ref('');
         const userRole = ref('');
-
-        const showCalculator = ref(false);
-        const calcInitialInvestment = ref(10000000);
-        const calcDiscountRate = ref(15);
-        const calcCashflows = ref([2000000, 3000000, 5000000, 7000000]);
+        const isSaving = ref(false);
+        const saveStatus = ref('');
+        const saveMessage = ref('');
+        
+        const profile = reactive({
+          email: '',
+          phone: '',
+          first_name: '',
+          last_name: '',
+          company_name: '',
+          tg_username: ''
+        });
 
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
@@ -462,7 +469,25 @@
           }
           userEmail.value = localStorage.getItem('user_email') || 'investor@example.com';
           userRole.value = localStorage.getItem('user_role') || 'investor';
+          profile.email = userEmail.value;
         });
+
+        const saveProfile = async () => {
+          isSaving.value = true;
+          saveStatus.value = '';
+          saveMessage.value = '';
+          
+          try {
+            await new Promise(r => setTimeout(r, 1000));
+            saveStatus.value = 'success';
+            saveMessage.value = 'Изменения успешно сохранены';
+          } catch (e) {
+            saveStatus.value = 'error';
+            saveMessage.value = 'Ошибка сохранения: ' + e.message;
+          } finally {
+            isSaving.value = false;
+          }
+        };
 
         const logout = () => {
           localStorage.removeItem('auth_token');
@@ -471,79 +496,15 @@
           window.location.href = '/index.html';
         };
 
-        // --- Калькуляторы (NPV, IRR, ROI) ---
-        const formatCurrency = (value) => {
-          return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(value);
-        };
-
-        const addCashflowYear = () => {
-          calcCashflows.value.push(0);
-        };
-
-        const removeCashflowYear = (index) => {
-          if (calcCashflows.value.length > 1) {
-            calcCashflows.value.splice(index, 1);
-          }
-        };
-
-        const calculatedNPV = Vue.computed(() => {
-          let npv = -calcInitialInvestment.value;
-          const rate = calcDiscountRate.value / 100;
-          for (let i = 0; i < calcCashflows.value.length; i++) {
-            npv += calcCashflows.value[i] / Math.pow(1 + rate, i + 1);
-          }
-          return npv;
-        });
-
-        const calculatedROI = Vue.computed(() => {
-          const totalReturn = calcCashflows.value.reduce((a, b) => a + b, 0);
-          return ((totalReturn - calcInitialInvestment.value) / calcInitialInvestment.value) * 100;
-        });
-
-        // Функция расчета IRR методом Ньютона-Рафсона
-        const calculatedIRR = Vue.computed(() => {
-          const cashflows = [-calcInitialInvestment.value, ...calcCashflows.value];
-          
-          let min = -1.0;
-          let max = 100.0;
-          let guess = 0.1;
-          let irr = null;
-          
-          for (let i = 0; i < 100; i++) {
-            let npv = 0;
-            let derivative = 0;
-            for (let j = 0; j < cashflows.length; j++) {
-              npv += cashflows[j] / Math.pow(1 + guess, j);
-              if (j > 0) {
-                derivative -= j * cashflows[j] / Math.pow(1 + guess, j + 1);
-              }
-            }
-            
-            let newGuess = guess - npv / derivative;
-            if (Math.abs(newGuess - guess) < 0.00001) {
-              irr = newGuess * 100;
-              break;
-            }
-            guess = newGuess;
-          }
-          
-          return (irr !== null && !isNaN(irr)) ? irr : null;
-        });
-
         return {
           userEmail,
           userRole,
-          logout,
-          showCalculator,
-          calcInitialInvestment,
-          calcDiscountRate,
-          calcCashflows,
-          formatCurrency,
-          addCashflowYear,
-          removeCashflowYear,
-          calculatedNPV,
-          calculatedROI,
-          calculatedIRR
+          profile,
+          isSaving,
+          saveStatus,
+          saveMessage,
+          saveProfile,
+          logout
         }
       }
     }).mount('#app')
