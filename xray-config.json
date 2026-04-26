@@ -1,0 +1,264 @@
+{
+  "dns": {
+    "servers": [
+      "8.8.8.8",
+      "1.1.1.1"
+    ],
+    "queryStrategy": "UseIP"
+  },
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "protocol": [
+          "bittorrent"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "domain:ru",
+          "domain:рф",
+          "domain:yandex",
+          "domain:volga",
+          "domain:vk.com",
+          "domain:icq.com",
+          "domain:ozon.com",
+          "domain:s.ruvps.pro",
+          "domain:2gis.com",
+          "domain:yandex.com",
+          "domain:subix.ru",
+          "domain:yastatic.net",
+          "domain:s.valista.site",
+          "domain:vpn1.su",
+          "domain:ru.net",
+          "domain:avito.st",
+          "domain:yadi.sk",
+          "domain:xn--p1ai",
+          "domain:xn--p1acf",
+          "domain:xn--80adxhks",
+          "domain:s.cladix.site",
+          "domain:vk.cc",
+          "domain:vk-cdn.net",
+          "domain:vk-cdn.me",
+          "domain:okko.tv",
+          "domain:premier.one"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "type": "field",
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "network": "tcp,udp",
+        "balancerTag": "Super_Balancer"
+      }
+    ],
+    "balancers": [
+      {
+        "tag": "Super_Balancer",
+        "selector": [
+          "bal_stand"
+        ],
+        "strategy": {
+          "type": "leastPing",
+          "settings": {
+            "maxRTT": "1s",
+            "expected": 2,
+            "baselines": [
+              "1s"
+            ],
+            "tolerance": 0.01
+          }
+        },
+        "fallbackTag": "direct"
+      }
+    ],
+    "domainMatcher": "hybrid",
+    "domainStrategy": "IPIfNonMatch"
+  },
+  "inbounds": [
+    {
+      "tag": "socks",
+      "port": 10808,
+      "listen": "0.0.0.0",
+      "protocol": "socks",
+      "settings": {
+        "udp": true,
+        "auth": "noauth"
+      },
+      "sniffing": {
+        "enabled": true,
+        "routeOnly": false,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    },
+    {
+      "tag": "http",
+      "port": 10809,
+      "listen": "0.0.0.0",
+      "protocol": "http",
+      "settings": {
+        "allowTransparent": false
+      },
+      "sniffing": {
+        "enabled": true,
+        "routeOnly": false,
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "bal_stand",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "crm24.vertiex.ru",
+            "port": 443,
+            "users": [
+              {
+                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "mode": "auto",
+          "host": ""
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.samsung.com",
+          "publicKey": "X3CgKYJ-JYshe9mcXnjprldK4VTm00fp6jwUdUnl_jI",
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "tag": "bal_stand-2",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "n560.kweps.ru",
+            "port": 443,
+            "users": [
+              {
+                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "mode": "auto",
+          "host": ""
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.samsung.com",
+          "publicKey": "LdZS1Mn61kQKXxDwf5wAEt8jFqkM4IjVQYXD_FkoKA8",
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "tag": "bal_stand-3",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "cleo.lafitta.org",
+            "port": 443,
+            "users": [
+              {
+                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "mode": "auto",
+          "host": ""
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.samsung.com",
+          "publicKey": "bO6oE5j-3-ONc3nqNsicX1hs6UhmrNLS5g_aMIRDUEc",
+          "spiderX": "/",
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "tag": "bal_stand-4",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "crm24.lafitta.org",
+            "port": 443,
+            "users": [
+              {
+                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "xhttp",
+        "xhttpSettings": {
+          "mode": "auto",
+          "host": ""
+        },
+        "security": "reality",
+        "realitySettings": {
+          "serverName": "www.samsung.com",
+          "publicKey": "5E7HaoIDvtXIjpSvxIVIrBbnS7chFtJcDACnSFNjekg",
+          "fingerprint": "chrome"
+        }
+      }
+    },
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "block",
+      "protocol": "blackhole"
+    }
+  ]
+}

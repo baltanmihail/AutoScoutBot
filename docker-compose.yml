@@ -39,19 +39,19 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/autoscout
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - TELEGRAM_PROXY=socks5://tor:9050
+      - TELEGRAM_PROXY=socks5://proxy:10808
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
     depends_on:
       - db
-      - tor
+      - proxy
     restart: unless-stopped
 
-  tor:
-    image: alpine:latest
-    command: >
-      sh -c 'apk add --no-cache tor && echo "SocksPort 0.0.0.0:9050" > /etc/tor/torrc && tor -f /etc/tor/torrc'
+  proxy:
+    image: teddysun/xray:latest
+    volumes:
+      - ./xray-config.json:/etc/xray/config.json
     restart: unless-stopped
 
 volumes:
