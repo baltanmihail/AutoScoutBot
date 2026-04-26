@@ -79,6 +79,16 @@ class SearchResponse(BaseModel):
     results: list[SearchResult]
     total_candidates: int = 0
 
+class QueryHistoryItem(BaseModel):
+    id: int
+    query_text: str
+    model_type: str
+    created_at: str
+    results_count: int
+
+class HistoryResponse(BaseModel):
+    history: list[QueryHistoryItem]
+
 
 # ---------------------------------------------------------------------------
 # Score

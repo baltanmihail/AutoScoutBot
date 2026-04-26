@@ -10,12 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_session, DATABASE_URL
 from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult
-from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief
+from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief, HistoryResponse, QueryHistoryItem
 from backend.routes.profile import get_current_user_from_token
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/search", tags=["search"])
+router = APIRouter(prefix="/api/search", tags=["search"])
 
 
 def _startup_to_feature_row(startup, financials: list) -> dict:
@@ -299,4 +299,86 @@ async def search_startups(
         query_id=q.id,
         results=results,
         total_candidates=len(scored_candidates),
+    )
+
+@router.get("/history", response_model=HistoryResponse)
+async def get_search_history(
+    authorization: str = Header(...),
+    session: AsyncSession = Depends(get_session),
+):
+    """Возвращает историю поисковых запросов пользователя."""
+    user = await get_current_user_from_token(authorization, session)
+    
+    stmt = (
+        select(Query, func.count(QueryResult.id).label("results_count"))
+        .outerjoin(QueryResult, Query.id == QueryResult.query_id)
+        .where(Query.user_id == user.id)
+        .group_by(Query.id)
+        .order_by(Query.created_at.desc())
+        .limit(30)
+    )
+    
+    rows = (await session.execute(stmt)).all()
+    
+    history_items = []
+    for q, count in rows:
+        history_items.append(
+            QueryHistoryItem(
+                id=q.id,
+                query_text=q.query_text,
+                model_type=q.model_type,
+                created_at=q.created_at.isoformat() if q.created_at else "",
+                results_count=count
+            )
+        )
+        
+    return HistoryResponse(history=history_items)
+
+@router.get("/history/{query_id}", response_model=SearchResponse)
+async def get_search_history_details(
+    query_id: int,
+    authorization: str = Header(...),
+    session: AsyncSession = Depends(get_session),
+):
+    """Возвращает результаты конкретного поискового запроса из истории."""
+    user = await get_current_user_from_token(authorization, session)
+    
+    q_stmt = select(Query).where(Query.id == query_id, Query.user_id == user.id)
+    q = (await session.execute(q_stmt)).scalars().first()
+    if not q:
+        raise HTTPException(status_code=404, detail="Запрос не найден")
+        
+    res_stmt = (
+        select(QueryResult, Startup, StartupScore)
+        .join(Startup, QueryResult.startup_id == Startup.id)
+        .outerjoin(StartupScore, Startup.id == StartupScore.startup_id)
+        .where(QueryResult.query_id == query_id)
+        .order_by(QueryResult.position.asc())
+    )
+    
+    rows = (await session.execute(res_stmt)).all()
+    
+    results = []
+    for qr, startup, db_score in rows:
+        brief = StartupBrief(
+            id=startup.id,
+            name=startup.name,
+            cluster=startup.cluster,
+            status=startup.status,
+            year_founded=startup.year_founded,
+            score_overall=db_score.score_overall if db_score else 0,
+            ml_score=qr.ml_score,
+        )
+        sr = SearchResult(
+            startup=brief,
+            rag_similarity=qr.rag_similarity,
+            ai_relevance=qr.ai_relevance,
+            ml_score=qr.ml_score,
+        )
+        results.append(sr)
+        
+    return SearchResponse(
+        query_id=q.id,
+        results=results,
+        total_candidates=len(results),
     )
