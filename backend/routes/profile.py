@@ -216,7 +216,11 @@ async def request_verification(
         verification_code = str(random.randint(100000, 999999))
         user.verification_code = verification_code
         await session.commit()
-        await send_email_code(user.email, verification_code)
+        
+        res = await send_email_code(user.email, verification_code)
+        if res is not True:
+            raise HTTPException(status_code=500, detail=f"Ошибка SMTP: {res}")
+            
         return {"message": "Код отправлен на Email"}
         
     elif type == "phone":
@@ -227,7 +231,11 @@ async def request_verification(
         phone_verification_code = str(random.randint(100000, 999999))
         user.phone_verification_code = phone_verification_code
         await session.commit()
-        await send_sms_code(user.phone, phone_verification_code)
+        
+        res = await send_sms_code(user.phone, phone_verification_code)
+        if res is not True:
+            raise HTTPException(status_code=500, detail=f"Ошибка SMS: {res}")
+            
         return {"message": "Код отправлен по СМС"}
         
     raise HTTPException(status_code=400, detail="Неверный тип")

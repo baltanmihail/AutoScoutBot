@@ -53,7 +53,7 @@ async def send_email_code(to_email: str, code: str):
             return True
         except Exception as e:
             logger.error(f"Error sending email to {to_email}: {e}")
-            return False
+            return str(e)
 
     return await asyncio.to_thread(_send)
 
@@ -82,11 +82,12 @@ async def send_sms_code(phone: str, code: str):
             if data.get("status_code") == 100:
                 return True
             else:
+                err_msg = data.get("status_text", "Неизвестная ошибка API")
                 logger.error(f"SMS API Error: {data}")
-                return False
+                return err_msg
     except Exception as e:
         logger.error(f"Error sending SMS to {phone}: {e}")
-        return False
+        return str(e)
 
 class LoginRequest(BaseModel):
     email: str
