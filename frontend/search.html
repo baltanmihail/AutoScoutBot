@@ -3,22 +3,476 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoScout AI | Поиск (Pro)</title>
+  <title>AutoScout Web | Панель Управления</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+            },
+            dark: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    [v-cloak] { display: none; }
+    
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Custom Scrollbar for dark theme */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a; 
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155; 
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569; 
+    }
+
+  </style>
 </head>
-<body class="bg-slate-950 text-slate-300 font-sans antialiased min-h-screen flex items-center justify-center">
-  <div class="text-center p-8 max-w-lg border border-white/10 rounded-2xl bg-slate-900/50 backdrop-blur">
-    <div class="w-16 h-16 rounded bg-gradient-to-br from-fuchsia-500 to-indigo-600 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-6 shadow-[0_0_30px_rgba(217,70,239,0.4)]">
-      AI
-    </div>
-    <h1 class="text-3xl font-bold text-white mb-4">AutoScout AI Search</h1>
-    <p class="text-slate-400 mb-8 leading-relaxed">
-      Глубокий семантический поиск по базе из 5000+ стартапов с использованием графовых нейросетей и LLM.
-      Эта функция доступна только по платной подписке (Pro/Max).
-    </p>
-    <a href="/dashboard.html" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-500 text-white font-medium py-3 px-6 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">
-      Вернуться на дашборд
-    </a>
+<body class="bg-dark-950 text-slate-300 font-sans antialiased min-h-screen selection:bg-brand-500 selection:text-white" id="app">
+
+  <!-- Background glow -->
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 left-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[128px] opacity-10"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-10"></div>
   </div>
+
+  <!-- Sidebar & Topbar Layout -->
+  <div class="flex flex-col md:flex-row h-screen overflow-hidden relative z-10" v-cloak>
+    
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 glass-panel border-b md:border-b-0 md:border-r border-white/10 flex flex-row md:flex-col transition-all z-20 shadow-2xl overflow-x-auto md:overflow-y-auto shrink-0 md:h-full h-auto">
+      <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
+        <!-- Animated Logo -->
+        <a href="javascript:void(0)" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
+          <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700" id="logo-bg-container">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-700" id="bg-grad-0"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 transition-opacity duration-700 opacity-0" id="bg-grad-1"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-600 transition-opacity duration-700 opacity-0" id="bg-grad-2"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-orange-600 transition-opacity duration-700 opacity-0" id="bg-grad-3"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-600 transition-opacity duration-700 opacity-0" id="bg-grad-4"></div>
+            
+            <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
+              <div class="h-8 w-8 flex items-center justify-center shrink-0">W</div>
+              <div class="h-8 w-8 flex items-center justify-center shrink-0">B</div>
+              <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
+              <div class="h-8 w-8 flex items-center justify-center shrink-0">C</div>
+              <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">AI</div>
+            </div>
+          </div>
+          <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
+            AutoScout
+            <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
+              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal" id="text-wheel">
+                <div class="h-6 flex items-center shrink-0 text-blue-400 transition-colors duration-500">Web</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Bot</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">App</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Com</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">AI</div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+      
+      <div class="flex-1 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto py-2 md:py-6 px-2 md:px-0">
+        <nav class="flex md:flex-col flex-row space-x-2 md:space-x-0 md:space-y-2 px-2 md:px-4">
+          <a href="javascript:void(0)" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(37,99,235,0.1)] whitespace-nowrap">
+            <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Главная
+          </a>
+
+          <a href="javascript:void(0)" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            Портфель
+          </a>
+          
+          <a href="javascript:void(0)" @click.prevent="showCalculator = true" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="hidden md:inline">IRR / NPV Калькулятор</span>
+            <span class="md:hidden">Фин. Модель</span>
+          </a>
+
+          <a href="/profile.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            Профиль
+          </a>
+
+          <a href="/admin.html" v-if="userRole === 'admin'" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Админ-панель
+          </a>
+        </nav>
+      </div>
+      
+      <div class="border-l md:border-l-0 md:border-t border-white/10 p-2 md:p-5 bg-dark-900/50 flex flex-row md:flex-col items-center md:items-stretch shrink-0">
+        <div class="hidden md:flex items-center justify-between mb-4">
+          <div class="text-sm font-medium text-slate-300 truncate mr-2">{{ userEmail.includes('@telegram.local') ? 'Telegram User' : userEmail }}</div>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+            {{ userRole === 'admin' ? 'Админ' : userRole === 'investor' ? 'Инвестор' : userRole === 'startup' ? 'Стартап' : userRole === 'expert' ? 'Эксперт' : userRole }}
+          </span>
+        </div>
+        <button @click="logout" class="md:w-full flex justify-center py-2 md:py-2.5 px-3 md:px-4 border border-red-500/30 rounded-lg shadow-sm text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors focus:outline-none whitespace-nowrap ml-2 md:ml-0">
+          Выйти <span class="hidden md:inline">&nbsp;из системы</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-dark-950/50">
+      <!-- Topbar -->
+      <header class="h-auto md:h-16 py-3 md:py-0 glass-panel border-b border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between px-4 md:px-8 z-10 gap-3 md:gap-0">
+        <div class="flex items-center gap-2 md:gap-3">
+          <h1 class="text-lg md:text-xl font-semibold text-white tracking-tight">Инвестиционный анализ</h1>
+          <span class="text-blue-500 text-lg font-bold hidden md:inline">//</span>
+          <span class="text-slate-400 text-sm hidden md:inline">Обзор рынка</span>
+        </div>
+        <div class="flex items-center justify-between w-full md:w-auto gap-4">
+          <!-- Request Limits Indicator -->
+          <div class="relative group cursor-help flex items-center bg-dark-900/80 border border-white/10 rounded-lg px-3 py-1.5 shadow-inner">
+            <svg class="w-4 h-4 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <span class="text-sm font-bold text-white">{{ totalRequests }}</span>
+            <span class="text-xs text-slate-400 ml-1 hidden sm:inline">запросов</span>
+            
+            <!-- Hover Dropdown -->
+            <div class="absolute right-0 top-full mt-2 w-48 bg-slate-900 border border-white/10 rounded-xl shadow-xl p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <div class="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">Баланс AI моделей</div>
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-slate-300">Standard</span>
+                  <span class="text-sm font-bold text-white">{{ requestsData.requests_standard }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-blue-400">Pro</span>
+                  <span class="text-sm font-bold text-blue-400">{{ requestsData.requests_pro }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-sm text-purple-400">Max</span>
+                  <span class="text-sm font-bold text-purple-400">{{ requestsData.requests_max }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Search UI in body instead -->
+        </div>
+      </header>
+
+            <!-- Dashboard Body -->
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 flex flex-col items-center">
+        
+        <!-- Main Search Area -->
+        <div class="w-full max-w-3xl flex flex-col items-center justify-center transition-all duration-500" :class="hasSearched ? 'mt-0 mb-6' : 'h-full justify-center'">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 flex items-center justify-center font-bold text-white text-2xl mx-auto mb-6 shadow-[0_0_30px_rgba(217,70,239,0.4)] transition-all" :class="hasSearched ? 'w-10 h-10 text-lg mb-4 shadow-none' : ''">
+            AI
+          </div>
+          <h1 class="text-3xl font-bold text-white mb-2 transition-all text-center" :class="hasSearched ? 'text-xl mb-0 hidden' : ''">AutoScout AI Search</h1>
+          <p class="text-slate-400 mb-8 text-center transition-all" :class="hasSearched ? 'hidden' : ''">Глубокий семантический поиск стартапов с помощью LLM (списывается 1 запрос).</p>
+          
+          <form @submit.prevent="performSearch" class="w-full relative group">
+            <div class="absolute inset-0 bg-gradient-to-r from-fuchsia-500 to-indigo-600 rounded-xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
+            <div class="relative flex items-center">
+              <input v-model="searchQuery" type="text" class="w-full bg-dark-900 border border-white/10 rounded-xl px-6 py-4 md:py-5 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 text-lg shadow-inner" placeholder="Опишите идеальный стартап, технологию или проблему..." :disabled="isSearching">
+              <button type="submit" :disabled="isSearching" class="absolute right-2 top-2 bottom-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg px-6 font-semibold transition-all disabled:opacity-50 flex items-center justify-center">
+                <svg v-if="isSearching" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span v-else>Найти</span>
+              </button>
+            </div>
+          </form>
+          
+          <div v-if="errorMessage" class="w-full mt-4 p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl text-center">
+            {{ errorMessage }}
+          </div>
+        </div>
+
+        <!-- Results Area -->
+        <div v-if="hasSearched && !isSearching && searchResults.length > 0" class="w-full max-w-4xl space-y-4">
+          <h3 class="text-lg font-semibold text-white tracking-tight mb-4">Найдено: {{ searchResults.length }}</h3>
+          
+          <div v-for="(res, idx) in searchResults" :key="idx" class="glass-panel p-5 rounded-xl border border-white/10 hover:border-fuchsia-500/30 transition-all cursor-pointer group flex flex-col md:flex-row gap-4 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            
+            <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-dark-800 border border-white/5 flex items-center justify-center text-lg font-bold text-slate-300">
+              {{ res.startup.name.charAt(0) }}
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-1">
+                <h4 class="text-base font-semibold text-white truncate">{{ res.startup.name }}</h4>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/30">
+                    AI Relevance: {{ (res.ai_relevance * 100).toFixed(0) }}%
+                  </span>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" v-if="res.ml_score !== null">
+                    ML-Скор: {{ res.ml_score.toFixed(1) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="flex flex-wrap gap-2 mb-3">
+                <span class="text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded" v-if="res.startup.inn">ИНН: {{ res.startup.inn }}</span>
+                <span class="text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded" v-if="res.startup.cluster">{{ res.startup.cluster }}</span>
+                <span class="text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded" v-if="res.startup.status">{{ res.startup.status }}</span>
+                <span class="text-xs text-slate-400 bg-slate-800/50 px-2 py-1 rounded" v-if="res.startup.year_founded">Основан: {{ res.startup.year_founded }}</span>
+              </div>
+              
+              <p class="text-sm text-slate-400 line-clamp-3 leading-relaxed">
+                {{ res.startup.company_description || res.startup.technologies || 'Описание отсутствует.' }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Results -->
+        <div v-if="hasSearched && !isSearching && searchResults.length === 0 && !errorMessage" class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-slate-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 class="text-lg font-medium text-white">Ничего не найдено</h3>
+          <p class="text-slate-400 mt-1">Попробуйте изменить поисковый запрос.</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const userEmail = ref('');
+        const userRole = ref('');
+        const requestsData = ref({ requests_standard: 0, requests_pro: 0, requests_max: 0 });
+        
+        const searchQuery = ref('');
+        const searchResults = ref([]);
+        const isSearching = ref(false);
+        const hasSearched = ref(false);
+        const errorMessage = ref('');
+
+        const performSearch = async () => {
+          if (!searchQuery.value.trim()) return;
+          isSearching.value = true;
+          hasSearched.value = true;
+          errorMessage.value = '';
+          searchResults.value = [];
+          
+          try {
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch('/api/search/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                query: searchQuery.value,
+                top_k: 10,
+                model_type: 'standard'
+              })
+            });
+            
+            const data = await res.json();
+            if (!res.ok) {
+              throw new Error(data.detail || 'Ошибка поиска');
+            }
+            
+            searchResults.value = data.results || [];
+            
+            // Update limits after successful search
+            fetchProfileLimits(token);
+            
+          } catch (e) {
+            errorMessage.value = e.message;
+          } finally {
+            isSearching.value = false;
+          }
+        };
+
+        const fetchProfileLimits = (token) => {
+          fetch('/api/profile', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }).then(res => res.json()).then(data => {
+            requestsData.value.requests_standard = data.requests_standard || 0;
+            requestsData.value.requests_pro = data.requests_pro || 0;
+            requestsData.value.requests_max = data.requests_max || 0;
+          }).catch(err => console.error("Error fetching limits", err));
+        };
+
+        onMounted(() => {
+          const token = localStorage.getItem('auth_token');
+          if (!token) {
+            window.location.href = '/index.html';
+            return;
+          }
+          userEmail.value = localStorage.getItem('user_email') || 'investor@example.com';
+          userRole.value = localStorage.getItem('user_role') || 'investor';
+          
+          fetchProfileLimits(token);
+          // Logo Animation Logic
+          const logoWheel = document.getElementById('logo-wheel');
+          const textWheel = document.getElementById('text-wheel');
+          const logoContainer = document.getElementById('logo-container');
+          
+          if (logoWheel && textWheel && logoContainer) {
+            let currentIndex = 0;
+            const totalItems = 5; // Web, Bot, App, Com, AI
+            let scrollInterval;
+            
+            function doSpin() {
+              currentIndex = (currentIndex + 1) % totalItems;
+              updateWheel(currentIndex);
+            }
+            
+            function scheduleNextSpin() {
+              const delay = 30000 + Math.random() * 15000;
+              scrollInterval = setTimeout(() => {
+                doSpin();
+                scheduleNextSpin();
+              }, delay);
+            }
+            scheduleNextSpin();
+            
+            function updateWheel(index) {
+              if(!logoWheel || !textWheel) return;
+              
+              logoWheel.style.transform = `translateY(-${index * 32}px)`;
+              textWheel.style.transform = `translateY(-${index * 24}px)`;
+              
+              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400'];
+              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30'];
+              
+              const textDivs = textWheel.children;
+              for(let i=0; i<textDivs.length; i++) {
+                // Ensure transitions are always present
+                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
+              }
+              
+              for(let i=0; i<5; i++) {
+                const bg = document.getElementById(`bg-grad-${i}`);
+                if (bg) {
+                  bg.style.opacity = i === index ? '1' : '0';
+                }
+              }
+              
+              const logoBgContainer = document.getElementById('logo-bg-container');
+              if (logoBgContainer) {
+                logoBgContainer.className = `w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg ${shadowColors[index]} overflow-hidden relative transition-shadow duration-700`;
+              }
+            }
+            
+            // Mouse wheel scroll with throttling
+            let isScrolling = false;
+            logoContainer.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              if (isScrolling) return;
+              
+              isScrolling = true;
+              setTimeout(() => { isScrolling = false; }, 600); // Prevent jumping around
+              
+              clearTimeout(scrollInterval);
+              if (e.deltaY > 0) {
+                currentIndex = (currentIndex + 1) % totalItems;
+              } else {
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+              }
+              updateWheel(currentIndex);
+              scheduleNextSpin();
+            });
+            
+            logoContainer.addEventListener('mouseleave', () => {
+              clearTimeout(scrollInterval);
+              currentIndex = 0; // Back to "Web"
+              updateWheel(0);
+              scheduleNextSpin();
+            });
+            
+            // Click redirects based on current index
+            logoContainer.addEventListener('click', () => {
+              switch(currentIndex) {
+                case 0: window.location.href = '/dashboard.html'; break; // Web
+                case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
+                case 2: alert('Мобильное приложение находится в разработке.'); break; // App
+                case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
+                case 4: window.location.href = '/search.html'; break; // AI
+              }
+            });
+          }
+        });
+
+        
+        const logout = () => {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('user_email');
+          localStorage.removeItem('user_role');
+          window.location.href = '/index.html';
+        };
+
+        const totalRequests = Vue.computed(() => 
+          requestsData.value.requests_standard + 
+          requestsData.value.requests_pro + 
+          requestsData.value.requests_max
+        );
+
+        return {
+          userEmail,
+          userRole,
+          requestsData,
+          totalRequests,
+          searchQuery,
+          searchResults,
+          isSearching,
+          hasSearched,
+          errorMessage,
+          performSearch,
+          logout
+        }
+      }
+    }).mount('#app')
+  </script>
 </body>
 </html>

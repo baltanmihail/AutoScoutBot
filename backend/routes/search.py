@@ -4,13 +4,14 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy import select, func, text, literal_column
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_session, DATABASE_URL
 from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult
 from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief
+from backend.routes.auth import get_current_user_from_token
 
 logger = logging.getLogger(__name__)
 
@@ -107,12 +108,28 @@ async def _compute_query_embedding(query_text: str):
 @router.post("/", response_model=SearchResponse)
 async def search_startups(
     req: SearchRequest,
+    authorization: str = Header(None),
     session: AsyncSession = Depends(get_session),
 ):
     """
     Main search endpoint.
     Pipeline: pgvector similarity -> keyword fallback -> ML re-scoring -> ranking.
     """
+    if authorization:
+        user = await get_current_user_from_token(authorization, session)
+        
+        # Check and deduct limits
+        if user.requests_standard > 0:
+            user.requests_standard -= 1
+        elif user.requests_pro > 0:
+            user.requests_pro -= 1
+        elif user.requests_max > 0:
+            user.requests_max -= 1
+        else:
+            raise HTTPException(status_code=403, detail="Лимит запросов исчерпан. Пожалуйста, оформите подписку или пополните баланс.")
+        
+        req.user_id = user.id
+
     candidate_limit = max(req.top_k * 10, 100)
 
     # --- Phase 4: Try pgvector semantic search first ---
