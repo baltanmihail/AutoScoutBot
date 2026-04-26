@@ -14,6 +14,7 @@ if getattr(config, "BACKEND_URL", ""):
     os.environ.setdefault("BACKEND_URL", config.BACKEND_URL)
 
 from aiogram.client.default import DefaultBotProperties
+from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram import Bot, Dispatcher, Router
 from aiogram.fsm.storage.memory import MemoryStorage
 
@@ -146,8 +147,15 @@ payments_service = PaymentsService(user_repository)
 
 payments_router = get_payments_router(payments_service)
 
+proxy_url = os.getenv("TELEGRAM_PROXY")
+if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
+    proxy_url = config.TELEGRAM_PROXY
 
-bot = Bot(token=TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
+session = AiohttpSession(proxy=proxy_url) if proxy_url else None
+if proxy_url:
+    print(f"🌐 Использование прокси для Telegram: {proxy_url}")
+
+bot = Bot(token=TELEGRAM_TOKEN, session=session, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher(storage=MemoryStorage())
 dp.include_router(payments_router)
 
