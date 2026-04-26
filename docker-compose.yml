@@ -39,12 +39,17 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/autoscout
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - TELEGRAM_PROXY=${TELEGRAM_PROXY}
+      - TELEGRAM_PROXY=socks5://tor:9050
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
     depends_on:
       - db
+      - tor
+    restart: unless-stopped
+
+  tor:
+    image: peterdavehello/tor-socks-proxy:latest
     restart: unless-stopped
 
 volumes:

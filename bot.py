@@ -151,9 +151,21 @@ proxy_url = os.getenv("TELEGRAM_PROXY")
 if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
     proxy_url = config.TELEGRAM_PROXY
 
-session = AiohttpSession(proxy=proxy_url) if proxy_url else None
+# Настраиваем aiohttp-socks сессию, если указан SOCKS5 прокси
+session = None
 if proxy_url:
     print(f"🌐 Использование прокси для Telegram: {proxy_url}")
+    if proxy_url.startswith("socks5"):
+        try:
+            from aiohttp_socks import ProxyConnector
+            connector = ProxyConnector.from_url(proxy_url)
+            session = AiohttpSession()
+            session._connector = connector
+        except ImportError:
+            print("⚠️ aiohttp-socks не установлен, SOCKS5 прокси может не работать!")
+            session = AiohttpSession(proxy=proxy_url)
+    else:
+        session = AiohttpSession(proxy=proxy_url)
 
 bot = Bot(token=TELEGRAM_TOKEN, session=session, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher(storage=MemoryStorage())

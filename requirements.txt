@@ -68,3 +68,4 @@ python-jose[cryptography]
 passlib[bcrypt]
 PyMuPDF>=1.24.0
 pdfplumber>=0.11.0
+aiohttp-socks
