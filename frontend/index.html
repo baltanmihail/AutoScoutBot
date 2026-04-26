@@ -120,6 +120,7 @@
           <div class="h-8 w-8 flex items-center justify-center shrink-0">B</div>
           <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
           <div class="h-8 w-8 flex items-center justify-center shrink-0">C</div>
+          <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">AI</div>
         </div>
       </div>
       <div class="ml-3 text-xl font-bold text-white tracking-tight flex items-baseline">
@@ -130,6 +131,7 @@
             <div class="h-6 flex items-center shrink-0">Bot</div>
             <div class="h-6 flex items-center shrink-0">App</div>
             <div class="h-6 flex items-center shrink-0">Com</div>
+            <div class="h-6 flex items-center shrink-0">AI</div>
           </div>
         </div>
       </div>
@@ -333,7 +335,7 @@
           
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 0;
-            const totalItems = 4; // Web, Bot, App, Com
+            const totalItems = 5; // Web, Bot, App, Com, AI
             
             // Auto scroll every 3 seconds
             const scrollInterval = setInterval(() => {
@@ -365,12 +367,13 @@
               textWheel.style.transform = `translateY(-${currentIndex * 24}px)`;
               
               // Change color based on current item
-              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400'];
+              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400'];
               const bgColors = [
                 'from-blue-500 to-purple-600', 
                 'from-emerald-500 to-teal-600', 
                 'from-purple-500 to-pink-600',
-                'from-rose-500 to-orange-600'
+                'from-rose-500 to-orange-600',
+                'from-fuchsia-500 to-indigo-600'
               ];
               
               const textDivs = textWheel.children;
