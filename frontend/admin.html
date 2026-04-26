@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoScout Web | Админ-панель</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: { brand: { 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb' }, dark: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    [v-cloak] { display: none; }
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-300 font-sans antialiased min-h-screen selection:bg-brand-500 selection:text-white" id="app">
+
+  <!-- Sidebar & Topbar Layout -->
+  <div class="flex h-screen overflow-hidden relative z-10" v-cloak>
+    
+    <!-- Sidebar -->
+    <aside class="w-64 glass-panel border-r border-white/10 flex flex-col transition-all z-20 shadow-2xl">
+      <div class="h-16 flex items-center px-6 border-b border-white/10">
+        <div class="w-8 h-8 rounded bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center font-bold text-white shadow-lg shadow-rose-500/20">A</div>
+        <span class="ml-3 text-xl font-bold text-white tracking-tight">Admin<span class="text-rose-400 font-normal"> Panel</span></span>
+      </div>
+      <div class="flex-1 overflow-y-auto py-6">
+        <nav class="space-y-2 px-4">
+          <a href="#" class="bg-rose-500/10 text-rose-400 border border-rose-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(244,63,94,0.1)]">
+            Пользователи платформы
+          </a>
+        </nav>
+      </div>
+      <div class="border-t border-white/10 p-5 bg-dark-900/50">
+        <button @click="logout" class="w-full flex justify-center py-2.5 px-4 border border-slate-500/30 rounded-lg shadow-sm text-sm font-medium text-slate-400 bg-slate-500/10 hover:bg-slate-500/20 transition-colors">
+          Вернуться на сайт
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-dark-950/50">
+      <header class="h-16 glass-panel border-b border-white/10 flex items-center justify-between px-8 z-10">
+        <div class="flex items-center gap-3">
+          <h1 class="text-xl font-semibold text-white tracking-tight">Управление доступом</h1>
+        </div>
+      </header>
+
+      <div class="flex-1 overflow-y-auto p-8">
+        
+        <!-- Stats -->
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+          <div class="glass-panel overflow-hidden rounded-xl border border-white/5 p-6">
+            <dt class="text-xs font-medium text-slate-400 uppercase tracking-wider">Всего юзеров</dt>
+            <dd class="text-3xl font-bold text-white mt-1">{{ stats.total_users }}</dd>
+          </div>
+          <div class="glass-panel overflow-hidden rounded-xl border border-white/5 p-6">
+            <dt class="text-xs font-medium text-slate-400 uppercase tracking-wider">Инвесторов</dt>
+            <dd class="text-3xl font-bold text-blue-400 mt-1">{{ stats.total_investors }}</dd>
+          </div>
+          <div class="glass-panel overflow-hidden rounded-xl border border-white/5 p-6">
+            <dt class="text-xs font-medium text-slate-400 uppercase tracking-wider">Стартапов</dt>
+            <dd class="text-3xl font-bold text-emerald-400 mt-1">{{ stats.total_startups }}</dd>
+          </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="glass-panel rounded-xl border border-white/10 overflow-hidden shadow-xl">
+          <div class="px-6 py-5 border-b border-white/10 bg-dark-800/50">
+            <h3 class="text-lg font-semibold text-white tracking-tight">Список зарегистрированных пользователей</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-white/5">
+              <thead class="bg-dark-900/50">
+                <tr>
+                  <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Email / TG</th>
+                  <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Имя Фамилия</th>
+                  <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Роль</th>
+                  <th class="px-6 py-4 text-left text-[11px] font-bold text-slate-400 uppercase tracking-widest">Действия (Изменить роль)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr v-for="user in users" :key="user.id" class="hover:bg-white/5 transition-colors group">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                    <div>{{ user.email }}</div>
+                    <div v-if="user.tg_username" class="text-xs text-blue-400 mt-1">@{{ user.tg_username }}</div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
+                    {{ user.first_name }} {{ user.last_name }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span :class="roleClass(user.role)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full border">
+                      {{ user.role }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
+                    <select v-model="user.role" @change="updateRole(user.id, user.role)" class="bg-dark-900 border border-white/10 rounded text-slate-300 text-sm focus:ring-rose-500 focus:border-rose-500 outline-none px-2 py-1">
+                      <option value="investor">Инвестор</option>
+                      <option value="startup">Стартап</option>
+                      <option value="expert">Эксперт</option>
+                      <option value="admin">Админ</option>
+                      <option value="blocked">Заблокирован</option>
+                    </select>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        const users = ref([]);
+        const stats = ref({ total_users: 0, total_investors: 0, total_startups: 0 });
+
+        const fetchUsers = async () => {
+          try {
+            const res = await fetch('/api/admin/users');
+            users.value = await res.json();
+          } catch (e) { console.error(e); }
+        };
+
+        const fetchStats = async () => {
+          try {
+            const res = await fetch('/api/admin/stats');
+            stats.value = await res.json();
+          } catch (e) { console.error(e); }
+        };
+
+        const updateRole = async (userId, newRole) => {
+          try {
+            await fetch('/api/admin/users/role', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userId, new_role: newRole })
+            });
+            fetchStats();
+          } catch (e) { alert("Ошибка обновления"); }
+        };
+
+        const roleClass = (role) => {
+          switch (role) {
+            case 'admin': return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+            case 'investor': return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+            case 'startup': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+            case 'blocked': return 'bg-red-500/10 text-red-400 border-red-500/20';
+            default: return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
+          }
+        };
+
+        const logout = () => {
+          window.location.href = '/dashboard.html';
+        };
+
+        onMounted(() => {
+          fetchUsers();
+          fetchStats();
+        });
+
+        return { users, stats, updateRole, roleClass, logout };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
