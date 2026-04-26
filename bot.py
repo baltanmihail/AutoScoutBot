@@ -247,6 +247,24 @@ async def on_startup():
 
 async def main():
     await on_startup()
+    
+    # Авто-поиск прокси, если он не задан вручную
+    proxy_url = os.getenv("TELEGRAM_PROXY")
+    if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
+        proxy_url = config.TELEGRAM_PROXY
+        
+    if not proxy_url:
+        try:
+            from utils.proxy import find_working_proxy
+            from aiogram.client.session.aiohttp import AiohttpSession
+            auto_proxy = await find_working_proxy()
+            if auto_proxy:
+                print(f"🌐 Авто-найденный прокси: {auto_proxy}")
+                # Безопасная подмена сессии бота до старта поллинга
+                bot.session = AiohttpSession(proxy=auto_proxy)
+        except Exception as e:
+            logger.error(f"Ошибка авто-прокси: {e}")
+
     await dp.start_polling(bot)
     await user_repository.on_end()
 

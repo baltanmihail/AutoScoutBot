@@ -123,9 +123,9 @@
           <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">AI</div>
         </div>
       </div>
-      <div class="ml-3 text-xl font-bold text-white tracking-tight flex items-baseline">
+      <div class="ml-3 text-xl font-bold text-white tracking-tight flex items-center">
         AutoScout
-        <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16">
+        <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
           <div class="absolute inset-0 flex flex-col transition-transform duration-500 ease-in-out font-normal text-blue-400" id="text-wheel">
             <div class="h-6 flex items-center shrink-0">Web</div>
             <div class="h-6 flex items-center shrink-0">Bot</div>
@@ -294,11 +294,14 @@
     <style>
       /* Вспомогательные стили для анимации логотипа */
       #logo-wheel, #text-wheel {
-        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease-out;
       }
       #logo-container {
         cursor: pointer;
         padding-right: 10px;
+      }
+      .motion-blur {
+        filter: blur(1.5px);
       }
     </style>
   <script>
@@ -362,6 +365,10 @@
               const textWheel = document.getElementById('text-wheel');
               
               if(!logoWheel || !textWheel) return;
+
+              // Добавляем эффект motion blur
+              logoWheel.classList.add('motion-blur');
+              textWheel.classList.add('motion-blur');
               
               logoWheel.style.transform = `translateY(-${currentIndex * 32}px)`;
               textWheel.style.transform = `translateY(-${currentIndex * 24}px)`;
@@ -382,6 +389,13 @@
               }
               
               logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[currentIndex]} flex items-center justify-center font-bold text-white shadow-lg overflow-hidden relative transition-colors duration-500`;
+
+              // Убираем blur после завершения основного рывка анимации
+              clearTimeout(logoWheel.blurTimeout);
+              logoWheel.blurTimeout = setTimeout(() => {
+                logoWheel.classList.remove('motion-blur');
+                textWheel.classList.remove('motion-blur');
+              }, 250);
             }
             
             // Initial color setup

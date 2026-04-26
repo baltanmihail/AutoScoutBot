@@ -73,6 +73,7 @@ sudo nano /etc/netplan/01-netcfg.yaml
 ```
 
 Вставляем туда:
+
 ```yaml
 network:
   version: 2
@@ -95,6 +96,8 @@ sudo netplan apply
 
 ### Установка ПО (Docker, Nginx, и т.д.)
 
+**ОБЯЗАТЕЛЬНО:** В панели СберCloud (раздел "Группы безопасности") в правилах `SSH-access_ru.AZ-1` (или другой вашей группы) нужно открыть порты **80 (HTTP)** и **443 (HTTPS)** для всех (0.0.0.0/0). Без этого сайт не будет доступен снаружи!
+
 ```bash
 # 1. Подключаемся к серверу (см. варианты выше)
 
@@ -102,9 +105,13 @@ sudo netplan apply
 sudo apt update && sudo apt upgrade -y
 sudo apt install -y docker.io docker-compose git nginx certbot python3-certbot-nginx
 
-# 3. Клонируем проект
-mkdir -p ~/autoscoutbot && cd ~/autoscoutbot
-git clone <URL_РЕПОЗИТОРИЯ> .
+# 3. Добавляем пользователя в группу docker
+sudo usermod -aG docker autoscoutbot
+# Перезаходим на сервер, чтобы права применились
+
+# 4. Клонируем проект (понадобится GitHub PAT)
+git clone https://github.com/baltanmihail/AutoScoutBot.git ~/autoscoutbot
+cd ~/autoscoutbot
 
 # 4. Настраиваем конфиг
 cp .env.example .env
