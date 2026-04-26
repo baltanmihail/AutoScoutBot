@@ -524,7 +524,7 @@ const fetchProfileLimits = (token) => {
           const logoContainer = document.getElementById('logo-container');
           
           if (logoWheel && textWheel && logoContainer) {
-            let currentIndex = 0;
+            let currentIndex = 4; // Start at AI for search page
             const totalItems = 5; // Web, Bot, App, Com, AI
             let scrollInterval;
             
@@ -540,6 +540,9 @@ const fetchProfileLimits = (token) => {
                 scheduleNextSpin();
               }, delay);
             }
+            
+            // Set initial state without spinning
+            updateWheel(currentIndex);
             scheduleNextSpin();
             
             function updateWheel(index) {
@@ -591,8 +594,8 @@ const fetchProfileLimits = (token) => {
             
             logoContainer.addEventListener('mouseleave', () => {
               clearTimeout(scrollInterval);
-              currentIndex = 0; // Back to "Web"
-              updateWheel(0);
+              currentIndex = 4; // Back to "AI" for search page
+              updateWheel(currentIndex);
               scheduleNextSpin();
             });
             

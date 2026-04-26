@@ -163,25 +163,32 @@ async def search_startups(
     if vector_id_set:
         stmt = stmt.where(Startup.id.in_(vector_id_set))
     elif req.query:
-        # Keyword fallback (ILIKE with multiple words)
+        # Keyword fallback (ILIKE with multiple words + exact full phrase)
         import re
         from sqlalchemy import or_
         
-        words = re.findall(r'\b\w{4,}\b', req.query.lower())
+        query_lower = req.query.lower()
+        words = re.findall(r'\b\w{3,}\b', query_lower)
         if not words:
-            words = [req.query.lower()]
+            words = [query_lower]
             
         words = words[:10]  # Limit to max 10 words
         
-        conditions = []
+        full_pattern = f"%{query_lower}%"
+        conditions = [
+            Startup.name.ilike(full_pattern),
+            Startup.inn.ilike(full_pattern),
+            Startup.company_description.ilike(full_pattern)
+        ]
+        
         for word in words:
             like_pattern = f"%{word}%"
             conditions.append(
+                Startup.name.ilike(like_pattern) |
                 Startup.company_description.ilike(like_pattern) |
                 Startup.technologies.ilike(like_pattern) |
                 Startup.industries.ilike(like_pattern) |
-                Startup.product_names.ilike(like_pattern) |
-                Startup.name.ilike(like_pattern)
+                Startup.product_names.ilike(like_pattern)
             )
             
         if conditions:
@@ -205,9 +212,29 @@ async def search_startups(
     except Exception as e:
         logger.debug("ML predictor not available: %s", e)
 
+    import re
+    query_lower = req.query.lower() if req.query else ""
+    query_words = set(re.findall(r'\b\w{3,}\b', query_lower))
+
     scored_candidates = []
     for startup, db_score in rows:
         vector_sim = vector_scores.get(startup.id, 0.0)
+        
+        # Compute pseudo-semantic similarity if pgvector missed
+        if not vector_id_set and query_lower:
+            s_name = startup.name.lower()
+            if query_lower in s_name or s_name in query_lower:
+                vector_sim = max(vector_sim, 0.9)
+            elif startup.inn and query_lower in startup.inn:
+                vector_sim = max(vector_sim, 0.95)
+            else:
+                desc_text = f"{startup.company_description or ''} {startup.technologies or ''} {startup.industries or ''}".lower()
+                desc_words = set(re.findall(r'\b\w{3,}\b', desc_text))
+                if query_words:
+                    overlap = len(query_words.intersection(desc_words))
+                    word_sim = overlap / len(query_words)
+                    vector_sim = max(vector_sim, word_sim * 0.6)
+
         proxy_overall = db_score.score_overall if db_score else 0.0
         existing_ml = db_score.ml_score if db_score else None
 
