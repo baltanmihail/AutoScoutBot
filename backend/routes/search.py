@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from backend.database import get_session, DATABASE_URL
 from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult
 from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief
-from backend.routes.auth import get_current_user_from_token
+from backend.routes.profile import get_current_user_from_token
 
 logger = logging.getLogger(__name__)
 
@@ -119,14 +119,21 @@ async def search_startups(
         user = await get_current_user_from_token(authorization, session)
         
         # Check and deduct limits
-        if user.requests_standard > 0:
-            user.requests_standard -= 1
-        elif user.requests_pro > 0:
-            user.requests_pro -= 1
-        elif user.requests_max > 0:
-            user.requests_max -= 1
+        if req.model_type == "max":
+            if user.requests_max > 0:
+                user.requests_max -= 1
+            else:
+                raise HTTPException(status_code=403, detail="Лимит запросов Max исчерпан.")
+        elif req.model_type == "pro":
+            if user.requests_pro > 0:
+                user.requests_pro -= 1
+            else:
+                raise HTTPException(status_code=403, detail="Лимит запросов Pro исчерпан.")
         else:
-            raise HTTPException(status_code=403, detail="Лимит запросов исчерпан. Пожалуйста, оформите подписку или пополните баланс.")
+            if user.requests_standard > 0:
+                user.requests_standard -= 1
+            else:
+                raise HTTPException(status_code=403, detail="Лимит запросов Standard исчерпан.")
         
         req.user_id = user.id
 
