@@ -115,24 +115,19 @@ async def search_startups(
     Main search endpoint.
     Pipeline: pgvector similarity -> keyword fallback -> ML re-scoring -> ranking.
     """
+    user = None
     if authorization:
         user = await get_current_user_from_token(authorization, session)
         
-        # Check and deduct limits
+        # Check limits (but do not deduct yet)
         if req.model_type == "max":
-            if user.requests_max > 0:
-                user.requests_max -= 1
-            else:
+            if user.requests_max <= 0:
                 raise HTTPException(status_code=403, detail="Лимит запросов Max исчерпан.")
         elif req.model_type == "pro":
-            if user.requests_pro > 0:
-                user.requests_pro -= 1
-            else:
+            if user.requests_pro <= 0:
                 raise HTTPException(status_code=403, detail="Лимит запросов Pro исчерпан.")
         else:
-            if user.requests_standard > 0:
-                user.requests_standard -= 1
-            else:
+            if user.requests_standard <= 0:
                 raise HTTPException(status_code=403, detail="Лимит запросов Standard исчерпан.")
         
         req.user_id = user.id
@@ -168,15 +163,29 @@ async def search_startups(
     if vector_id_set:
         stmt = stmt.where(Startup.id.in_(vector_id_set))
     elif req.query:
-        # Keyword fallback (ILIKE)
-        like_pattern = f"%{req.query}%"
-        stmt = stmt.where(
-            Startup.company_description.ilike(like_pattern)
-            | Startup.technologies.ilike(like_pattern)
-            | Startup.industries.ilike(like_pattern)
-            | Startup.product_names.ilike(like_pattern)
-            | Startup.name.ilike(like_pattern)
-        )
+        # Keyword fallback (ILIKE with multiple words)
+        import re
+        from sqlalchemy import or_
+        
+        words = re.findall(r'\b\w{4,}\b', req.query.lower())
+        if not words:
+            words = [req.query.lower()]
+            
+        words = words[:10]  # Limit to max 10 words
+        
+        conditions = []
+        for word in words:
+            like_pattern = f"%{word}%"
+            conditions.append(
+                Startup.company_description.ilike(like_pattern) |
+                Startup.technologies.ilike(like_pattern) |
+                Startup.industries.ilike(like_pattern) |
+                Startup.product_names.ilike(like_pattern) |
+                Startup.name.ilike(like_pattern)
+            )
+            
+        if conditions:
+            stmt = stmt.where(or_(*conditions))
 
     # Fetch more candidates than needed for ML re-ranking
     stmt = stmt.order_by(
@@ -292,6 +301,14 @@ async def search_startups(
             technologies=startup.technologies or "",
         )
         session.add(qr)
+
+    if user and results:
+        if req.model_type == "max":
+            user.requests_max -= 1
+        elif req.model_type == "pro":
+            user.requests_pro -= 1
+        else:
+            user.requests_standard -= 1
 
     await session.commit()
 
