@@ -27,6 +27,7 @@ class RegisterRequest(BaseModel):
     role: str = "investor"  # investor or startup
     first_name: Optional[str] = ""
     last_name: Optional[str] = ""
+    middle_name: Optional[str] = ""
     company_name: Optional[str] = ""
     phone: Optional[str] = ""
 
@@ -65,6 +66,7 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
         role=req.role,
         first_name=req.first_name,
         last_name=req.last_name,
+        middle_name=req.middle_name,
         company_name=req.company_name,
         phone=req.phone
     )

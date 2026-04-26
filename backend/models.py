@@ -256,6 +256,7 @@ class WebUser(Base):
     role = Column(String(50), default="investor")  # 'investor', 'startup', 'expert', 'admin'
     first_name = Column(String(255), default="")
     last_name = Column(String(255), default="")
+    middle_name = Column(String(255), default="")
     company_name = Column(String(255), default="")
     phone = Column(String(50), nullable=True)
     

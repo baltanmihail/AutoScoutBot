@@ -23,6 +23,7 @@ class ProfileResponse(BaseModel):
     role: str
     first_name: str
     last_name: str
+    middle_name: Optional[str] = None
     company_name: str
     phone: Optional[str] = None
     tg_username: Optional[str] = None
@@ -31,6 +32,7 @@ class ProfileResponse(BaseModel):
 class ProfileUpdateRequest(BaseModel):
     first_name: str
     last_name: str
+    middle_name: Optional[str] = ""
     company_name: str
     phone: str
 
@@ -66,6 +68,7 @@ async def get_profile(authorization: str = Header(...), session: AsyncSession = 
         role=user.role,
         first_name=user.first_name or "",
         last_name=user.last_name or "",
+        middle_name=user.middle_name or "",
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
@@ -125,6 +128,7 @@ async def link_telegram(
         role=user.role,
         first_name=user.first_name or "",
         last_name=user.last_name or "",
+        middle_name=user.middle_name or "",
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
@@ -141,6 +145,7 @@ async def update_profile(
     
     user.first_name = req.first_name
     user.last_name = req.last_name
+    user.middle_name = req.middle_name
     user.company_name = req.company_name
     user.phone = req.phone
     
@@ -153,6 +158,7 @@ async def update_profile(
         role=user.role,
         first_name=user.first_name or "",
         last_name=user.last_name or "",
+        middle_name=user.middle_name or "",
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
