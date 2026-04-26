@@ -475,6 +475,31 @@
           tg_username: ''
         });
 
+        const fetchProfile = async (token) => {
+          try {
+            const res = await fetch('/api/profile', {
+              headers: {
+                'Authorization': `Bearer ${token}`
+              }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              Object.assign(profile, {
+                email: data.email || '',
+                phone: data.phone || '',
+                first_name: data.first_name || '',
+                last_name: data.last_name || '',
+                company_name: data.company_name || '',
+                tg_username: data.tg_username || ''
+              });
+            } else {
+              console.error('Failed to fetch profile', res.status);
+            }
+          } catch (e) {
+            console.error('Error fetching profile:', e);
+          }
+        };
+
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
           if (!token) {
@@ -484,6 +509,8 @@
           userEmail.value = localStorage.getItem('user_email') || 'investor@example.com';
           userRole.value = localStorage.getItem('user_role') || 'investor';
           profile.email = userEmail.value;
+          
+          fetchProfile(token);
         });
 
         const saveProfile = async () => {
@@ -492,9 +519,30 @@
           saveMessage.value = '';
           
           try {
-            await new Promise(r => setTimeout(r, 1000));
-            saveStatus.value = 'success';
-            saveMessage.value = 'Изменения успешно сохранены';
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch('/api/profile', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                first_name: profile.first_name,
+                last_name: profile.last_name,
+                company_name: profile.company_name,
+                phone: profile.phone
+              })
+            });
+            
+            if (res.ok) {
+              saveStatus.value = 'success';
+              saveMessage.value = 'Изменения успешно сохранены';
+              const data = await res.json();
+              Object.assign(profile, data);
+            } else {
+              const err = await res.json();
+              throw new Error(err.detail || 'Не удалось сохранить');
+            }
           } catch (e) {
             saveStatus.value = 'error';
             saveMessage.value = 'Ошибка сохранения: ' + e.message;
