@@ -21,6 +21,7 @@ class WebUserResponse(BaseModel):
     role: str
     first_name: str
     last_name: str
+    middle_name: Optional[str] = None
     company_name: str
     phone: Optional[str] = None
     tg_username: Optional[str] = None
@@ -60,6 +61,7 @@ async def get_all_users(session: AsyncSession = Depends(get_session)):
             role=u.role,
             first_name=u.first_name,
             last_name=u.last_name,
+            middle_name=u.middle_name,
             company_name=u.company_name,
             phone=u.phone,
             tg_username=u.tg_username,
