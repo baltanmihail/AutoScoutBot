@@ -43,7 +43,7 @@
         <!-- Animated Logo -->
         <a href="javascript:void(0)" class="flex-shrink-0 flex items-center group cursor-pointer" id="logo-container" title="Перейти к поиску">
           <div class="w-8 h-8 rounded bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center font-bold text-white shadow-lg shadow-rose-500/30 overflow-hidden relative transition-colors duration-500 group-hover:from-fuchsia-500 group-hover:to-indigo-600">
-            <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out group-hover:-translate-y-[128px]" id="logo-wheel">
+            <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
               <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">M</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">U</div>
@@ -54,7 +54,7 @@
           <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
             Admin
             <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
-              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal text-blue-400 group-hover:-translate-y-[96px]" id="text-wheel">
+              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal text-blue-400" id="text-wheel">
                 <div class="h-6 flex items-center shrink-0 text-rose-400">Panel</div>
                 <div class="h-6 flex items-center shrink-0 text-emerald-400">Mode</div>
                 <div class="h-6 flex items-center shrink-0 text-purple-400">Users</div>
@@ -312,21 +312,6 @@
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 0;
             const totalItems = 5;
-            let scrollInterval;
-            
-            function doSpin() {
-              currentIndex = (currentIndex + 1) % (totalItems - 1);
-              updateWheel(currentIndex);
-            }
-            
-            function scheduleNextSpin() {
-              const delay = 30000 + Math.random() * 15000;
-              scrollInterval = setTimeout(() => {
-                doSpin();
-                scheduleNextSpin();
-              }, delay);
-            }
-            scheduleNextSpin();
             
             function updateWheel(index) {
               if(!logoWheel || !textWheel) return;
@@ -344,19 +329,31 @@
               }, 300);
             }
             
-            logoContainer.addEventListener('mouseenter', () => {
-              clearTimeout(scrollInterval);
-              updateWheel(4); // AI
+            // Mouse wheel scroll
+            logoContainer.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              if (e.deltaY > 0) {
+                currentIndex = (currentIndex + 1) % totalItems;
+              } else {
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+              }
+              updateWheel(currentIndex);
             });
             
             logoContainer.addEventListener('mouseleave', () => {
               currentIndex = 0; // Web
               updateWheel(0);
-              scheduleNextSpin();
             });
             
+            // Click redirects based on current index
             logoContainer.addEventListener('click', () => {
-              window.location.href = '/search.html';
+              switch(currentIndex) {
+                case 0: window.location.href = '/admin.html'; break; // Panel
+                case 1: alert('Смена режима интерфейса скоро появится.'); break; // Mode
+                case 2: alert('Фильтрация пользователей активирована (пример).'); break; // Users
+                case 3: alert('Статистика на главной панели.'); break; // Stats
+                case 4: window.location.href = '/search.html'; break; // AI
+              }
             });
           }
         });

@@ -262,6 +262,7 @@ class WebUser(Base):
     
     is_verified = Column(Boolean, default=False)
     verification_code = Column(String(6), nullable=True)
+    phone_verification_code = Column(String(6), nullable=True)
     
     requests_standard = Column(Integer, default=3)
     requests_pro = Column(Integer, default=0)

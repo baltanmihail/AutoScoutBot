@@ -317,13 +317,18 @@
             <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
               <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
             </div>
-            <h4 class="text-lg font-bold text-white">Подтверждение Email</h4>
-            <p class="text-sm text-slate-400 mt-2">Мы отправили 6-значный код на <span class="text-white font-medium">{{ email }}</span>. Пожалуйста, введите его ниже.</p>
+            <h4 class="text-lg font-bold text-white">Подтверждение аккаунта</h4>
+            <p class="text-sm text-slate-400 mt-2">Мы отправили 6-значный код на <span class="text-white font-medium">{{ email }}</span><span v-if="phone"> и СМС на <span class="text-white font-medium">{{ phone }}</span></span>. Пожалуйста, введите {{ phone ? 'их' : 'его' }} ниже.</p>
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-slate-300 mb-2 text-center">Код подтверждения</label>
-            <input v-model="verificationCode" type="text" maxlength="6" required class="w-full px-4 py-4 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-center text-2xl font-mono tracking-[0.5em]">
+            <label class="block text-sm font-medium text-slate-300 mb-2 text-center">Код подтверждения (Email)</label>
+            <input v-model="emailVerificationCode" type="text" maxlength="6" required class="w-full px-4 py-4 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-center text-2xl font-mono tracking-[0.5em]">
+          </div>
+
+          <div v-if="phone">
+            <label class="block text-sm font-medium text-slate-300 mb-2 text-center mt-4">Код подтверждения (СМС)</label>
+            <input v-model="phoneVerificationCode" type="text" maxlength="6" required class="w-full px-4 py-4 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-center text-2xl font-mono tracking-[0.5em]">
           </div>
 
           <div v-if="errorMessage" class="p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl text-center">
@@ -377,7 +382,8 @@
         const showLogin = ref(false);
         const isRegistering = ref(false);
         const showVerification = ref(false);
-        const verificationCode = ref('');
+        const emailVerificationCode = ref('');
+        const phoneVerificationCode = ref('');
         const email = ref('');
         const password = ref('');
         const phone = ref('');
@@ -597,10 +603,18 @@
           errorMessage.value = '';
 
           try {
+            const payload = { 
+              email: email.value, 
+              email_code: emailVerificationCode.value 
+            };
+            if (phone.value) {
+              payload.phone_code = phoneVerificationCode.value;
+            }
+
             const response = await fetch('/api/auth/verify', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: email.value, code: verificationCode.value })
+              body: JSON.stringify(payload)
             });
 
             const data = await response.json();
@@ -620,7 +634,8 @@
             showVerification.value = false;
             
             password.value = '';
-            verificationCode.value = '';
+            emailVerificationCode.value = '';
+            phoneVerificationCode.value = '';
             if (data.role === 'admin') {
               window.location.href = '/admin.html';
             } else {
@@ -646,7 +661,8 @@
           showLogin,
           isRegistering,
           showVerification,
-          verificationCode,
+          emailVerificationCode,
+          phoneVerificationCode,
           email,
           password,
           phone,

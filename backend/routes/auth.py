@@ -25,7 +25,8 @@ import random
 
 class VerifyCodeRequest(BaseModel):
     email: str
-    code: str
+    email_code: str
+    phone_code: Optional[str] = None
 
 class SendCodeRequest(BaseModel):
     email: str
@@ -75,7 +76,10 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
         else:
             # Re-generate code for unverified user
             verification_code = str(random.randint(100000, 999999))
+            phone_verification_code = str(random.randint(100000, 999999)) if req.phone else None
+            
             existing_user.verification_code = verification_code
+            existing_user.phone_verification_code = phone_verification_code
             existing_user.hashed_password = req.password
             existing_user.role = req.role
             existing_user.first_name = req.first_name
@@ -85,10 +89,14 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
             existing_user.phone = req.phone
             
             await session.commit()
-            logger.info(f"VERIFICATION CODE for {req.email}: {verification_code}")
-            return VerifyResponse(message="Код отправлен на почту", email=req.email)
+            logger.info(f"EMAIL VERIFICATION CODE for {req.email}: {verification_code}")
+            if phone_verification_code:
+                logger.info(f"SMS VERIFICATION CODE for {req.phone}: {phone_verification_code}")
+                
+            return VerifyResponse(message="Коды отправлены на почту и телефон", email=req.email)
 
     verification_code = str(random.randint(100000, 999999))
+    phone_verification_code = str(random.randint(100000, 999999)) if req.phone else None
     
     # TODO: bcrypt
     new_user = WebUser(
@@ -101,15 +109,18 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
         company_name=req.company_name,
         phone=req.phone,
         is_verified=False,
-        verification_code=verification_code
+        verification_code=verification_code,
+        phone_verification_code=phone_verification_code
     )
     session.add(new_user)
     await session.commit()
     
-    # Mocking email sending
-    logger.info(f"VERIFICATION CODE for {req.email}: {verification_code}")
+    # Mocking email & sms sending
+    logger.info(f"EMAIL VERIFICATION CODE for {req.email}: {verification_code}")
+    if phone_verification_code:
+        logger.info(f"SMS VERIFICATION CODE for {req.phone}: {phone_verification_code}")
 
-    return VerifyResponse(message="Код отправлен на почту", email=req.email)
+    return VerifyResponse(message="Коды отправлены на почту и телефон", email=req.email)
 
 
 @router.post("/verify", response_model=AuthResponse)
@@ -123,11 +134,15 @@ async def verify_code(req: VerifyCodeRequest, session: AsyncSession = Depends(ge
     if user.is_verified:
         raise HTTPException(status_code=400, detail="Пользователь уже верифицирован")
         
-    if user.verification_code != req.code:
-        raise HTTPException(status_code=400, detail="Неверный код подтверждения")
+    if user.verification_code != req.email_code:
+        raise HTTPException(status_code=400, detail="Неверный email код подтверждения")
+        
+    if user.phone_verification_code and user.phone_verification_code != req.phone_code:
+        raise HTTPException(status_code=400, detail="Неверный СМС код подтверждения")
         
     user.is_verified = True
     user.verification_code = None
+    user.phone_verification_code = None
     
     await session.commit()
     await session.refresh(user)

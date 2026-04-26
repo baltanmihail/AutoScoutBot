@@ -75,7 +75,7 @@
         <!-- Animated Logo -->
         <a href="javascript:void(0)" class="flex-shrink-0 flex items-center group cursor-pointer" id="logo-container" title="Перейти к поиску">
           <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-colors duration-500 group-hover:from-fuchsia-500 group-hover:to-indigo-600">
-            <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out group-hover:-translate-y-[128px]" id="logo-wheel">
+            <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
               <div class="h-8 w-8 flex items-center justify-center shrink-0">W</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">B</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
@@ -86,7 +86,7 @@
           <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
             AutoScout
             <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
-              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal text-blue-400 group-hover:-translate-y-[96px]" id="text-wheel">
+              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal text-blue-400" id="text-wheel">
                 <div class="h-6 flex items-center shrink-0 text-blue-400">Web</div>
                 <div class="h-6 flex items-center shrink-0 text-emerald-400">Bot</div>
                 <div class="h-6 flex items-center shrink-0 text-purple-400">App</div>
@@ -352,7 +352,7 @@
                     <div class="flex flex-col gap-1">
                       <span class="text-[10px] text-slate-300"><span class="text-slate-500">TRL:</span> 7 (Прототип)</span>
                       <span class="text-[10px] text-slate-300"><span class="text-slate-500">Команда:</span> 12 чел. (Сильная)</span>
-                      <span class="text-[9px] text-blue-400 font-semibold"><span class="text-slate-500 font-normal">Тренд:</span> +150% (Хайп)</span>
+                      <span class="text-[9px] text-blue-400 font-semibold"><span class="text-slate-500 font-normal">Тренд:</span> +150% (Активный рост)</span>
                     </div>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap">
@@ -373,7 +373,7 @@
                       <div class="w-full bg-dark-900 rounded-full h-1 border border-white/5 overflow-hidden">
                         <div class="bg-gradient-to-r from-emerald-500 to-emerald-400 h-1 rounded-full" style="width: 20%"></div>
                       </div>
-                      <span class="text-[9px] text-slate-500 text-center">Безопасно</span>
+                      <span class="text-[9px] text-slate-500 text-center">Низкий</span>
                     </div>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-right">
@@ -431,7 +431,7 @@
                     <div class="flex flex-col gap-1">
                       <span class="text-[10px] text-slate-300"><span class="text-slate-500">TRL:</span> 4 (MVP)</span>
                       <span class="text-[10px] text-slate-300"><span class="text-slate-500">Рынок:</span> Перегрет (Red Ocean)</span>
-                      <span class="text-[9px] text-amber-400 font-semibold"><span class="text-slate-500 font-normal">Тренд:</span> +12% (Спад)</span>
+                      <span class="text-[9px] text-amber-400 font-semibold"><span class="text-slate-500 font-normal">Тренд:</span> -12% (Нисходящий)</span>
                     </div>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap">
@@ -452,7 +452,7 @@
                       <div class="w-full bg-dark-900 rounded-full h-1 border border-white/5 overflow-hidden">
                         <div class="bg-gradient-to-r from-rose-500 to-rose-400 h-1 rounded-full shadow-[0_0_10px_rgba(244,63,94,0.5)]" style="width: 80%"></div>
                       </div>
-                      <span class="text-[9px] text-slate-500 text-center">Опасно</span>
+                      <span class="text-[9px] text-slate-500 text-center">Высокий</span>
                     </div>
                   </td>
                   <td class="px-4 py-4 whitespace-nowrap text-right">
@@ -627,7 +627,7 @@
             }
           }).catch(console.error);
           
-          // Logo Animation Logic (Slow trigger 1-2 times a min, fast to AI on hover)
+          // Logo Animation Logic (Scroll to change mode)
           const logoWheel = document.getElementById('logo-wheel');
           const textWheel = document.getElementById('text-wheel');
           const logoContainer = document.getElementById('logo-container');
@@ -635,22 +635,6 @@
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 0;
             const totalItems = 5; // Web, Bot, App, Com, AI
-            let scrollInterval;
-            
-            function doSpin() {
-              currentIndex = (currentIndex + 1) % (totalItems - 1); // Cycle through 0-3 (Web, Bot, App, Com)
-              updateWheel(currentIndex);
-            }
-            
-            // Random spin every 30-45 seconds
-            function scheduleNextSpin() {
-              const delay = 30000 + Math.random() * 15000;
-              scrollInterval = setTimeout(() => {
-                doSpin();
-                scheduleNextSpin();
-              }, delay);
-            }
-            scheduleNextSpin();
             
             function updateWheel(index) {
               if(!logoWheel || !textWheel) return;
@@ -668,20 +652,31 @@
               }, 300);
             }
             
-            logoContainer.addEventListener('mouseenter', () => {
-              clearTimeout(scrollInterval);
-              updateWheel(4); // Jump to "AI"
+            // Mouse wheel scroll
+            logoContainer.addEventListener('wheel', (e) => {
+              e.preventDefault();
+              if (e.deltaY > 0) {
+                currentIndex = (currentIndex + 1) % totalItems;
+              } else {
+                currentIndex = (currentIndex - 1 + totalItems) % totalItems;
+              }
+              updateWheel(currentIndex);
             });
             
             logoContainer.addEventListener('mouseleave', () => {
               currentIndex = 0; // Back to "Web"
               updateWheel(0);
-              scheduleNextSpin();
             });
             
-            // Click redirects to search
+            // Click redirects based on current index
             logoContainer.addEventListener('click', () => {
-              window.location.href = '/search.html';
+              switch(currentIndex) {
+                case 0: window.location.href = '/dashboard.html'; break; // Web
+                case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
+                case 2: alert('Мобильное приложение находится в разработке.'); break; // App
+                case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
+                case 4: window.location.href = '/search.html'; break; // AI
+              }
             });
           }
         });
