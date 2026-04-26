@@ -399,3 +399,27 @@ async def get_search_history_details(
         results=results,
         total_candidates=len(results),
     )
+
+@router.delete("/history/{query_id}")
+async def delete_search_history(
+    query_id: int,
+    authorization: str = Header(...),
+    session: AsyncSession = Depends(get_session),
+):
+    """Удаляет поисковый запрос из истории."""
+    user = await get_current_user_from_token(authorization, session)
+    
+    q_stmt = select(Query).where(Query.id == query_id, Query.user_id == user.id)
+    q = (await session.execute(q_stmt)).scalars().first()
+    if not q:
+        raise HTTPException(status_code=404, detail="Запрос не найден")
+        
+    # Delete related QueryResults first
+    from sqlalchemy import delete
+    await session.execute(delete(QueryResult).where(QueryResult.query_id == query_id))
+    
+    # Delete the Query itself
+    await session.delete(q)
+    await session.commit()
+    
+    return {"status": "success", "detail": "Запрос удален"}

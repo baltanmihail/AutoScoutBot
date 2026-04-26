@@ -268,10 +268,15 @@
                 <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="flex items-start justify-between relative z-10">
                   <span class="text-xs text-slate-500">{{ new Date(item.created_at).toLocaleDateString('ru-RU', {day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit'}) }}</span>
-                  <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium border uppercase tracking-wider" 
-                        :class="item.model_type === 'max' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : (item.model_type === 'pro' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-slate-300 border-slate-700')">
-                    {{ item.model_type }}
-                  </span>
+                  <div class="flex items-center">
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-medium border uppercase tracking-wider" 
+                          :class="item.model_type === 'max' ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : (item.model_type === 'pro' ? 'bg-blue-500/20 text-blue-400 border-blue-500/30' : 'bg-slate-800 text-slate-300 border-slate-700')">
+                      {{ item.model_type }}
+                    </span>
+                    <button @click.stop="deleteHistory(item.id)" class="text-slate-500 hover:text-red-400 transition-colors ml-2" title="Удалить из истории">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                  </div>
                 </div>
                 <p class="text-sm font-medium text-white line-clamp-2 leading-relaxed relative z-10 group-hover:text-blue-100 transition-colors">
                   {{ item.query_text }}
@@ -471,6 +476,27 @@
             isSearching.value = false;
           }
         };
+
+        const deleteHistory = async (queryId) => {
+          if (!confirm('Вы уверены, что хотите удалить этот запрос из истории?')) return;
+          try {
+            const token = localStorage.getItem('auth_token');
+            const res = await fetch(`/api/search/history/${queryId}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+              searchHistory.value = searchHistory.value.filter(h => h.id !== queryId);
+            } else {
+              const data = await res.json();
+              alert(data.detail || 'Ошибка при удалении');
+            }
+          } catch (e) {
+            console.error("Error deleting history", e);
+            alert('Ошибка при удалении');
+          }
+        };
+
 const fetchProfileLimits = (token) => {
           fetch('/api/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
@@ -612,6 +638,7 @@ const fetchProfileLimits = (token) => {
           searchHistory,
           fetchSearchHistory,
           loadHistory,
+          deleteHistory,
           logout,
           searchInput,
           resizeTextarea,

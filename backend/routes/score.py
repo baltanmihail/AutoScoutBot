@@ -46,6 +46,37 @@ def _startup_to_feature_row(startup: Startup, financials: list) -> dict:
     return row
 
 
+@router.get("/top")
+async def get_top_startups(
+    limit: int = 5,
+    session: AsyncSession = Depends(get_session),
+):
+    """Возвращает топ стартапов по ML-скору или общему баллу."""
+    stmt = (
+        select(Startup, StartupScore)
+        .outerjoin(StartupScore, Startup.id == StartupScore.startup_id)
+        .where(Startup.status != "")
+        .order_by(StartupScore.score_overall.desc().nullslast())
+        .limit(limit)
+    )
+    rows = (await session.execute(stmt)).all()
+    
+    results = []
+    for startup, sc in rows:
+        results.append({
+            "id": startup.id,
+            "name": startup.name,
+            "inn": startup.inn,
+            "cluster": startup.cluster,
+            "status": startup.status,
+            "year_founded": startup.year_founded,
+            "score_overall": sc.score_overall if sc else 0,
+            "ml_score": sc.ml_score if sc else 0,
+            "company_description": startup.company_description or startup.technologies or "Описание отсутствует."
+        })
+        
+    return {"top_startups": results}
+
 @router.post("/", response_model=ScoreResponse)
 async def get_score(
     req: ScoreRequest,
