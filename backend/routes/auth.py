@@ -28,6 +28,7 @@ class RegisterRequest(BaseModel):
     first_name: Optional[str] = ""
     last_name: Optional[str] = ""
     company_name: Optional[str] = ""
+    phone: Optional[str] = ""
 
 class TelegramAuthRequest(BaseModel):
     id: int
@@ -64,7 +65,8 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
         role=req.role,
         first_name=req.first_name,
         last_name=req.last_name,
-        company_name=req.company_name
+        company_name=req.company_name,
+        phone=req.phone
     )
     session.add(new_user)
     await session.commit()

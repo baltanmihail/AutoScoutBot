@@ -257,6 +257,7 @@ class WebUser(Base):
     first_name = Column(String(255), default="")
     last_name = Column(String(255), default="")
     company_name = Column(String(255), default="")
+    phone = Column(String(50), nullable=True)
     
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())

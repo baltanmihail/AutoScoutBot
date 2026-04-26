@@ -22,6 +22,7 @@ class WebUserResponse(BaseModel):
     first_name: str
     last_name: str
     company_name: str
+    phone: Optional[str] = None
     tg_username: Optional[str] = None
     created_at: str
 
@@ -51,6 +52,7 @@ async def get_all_users(session: AsyncSession = Depends(get_session)):
             first_name=u.first_name,
             last_name=u.last_name,
             company_name=u.company_name,
+            phone=u.phone,
             tg_username=u.tg_username,
             created_at=str(u.created_at)
         )
