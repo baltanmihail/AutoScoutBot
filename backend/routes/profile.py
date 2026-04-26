@@ -28,6 +28,9 @@ class ProfileResponse(BaseModel):
     phone: Optional[str] = None
     tg_username: Optional[str] = None
     tg_photo_url: Optional[str] = None
+    requests_standard: int = 3
+    requests_pro: int = 0
+    requests_max: int = 0
 
 class ProfileUpdateRequest(BaseModel):
     first_name: str
@@ -72,7 +75,10 @@ async def get_profile(authorization: str = Header(...), session: AsyncSession = 
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
-        tg_photo_url=user.tg_photo_url
+        tg_photo_url=user.tg_photo_url,
+        requests_standard=user.requests_standard,
+        requests_pro=user.requests_pro,
+        requests_max=user.requests_max
     )
 
 @router.post("/link_telegram", response_model=ProfileResponse)
@@ -132,7 +138,10 @@ async def link_telegram(
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
-        tg_photo_url=user.tg_photo_url
+        tg_photo_url=user.tg_photo_url,
+        requests_standard=user.requests_standard,
+        requests_pro=user.requests_pro,
+        requests_max=user.requests_max
     )
 @router.put("", response_model=ProfileResponse)
 async def update_profile(
@@ -162,5 +171,8 @@ async def update_profile(
         company_name=user.company_name or "",
         phone=user.phone,
         tg_username=user.tg_username,
-        tg_photo_url=user.tg_photo_url
+        tg_photo_url=user.tg_photo_url,
+        requests_standard=user.requests_standard,
+        requests_pro=user.requests_pro,
+        requests_max=user.requests_max
     )

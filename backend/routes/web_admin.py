@@ -25,10 +25,19 @@ class WebUserResponse(BaseModel):
     phone: Optional[str] = None
     tg_username: Optional[str] = None
     created_at: str
+    requests_standard: int = 3
+    requests_pro: int = 0
+    requests_max: int = 0
 
 class UserRoleUpdateRequest(BaseModel):
     user_id: int
     new_role: str  # 'investor', 'startup', 'admin', 'blocked'
+
+class UpdateRequestsLimitsRequest(BaseModel):
+    user_id: int
+    requests_standard: int
+    requests_pro: int
+    requests_max: int
 
 class AdminDashboardStats(BaseModel):
     total_users: int
@@ -54,7 +63,10 @@ async def get_all_users(session: AsyncSession = Depends(get_session)):
             company_name=u.company_name,
             phone=u.phone,
             tg_username=u.tg_username,
-            created_at=str(u.created_at)
+            created_at=str(u.created_at),
+            requests_standard=u.requests_standard,
+            requests_pro=u.requests_pro,
+            requests_max=u.requests_max
         )
         for u in users
     ]
@@ -77,6 +89,23 @@ async def update_user_role(req: UserRoleUpdateRequest, session: AsyncSession = D
     await session.commit()
     
     return {"status": "success", "user_id": user.id, "new_role": user.role}
+
+@router.post("/users/limits")
+async def update_user_limits(req: UpdateRequestsLimitsRequest, session: AsyncSession = Depends(get_session)):
+    """Изменить лимиты запросов пользователя"""
+    result = await session.execute(select(WebUser).where(WebUser.id == req.user_id))
+    user = result.scalars().first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        
+    user.requests_standard = req.requests_standard
+    user.requests_pro = req.requests_pro
+    user.requests_max = req.requests_max
+    
+    await session.commit()
+    
+    return {"status": "success"}
 
 
 @router.get("/stats", response_model=AdminDashboardStats)

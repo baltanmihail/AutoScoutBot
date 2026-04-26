@@ -21,6 +21,15 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+import random
+
+class VerifyCodeRequest(BaseModel):
+    email: str
+    code: str
+
+class SendCodeRequest(BaseModel):
+    email: str
+
 class RegisterRequest(BaseModel):
     email: str
     password: str
@@ -49,16 +58,38 @@ class AuthResponse(BaseModel):
     tg_photo_url: Optional[str] = None
 
 
-@router.post("/register", response_model=AuthResponse)
+class VerifyResponse(BaseModel):
+    message: str
+    email: str
+
+@router.post("/register", response_model=VerifyResponse)
 async def register(req: RegisterRequest, session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(WebUser).where(WebUser.email == req.email))
     existing_user = result.scalars().first()
     if existing_user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Пользователь с таким email уже зарегистрирован."
-        )
+        if existing_user.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Пользователь с таким email уже зарегистрирован."
+            )
+        else:
+            # Re-generate code for unverified user
+            verification_code = str(random.randint(100000, 999999))
+            existing_user.verification_code = verification_code
+            existing_user.hashed_password = req.password
+            existing_user.role = req.role
+            existing_user.first_name = req.first_name
+            existing_user.last_name = req.last_name
+            existing_user.middle_name = req.middle_name
+            existing_user.company_name = req.company_name
+            existing_user.phone = req.phone
+            
+            await session.commit()
+            logger.info(f"VERIFICATION CODE for {req.email}: {verification_code}")
+            return VerifyResponse(message="Код отправлен на почту", email=req.email)
 
+    verification_code = str(random.randint(100000, 999999))
+    
     # TODO: bcrypt
     new_user = WebUser(
         email=req.email,
@@ -68,20 +99,46 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
         last_name=req.last_name,
         middle_name=req.middle_name,
         company_name=req.company_name,
-        phone=req.phone
+        phone=req.phone,
+        is_verified=False,
+        verification_code=verification_code
     )
     session.add(new_user)
     await session.commit()
-    await session.refresh(new_user)
+    
+    # Mocking email sending
+    logger.info(f"VERIFICATION CODE for {req.email}: {verification_code}")
 
-    fake_token = f"fake_jwt_token_for_{new_user.id}"
+    return VerifyResponse(message="Код отправлен на почту", email=req.email)
+
+
+@router.post("/verify", response_model=AuthResponse)
+async def verify_code(req: VerifyCodeRequest, session: AsyncSession = Depends(get_session)):
+    result = await session.execute(select(WebUser).where(WebUser.email == req.email))
+    user = result.scalars().first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
+        
+    if user.is_verified:
+        raise HTTPException(status_code=400, detail="Пользователь уже верифицирован")
+        
+    if user.verification_code != req.code:
+        raise HTTPException(status_code=400, detail="Неверный код подтверждения")
+        
+    user.is_verified = True
+    user.verification_code = None
+    
+    await session.commit()
+    await session.refresh(user)
+    
+    fake_token = f"fake_jwt_token_for_{user.id}"
 
     return AuthResponse(
         token=fake_token,
-        role=new_user.role,
-        email=new_user.email or ""
+        role=user.role,
+        email=user.email or ""
     )
-
 
 @router.post("/login", response_model=AuthResponse)
 async def login(req: LoginRequest, session: AsyncSession = Depends(get_session)):
@@ -94,6 +151,12 @@ async def login(req: LoginRequest, session: AsyncSession = Depends(get_session))
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Неверный email или пароль."
+        )
+        
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Электронная почта не подтверждена. Пожалуйста, пройдите регистрацию заново, чтобы получить код."
         )
 
     fake_token = f"fake_jwt_token_for_{user.id}"

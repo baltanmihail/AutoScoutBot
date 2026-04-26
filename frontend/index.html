@@ -254,7 +254,7 @@
       
       <!-- Modal Body -->
       <div class="p-8 relative z-10 overflow-y-auto">
-        <form @submit.prevent="submitAuth" class="space-y-5">
+        <form v-if="!showVerification" @submit.prevent="submitAuth" class="space-y-5">
           <div>
             <label class="block text-sm font-medium text-slate-300 mb-2">Email</label>
             <input v-model="email" type="email" required class="w-full px-4 py-3 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all">
@@ -306,10 +306,42 @@
           </button>
         </form>
 
-        <div class="mt-6 pt-6 border-t border-white/10">
+        <div v-if="!showVerification" class="mt-6 pt-6 border-t border-white/10">
           <div class="text-center text-sm text-slate-400 mb-4">Или войдите через</div>
           <div id="telegram-login-container" class="flex justify-center"></div>
         </div>
+
+        <!-- Verification Form -->
+        <form v-if="showVerification" @submit.prevent="submitVerification" class="space-y-5">
+          <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-blue-500/30">
+              <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+            <h4 class="text-lg font-bold text-white">Подтверждение Email</h4>
+            <p class="text-sm text-slate-400 mt-2">Мы отправили 6-значный код на <span class="text-white font-medium">{{ email }}</span>. Пожалуйста, введите его ниже.</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-slate-300 mb-2 text-center">Код подтверждения</label>
+            <input v-model="verificationCode" type="text" maxlength="6" required class="w-full px-4 py-4 bg-slate-900/50 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-center text-2xl font-mono tracking-[0.5em]">
+          </div>
+
+          <div v-if="errorMessage" class="p-4 bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl text-center">
+            {{ errorMessage }}
+          </div>
+
+          <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] mt-6 flex justify-center items-center">
+            <svg v-if="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {{ isLoading ? 'Проверка...' : 'Подтвердить' }}
+          </button>
+          
+          <div class="text-center mt-4">
+            <button type="button" @click="showVerification = false; errorMessage = ''" class="text-sm text-slate-400 hover:text-white transition-colors">Изменить email или войти</button>
+          </div>
+        </form>
       </div>
       
       <!-- Modal Footer -->
@@ -344,6 +376,8 @@
       setup() {
         const showLogin = ref(false);
         const isRegistering = ref(false);
+        const showVerification = ref(false);
+        const verificationCode = ref('');
         const email = ref('');
         const password = ref('');
         const phone = ref('');
@@ -519,7 +553,20 @@
             const data = await response.json();
 
             if (!response.ok) {
+              if (response.status === 403 && !isRegistering.value) {
+                // Not verified, show verification form and wait for code
+                errorMessage.value = data.detail;
+                showVerification.value = true;
+                return;
+              }
               throw new Error(data.detail || 'Ошибка авторизации');
+            }
+
+            if (isRegistering.value) {
+              // Registration returns verification message
+              showVerification.value = true;
+              errorMessage.value = '';
+              return;
             }
 
             localStorage.setItem('auth_token', data.token);
@@ -545,6 +592,47 @@
           }
         };
 
+        const submitVerification = async () => {
+          isLoading.value = true;
+          errorMessage.value = '';
+
+          try {
+            const response = await fetch('/api/auth/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: email.value, code: verificationCode.value })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+              throw new Error(data.detail || 'Неверный код подтверждения');
+            }
+
+            localStorage.setItem('auth_token', data.token);
+            localStorage.setItem('user_email', data.email);
+            localStorage.setItem('user_role', data.role);
+            
+            isLoggedIn.value = true;
+            userEmail.value = data.email;
+            userRole.value = data.role;
+            showLogin.value = false;
+            showVerification.value = false;
+            
+            password.value = '';
+            verificationCode.value = '';
+            if (data.role === 'admin') {
+              window.location.href = '/admin.html';
+            } else {
+              window.location.href = '/dashboard.html';
+            }
+          } catch (error) {
+            errorMessage.value = error.message;
+          } finally {
+            isLoading.value = false;
+          }
+        };
+
         const logout = () => {
           localStorage.removeItem('auth_token');
           localStorage.removeItem('user_email');
@@ -557,6 +645,8 @@
         return {
           showLogin,
           isRegistering,
+          showVerification,
+          verificationCode,
           email,
           password,
           phone,
@@ -568,6 +658,7 @@
           userEmail,
           userRole,
           submitAuth,
+          submitVerification,
           logout
         }
       }

@@ -260,6 +260,13 @@ class WebUser(Base):
     company_name = Column(String(255), default="")
     phone = Column(String(50), nullable=True)
     
+    is_verified = Column(Boolean, default=False)
+    verification_code = Column(String(6), nullable=True)
+    
+    requests_standard = Column(Integer, default=3)
+    requests_pro = Column(Integer, default=0)
+    requests_max = Column(Integer, default=0)
+    
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
