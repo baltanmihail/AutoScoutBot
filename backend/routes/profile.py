@@ -31,8 +31,10 @@ class ProfileResponse(BaseModel):
     requests_standard: int = 3
     requests_pro: int = 0
     requests_max: int = 0
+    is_verified: bool = False
 
 class ProfileUpdateRequest(BaseModel):
+    email: str
     first_name: str
     last_name: str
     middle_name: Optional[str] = ""
@@ -78,7 +80,8 @@ async def get_profile(authorization: str = Header(...), session: AsyncSession = 
         tg_photo_url=user.tg_photo_url,
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
-        requests_max=user.requests_max
+        requests_max=user.requests_max,
+        is_verified=user.is_verified
     )
 
 @router.post("/link_telegram", response_model=ProfileResponse)
@@ -141,7 +144,8 @@ async def link_telegram(
         tg_photo_url=user.tg_photo_url,
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
-        requests_max=user.requests_max
+        requests_max=user.requests_max,
+        is_verified=user.is_verified
     )
 @router.put("", response_model=ProfileResponse)
 async def update_profile(
@@ -152,6 +156,14 @@ async def update_profile(
     """Обновление данных профиля"""
     user = await get_current_user_from_token(authorization, session)
     
+    if req.email and req.email != user.email:
+        result = await session.execute(select(WebUser).where(WebUser.email == req.email))
+        existing_email_user = result.scalars().first()
+        if existing_email_user and existing_email_user.id != user.id:
+            raise HTTPException(status_code=400, detail="Этот email уже занят другим пользователем")
+        user.email = req.email
+        user.is_verified = False
+        
     user.first_name = req.first_name
     user.last_name = req.last_name
     user.middle_name = req.middle_name
@@ -174,5 +186,6 @@ async def update_profile(
         tg_photo_url=user.tg_photo_url,
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
-        requests_max=user.requests_max
+        requests_max=user.requests_max,
+        is_verified=user.is_verified
     )

@@ -218,6 +218,14 @@
               
               <!-- Contact Info -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="md:col-span-2">
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-slate-300">Email</label>
+                    <span v-if="profile.is_verified && profile.email && !profile.email.includes('@telegram.local')" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Подтвержден</span>
+                    <span v-else-if="profile.email && !profile.email.includes('@telegram.local')" class="text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Не подтвержден</span>
+                  </div>
+                  <input v-model="profile.email" type="email" class="w-full px-4 py-2.5 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all">
+                </div>
                 <div>
                   <label class="block text-sm font-medium text-slate-300 mb-2">Имя</label>
                   <input v-model="profile.first_name" type="text" class="w-full px-4 py-2.5 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all">
@@ -231,7 +239,11 @@
                   <input v-model="profile.middle_name" type="text" class="w-full px-4 py-2.5 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all">
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-slate-300 mb-2">Номер телефона</label>
+                  <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-slate-300">Номер телефона</label>
+                    <span v-if="profile.is_verified && profile.phone" class="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Подтвержден</span>
+                    <span v-else-if="profile.phone" class="text-[10px] font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded uppercase tracking-wider">Не подтвержден</span>
+                  </div>
                   <input v-model="profile.phone" type="tel" class="w-full px-4 py-2.5 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none transition-all" placeholder="+7 (999) 000-00-00">
                 </div>
                 <div class="md:col-span-2">
@@ -324,7 +336,8 @@
           last_name: '',
           middle_name: '',
           company_name: '',
-          tg_username: ''
+          tg_username: '',
+          is_verified: false
         });
 
         const fetchProfile = async (token) => {
@@ -343,7 +356,8 @@
                 last_name: data.last_name || '',
                 middle_name: data.middle_name || '',
                 company_name: data.company_name || '',
-                tg_username: data.tg_username || ''
+                tg_username: data.tg_username || '',
+                is_verified: data.is_verified || false
               });
               
               if (!profile.tg_username) {
@@ -523,6 +537,7 @@
                 'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({
+                email: profile.email,
                 first_name: profile.first_name,
                 last_name: profile.last_name,
                 middle_name: profile.middle_name,
