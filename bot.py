@@ -274,6 +274,8 @@ async def main():
                 print(f"🌐 Авто-найденный прокси: {auto_proxy}")
                 # Используем обычную сессию aiohttp для http прокси
                 from aiogram.client.session.aiohttp import AiohttpSession
+                
+                # Для aiohttp сессии нужен URL без http:// для параметра proxy
                 bot.session = AiohttpSession(proxy=auto_proxy)
         except Exception as e:
             logger.error(f"Ошибка авто-прокси: {e}")
