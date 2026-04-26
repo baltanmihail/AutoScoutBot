@@ -160,11 +160,14 @@
           Интеллектуальный <br/>
           <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-500">ML-скаутинг</span> на открытых данных
         </h1>
-        <p class="text-lg md:text-xl text-slate-400 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-          Анализ на основе данных БФО и ЕГРЮЛ с объяснимостью SHAP. 
+        <p class="text-lg md:text-xl text-slate-400 mb-6 max-w-3xl mx-auto font-light leading-relaxed">
+          Анализ на основе данных <span class="text-slate-300 border-b border-slate-500/50 border-dashed cursor-help" title="Данные из открытых источников через API">ЕГРЮЛ (Checko)</span> и <span class="text-slate-300 border-b border-slate-500/50 border-dashed cursor-help" title="Бухгалтерская отчетность при наличии за последний период">БФО</span> с объяснимостью SHAP. 
           Мы проанализировали <span class="font-semibold text-emerald-400">5166</span> инновационных стартапов 
           по <span class="font-semibold text-purple-400">39+</span> критериям. 
-          Точность предиктивной модели составляет <span class="font-semibold text-blue-400">95%</span>.
+          Точность предиктивной модели составляет <span class="font-semibold text-blue-400 cursor-help border-b border-blue-400/50 border-dashed" title="Получено на тестовой выборке при классификации успешных стартапов и банкротств на исторических данных">95%*</span>.
+        </p>
+        <p class="text-xs text-slate-500 mb-12 max-w-3xl mx-auto">
+          * Точность 95% — это метрика Accuracy, полученная в ходе бэктестинга модели градиентного бустинга на исторических данных об успешных выходах и банкротствах российских компаний.
         </p>
         <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mt-12 relative">
           <!-- Abstract 3D elements (CSS approximations) -->
@@ -187,7 +190,7 @@
   <footer class="glass relative z-10 border-t border-white/10 mt-auto">
     <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="flex items-center text-slate-500 text-sm">
-        <span>© 2026 AutoScout Web. Разработка: <span class="font-medium text-slate-400">МГТУ им. Н.Э. Баумана (ИБМ7-61Б)</span>. Авторы: <span class="font-medium text-slate-400">Балтян М., Галкин З.</span></span>
+        <span>© 2026 AutoScout Web. Разработка: <span class="font-medium text-slate-400">Балтян Михаил (МГТУ им. Н.Э. Баумана)</span></span>
       </div>
       <div class="flex space-x-6">
         <a href="#" class="text-slate-500 hover:text-slate-300 transition-colors">Privacy Policy</a>
