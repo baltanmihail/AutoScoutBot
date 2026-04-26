@@ -84,6 +84,9 @@
         </div>
         <div class="flex items-center space-x-4" v-else v-cloak>
           <span class="text-sm font-medium text-slate-400">{{ userEmail }}</span>
+          <a v-if="userRole === 'admin'" href="/admin.html" class="bg-rose-600 hover:bg-rose-500 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-[0_0_15px_rgba(244,63,94,0.4)]">
+            Админ-панель
+          </a>
           <a href="/dashboard.html" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-[0_0_15px_rgba(37,99,235,0.4)]">
             Панель управления
           </a>
@@ -229,13 +232,16 @@
         const errorMessage = ref('');
         const isLoggedIn = ref(false);
         const userEmail = ref('');
+        const userRole = ref('');
 
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
           const storedEmail = localStorage.getItem('user_email');
+          const storedRole = localStorage.getItem('user_role');
           if (token && storedEmail) {
             isLoggedIn.value = true;
             userEmail.value = storedEmail;
+            userRole.value = storedRole;
           }
         });
 
@@ -267,10 +273,15 @@
             
             isLoggedIn.value = true;
             userEmail.value = data.email;
+            userRole.value = data.role;
             showLogin.value = false;
             
             password.value = '';
-            window.location.href = '/dashboard.html';
+            if (data.role === 'admin') {
+              window.location.href = '/admin.html';
+            } else {
+              window.location.href = '/dashboard.html';
+            }
 
           } catch (error) {
             errorMessage.value = error.message;
@@ -285,6 +296,7 @@
           localStorage.removeItem('user_role');
           isLoggedIn.value = false;
           userEmail.value = '';
+          userRole.value = '';
         };
 
         return {
@@ -297,6 +309,7 @@
           errorMessage,
           isLoggedIn,
           userEmail,
+          userRole,
           submitAuth,
           logout
         }
