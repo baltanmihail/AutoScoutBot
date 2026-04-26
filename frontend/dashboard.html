@@ -74,7 +74,13 @@
       <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
         <!-- Animated Logo -->
         <a href="javascript:void(0)" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
-          <div class="w-8 h-8 rounded bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-colors duration-500">
+          <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700" id="logo-bg-container">
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-700" id="bg-grad-0"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 transition-opacity duration-700 opacity-0" id="bg-grad-1"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-600 transition-opacity duration-700 opacity-0" id="bg-grad-2"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-orange-600 transition-opacity duration-700 opacity-0" id="bg-grad-3"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-600 transition-opacity duration-700 opacity-0" id="bg-grad-4"></div>
+            
             <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
               <div class="h-8 w-8 flex items-center justify-center shrink-0">W</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">B</div>
@@ -658,13 +664,7 @@
               textWheel.style.transform = `translateY(-${index * 24}px)`;
               
               const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400'];
-              const bgColors = [
-                'from-blue-500 to-purple-600', 
-                'from-emerald-500 to-teal-600', 
-                'from-purple-500 to-pink-600',
-                'from-rose-500 to-orange-600',
-                'from-fuchsia-500 to-indigo-600'
-              ];
+              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30'];
               
               const textDivs = textWheel.children;
               for(let i=0; i<textDivs.length; i++) {
@@ -672,7 +672,17 @@
                 textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
               }
               
-              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[index]} flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700 ease-in-out`;
+              for(let i=0; i<5; i++) {
+                const bg = document.getElementById(`bg-grad-${i}`);
+                if (bg) {
+                  bg.style.opacity = i === index ? '1' : '0';
+                }
+              }
+              
+              const logoBgContainer = document.getElementById('logo-bg-container');
+              if (logoBgContainer) {
+                logoBgContainer.className = `w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg ${shadowColors[index]} overflow-hidden relative transition-shadow duration-700`;
+              }
             }
             
             // Mouse wheel scroll with throttling
