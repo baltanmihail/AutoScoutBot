@@ -247,8 +247,12 @@ class WebUser(Base):
     __tablename__ = "web_users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String(255), unique=True, nullable=False, index=True)
-    hashed_password = Column(String(255), nullable=False)
+    email = Column(String(255), unique=True, nullable=True, index=True)
+    hashed_password = Column(String(255), nullable=True)
+    tg_id = Column(BigInteger, unique=True, nullable=True, index=True)
+    tg_username = Column(String(255), nullable=True)
+    tg_first_name = Column(String(255), nullable=True)
+    tg_photo_url = Column(String(1024), nullable=True)
     role = Column(String(50), default="investor")  # 'investor', 'startup', 'expert', 'admin'
     first_name = Column(String(255), default="")
     last_name = Column(String(255), default="")

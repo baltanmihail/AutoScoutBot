@@ -1,4 +1,8 @@
 import logging
+import time
+import os
+import hashlib
+import hmac
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -25,15 +29,26 @@ class RegisterRequest(BaseModel):
     last_name: Optional[str] = ""
     company_name: Optional[str] = ""
 
+class TelegramAuthRequest(BaseModel):
+    id: int
+    first_name: str
+    last_name: Optional[str] = None
+    username: Optional[str] = None
+    photo_url: Optional[str] = None
+    auth_date: int
+    hash: str
+    role: str = "investor"
+
 class AuthResponse(BaseModel):
     token: str
     role: str
     email: str
+    tg_username: Optional[str] = None
+    tg_photo_url: Optional[str] = None
 
 
 @router.post("/register", response_model=AuthResponse)
 async def register(req: RegisterRequest, session: AsyncSession = Depends(get_session)):
-    # 1. Проверяем, есть ли уже такой пользователь
     result = await session.execute(select(WebUser).where(WebUser.email == req.email))
     existing_user = result.scalars().first()
     if existing_user:
@@ -42,10 +57,10 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
             detail="Пользователь с таким email уже зарегистрирован."
         )
 
-    # В MVP-версии пароль храним как есть (в продакшене обязательно хешируем, например через bcrypt!)
+    # TODO: bcrypt
     new_user = WebUser(
         email=req.email,
-        hashed_password=req.password,  # TODO: add bcrypt hash
+        hashed_password=req.password,
         role=req.role,
         first_name=req.first_name,
         last_name=req.last_name,
@@ -55,13 +70,12 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
     await session.commit()
     await session.refresh(new_user)
 
-    # Генерируем "токен" (заглушка для фронтенда)
     fake_token = f"fake_jwt_token_for_{new_user.id}"
 
     return AuthResponse(
         token=fake_token,
         role=new_user.role,
-        email=new_user.email
+        email=new_user.email or ""
     )
 
 
@@ -83,5 +97,68 @@ async def login(req: LoginRequest, session: AsyncSession = Depends(get_session))
     return AuthResponse(
         token=fake_token,
         role=user.role,
-        email=user.email
+        email=user.email or ""
+    )
+
+
+@router.post("/telegram", response_model=AuthResponse)
+async def telegram_auth(req: TelegramAuthRequest, session: AsyncSession = Depends(get_session)):
+    """Аутентификация через Telegram Widget"""
+    
+    bot_token = os.getenv("TELEGRAM_TOKEN", "")
+    if not bot_token:
+        raise HTTPException(status_code=500, detail="Telegram token not configured on server")
+
+    # 1. Проверяем подлинность хэша от Telegram
+    data_check_arr = []
+    data_dict = req.dict(exclude={"hash", "role"})
+    for key, value in data_dict.items():
+        if value is not None:
+            data_check_arr.append(f"{key}={value}")
+    
+    data_check_arr.sort()
+    data_check_string = "\n".join(data_check_arr)
+    
+    secret_key = hashlib.sha256(bot_token.encode()).digest()
+    expected_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
+    
+    if expected_hash != req.hash:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid Telegram hash")
+        
+    # 2. Проверяем устаревание (не старше 24 часов)
+    if time.time() - req.auth_date > 86400:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Telegram auth data expired")
+
+    # 3. Ищем пользователя по tg_id или создаем нового
+    result = await session.execute(select(WebUser).where(WebUser.tg_id == req.id))
+    user = result.scalars().first()
+    
+    if not user:
+        user = WebUser(
+            tg_id=req.id,
+            tg_username=req.username,
+            tg_first_name=req.first_name,
+            tg_photo_url=req.photo_url,
+            first_name=req.first_name,
+            last_name=req.last_name or "",
+            role=req.role
+        )
+        session.add(user)
+    else:
+        # Обновляем профиль если изменился
+        user.tg_username = req.username
+        user.tg_first_name = req.first_name
+        user.tg_photo_url = req.photo_url
+
+    await session.commit()
+    await session.refresh(user)
+    
+    fake_token = f"fake_jwt_token_for_{user.id}"
+    
+    return AuthResponse(
+        token=fake_token,
+        role=user.role,
+        email=user.email or f"tg_{req.id}@telegram.local",
+        tg_username=user.tg_username,
+        tg_photo_url=user.tg_photo_url
     )
