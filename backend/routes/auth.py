@@ -79,8 +79,19 @@ async def send_sms_code(phone: str, code: str):
         async with httpx.AsyncClient() as client:
             response = await client.get(url, params=params, timeout=10.0)
             data = response.json()
+            
+            logger.info(f"SMS.ru response: {data}")
+            
             if data.get("status_code") == 100:
-                return True
+                # Check specific number status
+                phone_clean = phone.replace("+", "").replace(" ", "").replace("(", "").replace(")", "").replace("-", "")
+                sms_info = data.get("sms", {}).get(phone_clean, {})
+                if sms_info.get("status_code") == 100:
+                    return True
+                else:
+                    err_msg = sms_info.get("status_text", "Ошибка отправки на данный номер")
+                    logger.error(f"SMS API Error for {phone}: {sms_info}")
+                    return err_msg
             else:
                 err_msg = data.get("status_text", "Неизвестная ошибка API")
                 logger.error(f"SMS API Error: {data}")
