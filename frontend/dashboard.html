@@ -94,7 +94,7 @@
             Портфель (Watchlist)
           </a>
           
-          <a href="#" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
+          <a href="#" @click.prevent="showCalculator = true" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
             <svg class="text-slate-500 group-hover:text-slate-400 mr-3 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -200,7 +200,7 @@
           </div>
 
           <!-- IRR Calculator Widget mini -->
-          <div class="glass-panel overflow-hidden rounded-xl border border-blue-500/30 relative group bg-blue-900/10 cursor-pointer hover:bg-blue-900/20 transition-all shadow-[0_0_15px_rgba(37,99,235,0.1)]">
+          <div @click="showCalculator = true" class="glass-panel overflow-hidden rounded-xl border border-blue-500/30 relative group bg-blue-900/10 cursor-pointer hover:bg-blue-900/20 transition-all shadow-[0_0_15px_rgba(37,99,235,0.1)]">
             <div class="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/20 rounded-full blur-xl group-hover:bg-blue-500/30 transition-colors"></div>
             <div class="p-6 relative z-10 h-full flex flex-col justify-center">
               <div class="flex items-center justify-between">
@@ -317,6 +317,118 @@
           </div>
         </div>
 
+        <!-- NPV/IRR Calculator Modal -->
+        <div v-if="showCalculator" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" v-cloak>
+          <div class="glass-panel rounded-2xl w-full max-w-2xl overflow-hidden border border-white/10 relative shadow-2xl" @click.stop>
+            <!-- Modal Header -->
+            <div class="px-6 py-5 border-b border-white/10 flex justify-between items-center relative z-10 bg-dark-800/50">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white tracking-tight">Финансовое моделирование</h3>
+              </div>
+              <button @click="showCalculator = false" class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+              </button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-6 relative z-10 max-h-[80vh] overflow-y-auto">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Inputs Column -->
+                <div class="space-y-4">
+                  <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">Параметры инвестиции</h4>
+                  
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Начальные инвестиции (₽)</label>
+                    <input v-model.number="calcInitialInvestment" type="number" class="w-full px-3 py-2 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none text-sm font-mono">
+                  </div>
+                  
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1.5">Ставка дисконтирования (WACC) %</label>
+                    <input v-model.number="calcDiscountRate" type="number" step="0.1" class="w-full px-3 py-2 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none text-sm font-mono">
+                  </div>
+                  
+                  <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                      <label class="block text-xs font-medium text-slate-400">Прогноз кэшфлоу (по годам)</label>
+                      <button @click="addCashflowYear" class="text-xs text-blue-400 hover:text-blue-300 font-medium">+ Год</button>
+                    </div>
+                    <div class="space-y-2">
+                      <div v-for="(cf, index) in calcCashflows" :key="index" class="flex gap-2 items-center">
+                        <span class="text-xs text-slate-500 w-8">Год {{index + 1}}</span>
+                        <input v-model.number="calcCashflows[index]" type="number" class="flex-1 px-3 py-1.5 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-blue-500 outline-none text-sm font-mono">
+                        <button @click="removeCashflowYear(index)" class="text-slate-500 hover:text-red-400 p-1" v-if="calcCashflows.length > 1">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Results Column -->
+                <div class="bg-dark-900/50 rounded-xl p-5 border border-white/5 flex flex-col justify-center space-y-6 relative overflow-hidden">
+                  <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl"></div>
+                  
+                  <!-- NPV Result -->
+                  <div>
+                    <div class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">NPV (Чистая приведенная стоимость)</div>
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-3xl font-bold font-mono" :class="calculatedNPV >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                        {{ formatCurrency(calculatedNPV) }}
+                      </span>
+                      <span class="text-sm text-slate-500 font-mono">₽</span>
+                    </div>
+                    <div class="text-xs mt-1" :class="calculatedNPV >= 0 ? 'text-emerald-500/70' : 'text-rose-500/70'">
+                      {{ calculatedNPV >= 0 ? 'Проект рентабелен' : 'Проект убыточен' }}
+                    </div>
+                  </div>
+                  
+                  <div class="h-px w-full bg-white/10"></div>
+                  
+                  <!-- IRR Result -->
+                  <div>
+                    <div class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">IRR (Внутренняя норма доходности)</div>
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-3xl font-bold font-mono" :class="calculatedIRR >= calcDiscountRate ? 'text-emerald-400' : 'text-amber-400'">
+                        {{ calculatedIRR !== null ? calculatedIRR.toFixed(2) : '---' }}
+                      </span>
+                      <span class="text-lg text-slate-500 font-mono">%</span>
+                    </div>
+                    <div class="text-xs mt-1" :class="calculatedIRR >= calcDiscountRate ? 'text-emerald-500/70' : 'text-amber-500/70'" v-if="calculatedIRR !== null">
+                      {{ calculatedIRR >= calcDiscountRate ? 'Выше ставки дисконтирования' : 'Ниже ставки дисконтирования' }}
+                    </div>
+                    <div class="text-xs mt-1 text-slate-500" v-else>Нет решения (нестандартный кэшфлоу)</div>
+                  </div>
+
+                  <div class="h-px w-full bg-white/10"></div>
+                  
+                  <!-- ROI Result -->
+                  <div>
+                    <div class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">ROI (Окупаемость инвестиций)</div>
+                    <div class="flex items-baseline gap-2">
+                      <span class="text-2xl font-bold font-mono text-blue-400">
+                        {{ calculatedROI.toFixed(1) }}
+                      </span>
+                      <span class="text-sm text-slate-500 font-mono">%</span>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-dark-900/80 border-t border-white/10 flex justify-between items-center relative z-10">
+              <p class="text-xs text-slate-500">Автоматический перерасчет при изменении данных</p>
+              <button @click="showCalculator = false" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-lg text-sm font-medium transition-all shadow-[0_0_10px_rgba(37,99,235,0.3)]">
+                Готово
+              </button>
+            </div>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -328,6 +440,11 @@
       setup() {
         const userEmail = ref('');
         const userRole = ref('');
+
+        const showCalculator = ref(false);
+        const calcInitialInvestment = ref(10000000);
+        const calcDiscountRate = ref(15);
+        const calcCashflows = ref([2000000, 3000000, 5000000, 7000000]);
 
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
@@ -346,10 +463,79 @@
           window.location.href = '/index.html';
         };
 
+        // --- Калькуляторы (NPV, IRR, ROI) ---
+        const formatCurrency = (value) => {
+          return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(value);
+        };
+
+        const addCashflowYear = () => {
+          calcCashflows.value.push(0);
+        };
+
+        const removeCashflowYear = (index) => {
+          if (calcCashflows.value.length > 1) {
+            calcCashflows.value.splice(index, 1);
+          }
+        };
+
+        const calculatedNPV = Vue.computed(() => {
+          let npv = -calcInitialInvestment.value;
+          const rate = calcDiscountRate.value / 100;
+          for (let i = 0; i < calcCashflows.value.length; i++) {
+            npv += calcCashflows.value[i] / Math.pow(1 + rate, i + 1);
+          }
+          return npv;
+        });
+
+        const calculatedROI = Vue.computed(() => {
+          const totalReturn = calcCashflows.value.reduce((a, b) => a + b, 0);
+          return ((totalReturn - calcInitialInvestment.value) / calcInitialInvestment.value) * 100;
+        });
+
+        // Функция расчета IRR методом Ньютона-Рафсона
+        const calculatedIRR = Vue.computed(() => {
+          const cashflows = [-calcInitialInvestment.value, ...calcCashflows.value];
+          
+          let min = -1.0;
+          let max = 100.0;
+          let guess = 0.1;
+          let irr = null;
+          
+          for (let i = 0; i < 100; i++) {
+            let npv = 0;
+            let derivative = 0;
+            for (let j = 0; j < cashflows.length; j++) {
+              npv += cashflows[j] / Math.pow(1 + guess, j);
+              if (j > 0) {
+                derivative -= j * cashflows[j] / Math.pow(1 + guess, j + 1);
+              }
+            }
+            
+            let newGuess = guess - npv / derivative;
+            if (Math.abs(newGuess - guess) < 0.00001) {
+              irr = newGuess * 100;
+              break;
+            }
+            guess = newGuess;
+          }
+          
+          return (irr !== null && !isNaN(irr)) ? irr : null;
+        });
+
         return {
           userEmail,
           userRole,
-          logout
+          logout,
+          showCalculator,
+          calcInitialInvestment,
+          calcDiscountRate,
+          calcCashflows,
+          formatCurrency,
+          addCashflowYear,
+          removeCashflowYear,
+          calculatedNPV,
+          calculatedROI,
+          calculatedIRR
         }
       }
     }).mount('#app')
