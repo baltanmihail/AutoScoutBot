@@ -151,23 +151,8 @@ proxy_url = os.getenv("TELEGRAM_PROXY")
 if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
     proxy_url = config.TELEGRAM_PROXY
 
-# Настраиваем aiohttp-socks сессию, если указан SOCKS5 прокси
-session = None
-if proxy_url:
-    print(f"🌐 Использование прокси для Telegram: {proxy_url}")
-    if proxy_url.startswith("socks5"):
-        try:
-            from aiohttp_socks import ProxyConnector
-            connector = ProxyConnector.from_url(proxy_url)
-            session = AiohttpSession()
-            session._connector = connector
-        except ImportError:
-            print("⚠️ aiohttp-socks не установлен, SOCKS5 прокси может не работать!")
-            session = AiohttpSession(proxy=proxy_url)
-    else:
-        session = AiohttpSession(proxy=proxy_url)
-
-bot = Bot(token=TELEGRAM_TOKEN, session=session, default=DefaultBotProperties(parse_mode="HTML"))
+# Настраиваем bot и dp, инициализацию aiohttp-socks сессии выносим в main
+bot = Bot(token=TELEGRAM_TOKEN, default=DefaultBotProperties(parse_mode="HTML"))
 dp = Dispatcher(storage=MemoryStorage())
 dp.include_router(payments_router)
 
@@ -258,14 +243,30 @@ async def on_startup():
             print(f"✅ Индекс сохранен в {RAG_INDEX_FILE}")
 
 async def main():
-    await on_startup()
-    
-    # Авто-поиск прокси, если он не задан вручную
+    # Инициализируем сессию бота внутри event loop
     proxy_url = os.getenv("TELEGRAM_PROXY")
     if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
         proxy_url = config.TELEGRAM_PROXY
-        
-    if not proxy_url:
+
+    if proxy_url:
+        print(f"🌐 Использование ручного прокси для Telegram: {proxy_url}")
+        if proxy_url.startswith("socks5"):
+            try:
+                from aiohttp_socks import ProxyConnector
+                from aiogram.client.session.aiohttp import AiohttpSession
+                connector = ProxyConnector.from_url(proxy_url)
+                session = AiohttpSession()
+                session._connector = connector
+                bot.session = session
+            except ImportError:
+                print("⚠️ aiohttp-socks не установлен, SOCKS5 прокси может не работать!")
+                from aiogram.client.session.aiohttp import AiohttpSession
+                bot.session = AiohttpSession(proxy=proxy_url)
+        else:
+            from aiogram.client.session.aiohttp import AiohttpSession
+            bot.session = AiohttpSession(proxy=proxy_url)
+    else:
+        # Авто-поиск прокси, если он не задан вручную
         try:
             from utils.proxy import find_working_proxy
             auto_proxy = await find_working_proxy()
@@ -277,6 +278,8 @@ async def main():
         except Exception as e:
             logger.error(f"Ошибка авто-прокси: {e}")
 
+    await on_startup()
+    
     await dp.start_polling(bot)
     await user_repository.on_end()
 
