@@ -27,6 +27,11 @@ services:
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMS_API_KEY=${SMS_API_KEY}
     depends_on:
       - db
     restart: unless-stopped
@@ -43,6 +48,11 @@ services:
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
+      - SMTP_SERVER=${SMTP_SERVER}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMS_API_KEY=${SMS_API_KEY}
     depends_on:
       - db
     restart: unless-stopped
