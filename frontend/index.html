@@ -18,6 +18,29 @@
               400: '#60a5fa',
               500: '#3b82f6',
               600: '#2563eb',
+            },
+            dark: {
+              800: '#1e293b',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          },
+          animation: {
+            blob: "blob 10s infinite",
+            'float-slow': 'float 8s ease-in-out infinite',
+            'float-medium': 'float 6s ease-in-out infinite',
+            'float-fast': 'float 4s ease-in-out infinite',
+          },
+          keyframes: {
+            blob: {
+              "0%": { transform: "translate(0px, 0px) scale(1)" },
+              "33%": { transform: "translate(30px, -50px) scale(1.1)" },
+              "66%": { transform: "translate(-20px, 20px) scale(0.9)" },
+              "100%": { transform: "translate(0px, 0px) scale(1)" },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-20px)' },
             }
           }
         }
@@ -35,10 +58,34 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
     .glass-card {
-      background: linear-gradient(145deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.7) 100%);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+    }
+    .prismatic-border {
+      position: relative;
+    }
+    .prismatic-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 26px;
+      background: linear-gradient(45deg, #10b981, #3b82f6, #8b5cf6, #ec4899);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background-size: 200% 200%;
+      animation: gradient-shift 5s ease infinite;
+    }
+    .prismatic-border:hover::before {
+      opacity: 0.5;
+    }
+    @keyframes gradient-shift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
     .text-gradient {
       background-clip: text;
@@ -51,9 +98,14 @@
 <body class="bg-slate-950 text-slate-300 font-sans antialiased selection:bg-brand-500 selection:text-white flex flex-col min-h-screen relative" id="app">
   
   <!-- Background effects -->
-  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-    <div class="absolute -top-40 -right-40 w-96 h-96 bg-blue-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
-    <div class="absolute top-40 -left-40 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-[128px] opacity-20"></div>
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-dark-950">
+    <!-- Prismatic morphing shapes -->
+    <div class="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+    <div class="absolute top-40 -left-40 w-[500px] h-[500px] rounded-full mix-blend-screen filter blur-[100px] opacity-30 animate-blob animation-delay-2000 bg-gradient-to-r from-blue-600 to-indigo-500"></div>
+    <div class="absolute -bottom-40 left-1/2 w-[700px] h-[700px] rounded-full mix-blend-screen filter blur-[120px] opacity-20 animate-blob animation-delay-4000 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+    
+    <!-- Grid overlay -->
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-50"></div>
   </div>
 
   <!-- Header -->
@@ -114,11 +166,16 @@
           по <span class="font-semibold text-purple-400">39+</span> критериям. 
           Точность предиктивной модели составляет <span class="font-semibold text-blue-400">95%</span>.
         </p>
-        <div class="flex flex-col sm:flex-row justify-center items-center gap-6">
-          <button @click="showLogin = true" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(37,99,235,0.6)]">
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-6 mt-12 relative">
+          <!-- Abstract 3D elements (CSS approximations) -->
+          <div class="hidden lg:block absolute -left-20 -top-10 w-16 h-16 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 shadow-[0_10px_30px_rgba(16,185,129,0.5)] transform -rotate-12 animate-float-medium backdrop-blur-md opacity-80 border border-white/20"></div>
+          <div class="hidden lg:block absolute -right-16 top-10 w-24 h-24 rounded-full bg-gradient-to-bl from-purple-500 to-pink-500 shadow-[0_10px_40px_rgba(168,85,247,0.5)] animate-float-slow backdrop-blur-xl opacity-70 border border-white/20"></div>
+          <div class="hidden lg:block absolute left-1/4 -bottom-16 w-12 h-12 rotate-45 bg-gradient-to-tr from-blue-400 to-indigo-600 shadow-[0_10px_20px_rgba(59,130,246,0.5)] animate-float-fast backdrop-blur-sm opacity-90 border border-white/20"></div>
+
+          <button @click="showLogin = true" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-lg font-semibold px-10 py-4 rounded-xl transition-all shadow-[0_0_30px_rgba(59,130,246,0.5)] hover:shadow-[0_0_50px_rgba(59,130,246,0.7)] hover:-translate-y-1 z-10 border border-blue-400/30">
             Для инвесторов
           </button>
-          <button @click="showLogin = true" class="w-full sm:w-auto glass hover:bg-white/10 text-white text-lg font-semibold px-8 py-4 rounded-xl transition-all">
+          <button @click="showLogin = true" class="w-full sm:w-auto glass-card hover:bg-white/10 text-white text-lg font-semibold px-10 py-4 rounded-xl transition-all hover:-translate-y-1 z-10 prismatic-border">
             Для фаундеров
           </button>
         </div>
