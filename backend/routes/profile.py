@@ -189,3 +189,62 @@ async def update_profile(
         requests_max=user.requests_max,
         is_verified=user.is_verified
     )
+
+class ProfileVerifyRequest(BaseModel):
+    email_code: str
+    phone_code: Optional[str] = None
+
+@router.post("/request_verification")
+async def request_verification(
+    authorization: str = Header(...),
+    session: AsyncSession = Depends(get_session)
+):
+    """Запрос кода для подтверждения профиля (Email и СМС)"""
+    user = await get_current_user_from_token(authorization, session)
+    if user.is_verified:
+        return {"message": "Профиль уже подтвержден"}
+        
+    import random
+    verification_code = str(random.randint(100000, 999999))
+    phone_verification_code = str(random.randint(100000, 999999)) if user.phone else None
+    
+    user.verification_code = verification_code
+    user.phone_verification_code = phone_verification_code
+    await session.commit()
+    
+    from backend.routes.auth import send_email_code, send_sms_code
+    import asyncio
+    
+    email_task = asyncio.create_task(send_email_code(user.email, verification_code))
+    if phone_verification_code:
+        sms_task = asyncio.create_task(send_sms_code(user.phone, phone_verification_code))
+        await asyncio.gather(email_task, sms_task)
+    else:
+        await email_task
+        
+    return {"message": "Коды отправлены"}
+
+@router.post("/verify")
+async def verify_profile(
+    req: ProfileVerifyRequest,
+    authorization: str = Header(...),
+    session: AsyncSession = Depends(get_session)
+):
+    """Проверка введенного кода и подтверждение профиля"""
+    user = await get_current_user_from_token(authorization, session)
+    
+    if user.is_verified:
+        raise HTTPException(status_code=400, detail="Профиль уже подтвержден")
+        
+    if user.verification_code and user.verification_code != req.email_code:
+        raise HTTPException(status_code=400, detail="Неверный email код подтверждения")
+        
+    if user.phone_verification_code and user.phone_verification_code != req.phone_code:
+        raise HTTPException(status_code=400, detail="Неверный СМС код подтверждения")
+        
+    user.is_verified = True
+    user.verification_code = None
+    user.phone_verification_code = None
+    
+    await session.commit()
+    return {"message": "Профиль успешно подтвержден"}

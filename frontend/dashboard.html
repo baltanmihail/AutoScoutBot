@@ -147,9 +147,9 @@
       
       <div class="border-l md:border-l-0 md:border-t border-white/10 p-2 md:p-5 bg-dark-900/50 flex flex-row md:flex-col items-center md:items-stretch shrink-0">
         <div class="hidden md:flex items-center justify-between mb-4">
-          <div class="text-sm font-medium text-slate-300 truncate mr-2">{{ userEmail }}</div>
+          <div class="text-sm font-medium text-slate-300 truncate mr-2">{{ userEmail.includes('@telegram.local') ? 'Telegram User' : userEmail }}</div>
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
-            {{ userRole }}
+            {{ userRole === 'admin' ? 'Админ' : userRole === 'investor' ? 'Инвестор' : userRole === 'startup' ? 'Стартап' : userRole === 'expert' ? 'Эксперт' : userRole }}
           </span>
         </div>
         <button @click="logout" class="md:w-full flex justify-center py-2 md:py-2.5 px-3 md:px-4 border border-red-500/30 rounded-lg shadow-sm text-sm font-medium text-red-400 bg-red-500/10 hover:bg-red-500/20 transition-colors focus:outline-none whitespace-nowrap ml-2 md:ml-0">
