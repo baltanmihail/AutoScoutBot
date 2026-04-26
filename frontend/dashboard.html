@@ -654,9 +654,6 @@
             function updateWheel(index) {
               if(!logoWheel || !textWheel) return;
               
-              logoWheel.classList.add('motion-blur');
-              textWheel.classList.add('motion-blur');
-              
               logoWheel.style.transform = `translateY(-${index * 32}px)`;
               textWheel.style.transform = `translateY(-${index * 24}px)`;
               
@@ -671,21 +668,22 @@
               
               const textDivs = textWheel.children;
               for(let i=0; i<textDivs.length; i++) {
-                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-colors duration-500`;
+                // Ensure transitions are always present
+                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
               }
               
-              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[index]} flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-colors duration-500`;
-              
-              clearTimeout(logoWheel.blurTimeout);
-              logoWheel.blurTimeout = setTimeout(() => {
-                logoWheel.classList.remove('motion-blur');
-                textWheel.classList.remove('motion-blur');
-              }, 300);
+              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[index]} flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700 ease-in-out`;
             }
             
-            // Mouse wheel scroll
+            // Mouse wheel scroll with throttling
+            let isScrolling = false;
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
+              if (isScrolling) return;
+              
+              isScrolling = true;
+              setTimeout(() => { isScrolling = false; }, 600); // Prevent jumping around
+              
               clearTimeout(scrollInterval);
               if (e.deltaY > 0) {
                 currentIndex = (currentIndex + 1) % totalItems;

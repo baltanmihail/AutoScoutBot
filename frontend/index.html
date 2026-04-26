@@ -414,25 +414,46 @@
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 0;
             const totalItems = 5; // Web, Bot, App, Com, AI
+            let scrollInterval;
             
-            // Auto scroll every 3 seconds
-            const scrollInterval = setInterval(() => {
+            function doSpin() {
               currentIndex = (currentIndex + 1) % totalItems;
               updateWheel();
-            }, 3000);
+            }
             
-            // Mouse wheel scroll
+            function scheduleNextSpin() {
+              const delay = 30000 + Math.random() * 15000;
+              scrollInterval = setTimeout(() => {
+                doSpin();
+                scheduleNextSpin();
+              }, delay);
+            }
+            scheduleNextSpin();
+            
+            // Mouse wheel scroll with throttling
+            let isScrolling = false;
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
+              if (isScrolling) return;
+              
+              isScrolling = true;
+              setTimeout(() => { isScrolling = false; }, 600);
+              
+              clearTimeout(scrollInterval);
               if (e.deltaY > 0) {
                 currentIndex = (currentIndex + 1) % totalItems;
               } else {
                 currentIndex = (currentIndex - 1 + totalItems) % totalItems;
               }
               updateWheel();
-              
-              // Optional: reset auto-scroll interval when user manually scrolls
-              // clearInterval(scrollInterval); // This would stop auto-scroll after manual interaction
+              scheduleNextSpin();
+            });
+            
+            logoContainer.addEventListener('mouseleave', () => {
+              clearTimeout(scrollInterval);
+              currentIndex = 0; // Web
+              updateWheel();
+              scheduleNextSpin();
             });
             
             function updateWheel() {
@@ -440,10 +461,6 @@
               const textWheel = document.getElementById('text-wheel');
               
               if(!logoWheel || !textWheel) return;
-
-              // Добавляем эффект motion blur
-              logoWheel.classList.add('motion-blur');
-              textWheel.classList.add('motion-blur');
               
               logoWheel.style.transform = `translateY(-${currentIndex * 32}px)`;
               textWheel.style.transform = `translateY(-${currentIndex * 24}px)`;
@@ -460,17 +477,10 @@
               
               const textDivs = textWheel.children;
               for(let i=0; i<textDivs.length; i++) {
-                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === currentIndex ? colors[i] : 'text-slate-500'} transition-colors duration-500`;
+                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === currentIndex ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
               }
               
-              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[currentIndex]} flex items-center justify-center font-bold text-white shadow-lg overflow-hidden relative transition-colors duration-500`;
-
-              // Убираем blur после завершения основного рывка анимации
-              clearTimeout(logoWheel.blurTimeout);
-              logoWheel.blurTimeout = setTimeout(() => {
-                logoWheel.classList.remove('motion-blur');
-                textWheel.classList.remove('motion-blur');
-              }, 250);
+              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[currentIndex]} flex items-center justify-center font-bold text-white shadow-lg overflow-hidden relative transition-all duration-700 ease-in-out`;
             }
             
             // Initial color setup
