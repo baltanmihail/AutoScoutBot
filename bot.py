@@ -248,7 +248,7 @@ async def main():
     if not proxy_url and hasattr(config, "TELEGRAM_PROXY"):
         proxy_url = config.TELEGRAM_PROXY
 
-    if proxy_url:
+    if proxy_url and proxy_url.strip():
         print(f"🌐 Использование ручного прокси для Telegram: {proxy_url}")
         if proxy_url.startswith("socks5"):
             try:
