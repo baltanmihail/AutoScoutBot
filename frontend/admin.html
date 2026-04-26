@@ -41,8 +41,8 @@
     <aside class="w-full md:w-64 glass-panel border-b md:border-b-0 md:border-r border-white/10 flex flex-row md:flex-col transition-all z-20 shadow-2xl shrink-0 md:h-full h-auto overflow-x-auto md:overflow-y-auto">
       <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
         <!-- Animated Logo -->
-        <a href="javascript:void(0)" class="flex-shrink-0 flex items-center group cursor-pointer" id="logo-container" title="Перейти к поиску">
-          <div class="w-8 h-8 rounded bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center font-bold text-white shadow-lg shadow-rose-500/30 overflow-hidden relative transition-colors duration-500 group-hover:from-fuchsia-500 group-hover:to-indigo-600">
+        <a href="javascript:void(0)" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
+          <div class="w-8 h-8 rounded bg-gradient-to-br from-rose-500 to-orange-600 flex items-center justify-center font-bold text-white shadow-lg shadow-rose-500/30 overflow-hidden relative transition-colors duration-500">
             <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
               <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">M</div>
@@ -54,12 +54,12 @@
           <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
             Admin
             <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
-              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal text-blue-400" id="text-wheel">
-                <div class="h-6 flex items-center shrink-0 text-rose-400">Panel</div>
-                <div class="h-6 flex items-center shrink-0 text-emerald-400">Mode</div>
-                <div class="h-6 flex items-center shrink-0 text-purple-400">Users</div>
-                <div class="h-6 flex items-center shrink-0 text-orange-400">Stats</div>
-                <div class="h-6 flex items-center shrink-0 text-fuchsia-400">AI</div>
+              <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal" id="text-wheel">
+                <div class="h-6 flex items-center shrink-0 text-rose-400 transition-colors duration-500">Panel</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Mode</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Users</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Stats</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">AI</div>
               </div>
             </div>
           </div>
@@ -328,6 +328,21 @@
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 0;
             const totalItems = 5;
+            let scrollInterval;
+            
+            function doSpin() {
+              currentIndex = (currentIndex + 1) % totalItems;
+              updateWheel(currentIndex);
+            }
+            
+            function scheduleNextSpin() {
+              const delay = 30000 + Math.random() * 15000;
+              scrollInterval = setTimeout(() => {
+                doSpin();
+                scheduleNextSpin();
+              }, delay);
+            }
+            scheduleNextSpin();
             
             function updateWheel(index) {
               if(!logoWheel || !textWheel) return;
@@ -338,6 +353,22 @@
               logoWheel.style.transform = `translateY(-${index * 32}px)`;
               textWheel.style.transform = `translateY(-${index * 24}px)`;
               
+              const colors = ['text-rose-400', 'text-emerald-400', 'text-purple-400', 'text-orange-400', 'text-fuchsia-400'];
+              const bgColors = [
+                'from-rose-500 to-orange-600', 
+                'from-emerald-500 to-teal-600', 
+                'from-purple-500 to-pink-600',
+                'from-orange-500 to-amber-600',
+                'from-fuchsia-500 to-indigo-600'
+              ];
+              
+              const textDivs = textWheel.children;
+              for(let i=0; i<textDivs.length; i++) {
+                textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-colors duration-500`;
+              }
+              
+              logoWheel.parentElement.className = `w-8 h-8 rounded bg-gradient-to-br ${bgColors[index]} flex items-center justify-center font-bold text-white shadow-lg shadow-rose-500/30 overflow-hidden relative transition-colors duration-500`;
+
               clearTimeout(logoWheel.blurTimeout);
               logoWheel.blurTimeout = setTimeout(() => {
                 logoWheel.classList.remove('motion-blur');
@@ -348,17 +379,21 @@
             // Mouse wheel scroll
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
+              clearTimeout(scrollInterval);
               if (e.deltaY > 0) {
                 currentIndex = (currentIndex + 1) % totalItems;
               } else {
                 currentIndex = (currentIndex - 1 + totalItems) % totalItems;
               }
               updateWheel(currentIndex);
+              scheduleNextSpin();
             });
             
             logoContainer.addEventListener('mouseleave', () => {
+              clearTimeout(scrollInterval);
               currentIndex = 0; // Web
               updateWheel(0);
+              scheduleNextSpin();
             });
             
             // Click redirects based on current index

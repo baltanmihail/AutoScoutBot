@@ -3,6 +3,11 @@ import time
 import os
 import hashlib
 import hmac
+import random
+import asyncio
+import smtplib
+from email.message import EmailMessage
+import httpx
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -16,6 +21,72 @@ from backend.models import WebUser
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+
+async def send_email_code(to_email: str, code: str):
+    """Отправка кода на email через SMTP (асинхронно)."""
+    smtp_server = os.getenv("SMTP_SERVER")
+    smtp_port = int(os.getenv("SMTP_PORT", 465))
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASSWORD")
+    
+    if not all([smtp_server, smtp_user, smtp_pass]):
+        logger.warning(f"[MOCK EMAIL] No SMTP credentials. Code for {to_email}: {code}")
+        return True
+        
+    def _send():
+        msg = EmailMessage()
+        msg.set_content(f"Ваш код подтверждения регистрации на платформе AutoScout Web:\n\n{code}\n\nНикому не сообщайте этот код.")
+        msg["Subject"] = "Код подтверждения AutoScout Web"
+        msg["From"] = smtp_user
+        msg["To"] = to_email
+        
+        try:
+            if smtp_port == 465:
+                with smtplib.SMTP_SSL(smtp_server, smtp_port) as server:
+                    server.login(smtp_user, smtp_pass)
+                    server.send_message(msg)
+            else:
+                with smtplib.SMTP(smtp_server, smtp_port) as server:
+                    server.starttls()
+                    server.login(smtp_user, smtp_pass)
+                    server.send_message(msg)
+            return True
+        except Exception as e:
+            logger.error(f"Error sending email to {to_email}: {e}")
+            return False
+
+    return await asyncio.to_thread(_send)
+
+async def send_sms_code(phone: str, code: str):
+    """Отправка кода по СМС через API (например, SMS.ru или SMSAero)."""
+    sms_api_key = os.getenv("SMS_API_KEY")
+    
+    if not sms_api_key:
+        logger.warning(f"[MOCK SMS] No SMS API key. Code for {phone}: {code}")
+        return True
+        
+    # Пример интеграции с SMS.ru
+    # https://sms.ru/api/send
+    url = "https://sms.ru/sms/send"
+    params = {
+        "api_id": sms_api_key,
+        "to": phone.replace("+", "").replace(" ", "").replace("(", "").replace(")", "").replace("-", ""),
+        "msg": f"AutoScout Web код: {code}",
+        "json": 1
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, params=params, timeout=10.0)
+            data = response.json()
+            if data.get("status_code") == 100:
+                return True
+            else:
+                logger.error(f"SMS API Error: {data}")
+                return False
+    except Exception as e:
+        logger.error(f"Error sending SMS to {phone}: {e}")
+        return False
 
 class LoginRequest(BaseModel):
     email: str
@@ -89,9 +160,14 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
             existing_user.phone = req.phone
             
             await session.commit()
-            logger.info(f"EMAIL VERIFICATION CODE for {req.email}: {verification_code}")
+            
+            # Send Codes
+            email_task = asyncio.create_task(send_email_code(req.email, verification_code))
             if phone_verification_code:
-                logger.info(f"SMS VERIFICATION CODE for {req.phone}: {phone_verification_code}")
+                sms_task = asyncio.create_task(send_sms_code(req.phone, phone_verification_code))
+                await asyncio.gather(email_task, sms_task)
+            else:
+                await email_task
                 
             return VerifyResponse(message="Коды отправлены на почту и телефон", email=req.email)
 
@@ -115,10 +191,13 @@ async def register(req: RegisterRequest, session: AsyncSession = Depends(get_ses
     session.add(new_user)
     await session.commit()
     
-    # Mocking email & sms sending
-    logger.info(f"EMAIL VERIFICATION CODE for {req.email}: {verification_code}")
+    # Send Codes
+    email_task = asyncio.create_task(send_email_code(req.email, verification_code))
     if phone_verification_code:
-        logger.info(f"SMS VERIFICATION CODE for {req.phone}: {phone_verification_code}")
+        sms_task = asyncio.create_task(send_sms_code(req.phone, phone_verification_code))
+        await asyncio.gather(email_task, sms_task)
+    else:
+        await email_task
 
     return VerifyResponse(message="Коды отправлены на почту и телефон", email=req.email)
 
