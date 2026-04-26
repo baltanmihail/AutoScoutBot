@@ -216,12 +216,13 @@ async def verify_code(req: VerifyCodeRequest, session: AsyncSession = Depends(ge
     if user.verification_code != req.email_code:
         raise HTTPException(status_code=400, detail="Неверный email код подтверждения")
         
-    if user.phone_verification_code and user.phone_verification_code != req.phone_code:
-        raise HTTPException(status_code=400, detail="Неверный СМС код подтверждения")
+    if user.phone_verification_code and req.phone_code:
+        if user.phone_verification_code != req.phone_code:
+            raise HTTPException(status_code=400, detail="Неверный СМС код подтверждения")
+        user.phone_verification_code = "OK"
         
     user.is_verified = True
     user.verification_code = None
-    user.phone_verification_code = None
     
     await session.commit()
     await session.refresh(user)

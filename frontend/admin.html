@@ -30,12 +30,6 @@
     ::-webkit-scrollbar-track { background: #0f172a; }
     ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #475569; }
-    #logo-wheel, #text-wheel {
-      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease-out;
-    }
-    .motion-blur {
-      filter: blur(1.5px);
-    }
   </style>
 </head>
 <body class="bg-dark-950 text-slate-300 font-sans antialiased min-h-screen selection:bg-brand-500 selection:text-white" id="app">
@@ -174,7 +168,7 @@
                     {{ user.phone || '-' }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-300">
-                    {{ user.last_name }} {{ user.first_name }} {{ user.middle_name || '' }}
+                    {{ (user.last_name || user.first_name || user.middle_name) ? (user.last_name + ' ' + user.first_name + ' ' + (user.middle_name || '')).trim() : (user.email && user.email.includes('@telegram.local') ? 'Telegram User' : 'Без имени') }}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <span :class="roleClass(user.role)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full border">

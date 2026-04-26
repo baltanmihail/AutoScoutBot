@@ -32,6 +32,7 @@ class ProfileResponse(BaseModel):
     requests_pro: int = 0
     requests_max: int = 0
     is_verified: bool = False
+    is_phone_verified: bool = False
 
 class ProfileUpdateRequest(BaseModel):
     email: str
@@ -60,7 +61,7 @@ async def get_current_user_from_token(token: str, session: AsyncSession) -> WebU
     return user
 
 
-from fastapi import Header
+from fastapi import Header, Query
 
 @router.get("", response_model=ProfileResponse)
 async def get_profile(authorization: str = Header(...), session: AsyncSession = Depends(get_session)):
@@ -81,7 +82,8 @@ async def get_profile(authorization: str = Header(...), session: AsyncSession = 
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
         requests_max=user.requests_max,
-        is_verified=user.is_verified
+        is_verified=user.is_verified,
+        is_phone_verified=(user.phone_verification_code == "OK")
     )
 
 @router.post("/link_telegram", response_model=ProfileResponse)
@@ -145,7 +147,8 @@ async def link_telegram(
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
         requests_max=user.requests_max,
-        is_verified=user.is_verified
+        is_verified=user.is_verified,
+        is_phone_verified=(user.phone_verification_code == "OK")
     )
 @router.put("", response_model=ProfileResponse)
 async def update_profile(
@@ -187,42 +190,47 @@ async def update_profile(
         requests_standard=user.requests_standard,
         requests_pro=user.requests_pro,
         requests_max=user.requests_max,
-        is_verified=user.is_verified
+        is_verified=user.is_verified,
+        is_phone_verified=(user.phone_verification_code == "OK")
     )
 
 class ProfileVerifyRequest(BaseModel):
-    email_code: str
-    phone_code: Optional[str] = None
+    type: str
+    code: str
 
 @router.post("/request_verification")
 async def request_verification(
+    type: str = Query("email", description="Тип подтверждения: email или phone"),
     authorization: str = Header(...),
     session: AsyncSession = Depends(get_session)
 ):
-    """Запрос кода для подтверждения профиля (Email и СМС)"""
+    """Запрос кода для подтверждения профиля"""
     user = await get_current_user_from_token(authorization, session)
-    if user.is_verified:
-        return {"message": "Профиль уже подтвержден"}
-        
+    
     import random
-    verification_code = str(random.randint(100000, 999999))
-    phone_verification_code = str(random.randint(100000, 999999)) if user.phone else None
-    
-    user.verification_code = verification_code
-    user.phone_verification_code = phone_verification_code
-    await session.commit()
-    
     from backend.routes.auth import send_email_code, send_sms_code
-    import asyncio
     
-    email_task = asyncio.create_task(send_email_code(user.email, verification_code))
-    if phone_verification_code:
-        sms_task = asyncio.create_task(send_sms_code(user.phone, phone_verification_code))
-        await asyncio.gather(email_task, sms_task)
-    else:
-        await email_task
+    if type == "email":
+        if user.is_verified:
+            return {"message": "Email уже подтвержден"}
+        verification_code = str(random.randint(100000, 999999))
+        user.verification_code = verification_code
+        await session.commit()
+        await send_email_code(user.email, verification_code)
+        return {"message": "Код отправлен на Email"}
         
-    return {"message": "Коды отправлены"}
+    elif type == "phone":
+        if not user.phone:
+            raise HTTPException(status_code=400, detail="Номер телефона не указан")
+        if user.phone_verification_code == "OK":
+            return {"message": "Телефон уже подтвержден"}
+        phone_verification_code = str(random.randint(100000, 999999))
+        user.phone_verification_code = phone_verification_code
+        await session.commit()
+        await send_sms_code(user.phone, phone_verification_code)
+        return {"message": "Код отправлен по СМС"}
+        
+    raise HTTPException(status_code=400, detail="Неверный тип")
 
 @router.post("/verify")
 async def verify_profile(
@@ -230,21 +238,26 @@ async def verify_profile(
     authorization: str = Header(...),
     session: AsyncSession = Depends(get_session)
 ):
-    """Проверка введенного кода и подтверждение профиля"""
+    """Проверка введенного кода"""
     user = await get_current_user_from_token(authorization, session)
     
-    if user.is_verified:
-        raise HTTPException(status_code=400, detail="Профиль уже подтвержден")
+    if req.type == "email":
+        if user.is_verified:
+            raise HTTPException(status_code=400, detail="Email уже подтвержден")
+        if not user.verification_code or user.verification_code != req.code:
+            raise HTTPException(status_code=400, detail="Неверный email код")
+        user.is_verified = True
+        user.verification_code = None
         
-    if user.verification_code and user.verification_code != req.email_code:
-        raise HTTPException(status_code=400, detail="Неверный email код подтверждения")
+    elif req.type == "phone":
+        if user.phone_verification_code == "OK":
+            raise HTTPException(status_code=400, detail="Телефон уже подтвержден")
+        if not user.phone_verification_code or user.phone_verification_code != req.code:
+            raise HTTPException(status_code=400, detail="Неверный СМС код")
+        user.phone_verification_code = "OK"
         
-    if user.phone_verification_code and user.phone_verification_code != req.phone_code:
-        raise HTTPException(status_code=400, detail="Неверный СМС код подтверждения")
+    else:
+        raise HTTPException(status_code=400, detail="Неверный тип")
         
-    user.is_verified = True
-    user.verification_code = None
-    user.phone_verification_code = None
-    
     await session.commit()
-    return {"message": "Профиль успешно подтвержден"}
+    return {"message": "Успешно подтверждено"}
