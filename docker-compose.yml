@@ -49,9 +49,9 @@ services:
     restart: unless-stopped
 
   tor:
-    image: dperson/torproxy
-    environment:
-      - TOR_MaxCircuitDirtiness=10
+    image: alpine:latest
+    command: >
+      sh -c 'apk add --no-cache tor && echo "SocksPort 0.0.0.0:9050" > /etc/tor/torrc && tor -f /etc/tor/torrc'
     restart: unless-stopped
 
 volumes:
