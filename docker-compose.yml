@@ -39,19 +39,12 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/autoscout
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - TELEGRAM_PROXY=socks5://proxy:10808
+      - TELEGRAM_PROXY=${TELEGRAM_PROXY}
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
     depends_on:
       - db
-      - proxy
-    restart: unless-stopped
-
-  proxy:
-    image: teddysun/xray:latest
-    volumes:
-      - ./xray-config.json:/etc/xray/config.json
     restart: unless-stopped
 
 volumes:

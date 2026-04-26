@@ -14,7 +14,8 @@ async def find_working_proxy():
     urls = [
         "https://raw.githubusercontent.com/TheSpeedX/PROXY-List/master/http.txt",
         "https://raw.githubusercontent.com/monosans/proxy-list/main/proxies/http.txt",
-        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt"
+        "https://raw.githubusercontent.com/ShiftyTR/Proxy-List/master/http.txt",
+        "https://raw.githubusercontent.com/yemreakbulut/pt-proxy-list/main/http.txt"
     ]
     
     proxies = []
@@ -24,7 +25,7 @@ async def find_working_proxy():
                 async with session.get(url, timeout=5) as resp:
                     if resp.status == 200:
                         text = await resp.text()
-                        proxies.extend(text.strip().split('\n')[:150])
+                        proxies.extend(text.strip().split('\n')[:300])
             except Exception as e:
                 logger.warning(f"Не удалось загрузить список прокси с {url}: {e}")
                 continue
