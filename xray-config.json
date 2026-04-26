@@ -30,8 +30,8 @@
           "domain:yandex.com",
           "domain:subix.ru",
           "domain:yastatic.net",
-          "domain:s.valista.site",
           "domain:vpn1.su",
+          "domain:s.valista.site",
           "domain:ru.net",
           "domain:avito.st",
           "domain:yadi.sk",
@@ -53,31 +53,6 @@
         ],
         "type": "field",
         "outboundTag": "direct"
-      },
-      {
-        "type": "field",
-        "network": "tcp,udp",
-        "balancerTag": "Super_Balancer"
-      }
-    ],
-    "balancers": [
-      {
-        "tag": "Super_Balancer",
-        "selector": [
-          "bal_stand"
-        ],
-        "strategy": {
-          "type": "leastPing",
-          "settings": {
-            "maxRTT": "1s",
-            "expected": 2,
-            "baselines": [
-              "1s"
-            ],
-            "tolerance": 0.01
-          }
-        },
-        "fallbackTag": "direct"
       }
     ],
     "domainMatcher": "hybrid",
@@ -124,131 +99,31 @@
   ],
   "outbounds": [
     {
-      "tag": "bal_stand",
+      "tag": "proxy",
       "protocol": "vless",
       "settings": {
         "vnext": [
           {
-            "address": "crm24.vertiex.ru",
+            "address": "ru1.kweps.ru",
             "port": 443,
             "users": [
               {
                 "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
                 "encryption": "none",
-                "flow": ""
+                "flow": "xtls-rprx-vision"
               }
             ]
           }
         ]
       },
       "streamSettings": {
-        "network": "xhttp",
-        "xhttpSettings": {
-          "mode": "auto",
-          "host": ""
-        },
+        "network": "tcp",
+        "tcpSettings": {},
         "security": "reality",
         "realitySettings": {
-          "serverName": "www.samsung.com",
-          "publicKey": "X3CgKYJ-JYshe9mcXnjprldK4VTm00fp6jwUdUnl_jI",
-          "fingerprint": "chrome"
-        }
-      }
-    },
-    {
-      "tag": "bal_stand-2",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "n560.kweps.ru",
-            "port": 443,
-            "users": [
-              {
-                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "xhttpSettings": {
-          "mode": "auto",
-          "host": ""
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.samsung.com",
-          "publicKey": "LdZS1Mn61kQKXxDwf5wAEt8jFqkM4IjVQYXD_FkoKA8",
-          "fingerprint": "chrome"
-        }
-      }
-    },
-    {
-      "tag": "bal_stand-3",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "cleo.lafitta.org",
-            "port": 443,
-            "users": [
-              {
-                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "xhttpSettings": {
-          "mode": "auto",
-          "host": ""
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.samsung.com",
-          "publicKey": "bO6oE5j-3-ONc3nqNsicX1hs6UhmrNLS5g_aMIRDUEc",
-          "spiderX": "/",
-          "fingerprint": "chrome"
-        }
-      }
-    },
-    {
-      "tag": "bal_stand-4",
-      "protocol": "vless",
-      "settings": {
-        "vnext": [
-          {
-            "address": "crm24.lafitta.org",
-            "port": 443,
-            "users": [
-              {
-                "id": "4de494b7-3abd-46ec-9dc7-9f2928d6acf4",
-                "encryption": "none",
-                "flow": ""
-              }
-            ]
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "xhttp",
-        "xhttpSettings": {
-          "mode": "auto",
-          "host": ""
-        },
-        "security": "reality",
-        "realitySettings": {
-          "serverName": "www.samsung.com",
-          "publicKey": "5E7HaoIDvtXIjpSvxIVIrBbnS7chFtJcDACnSFNjekg",
-          "fingerprint": "chrome"
+          "serverName": "www.philips.com",
+          "publicKey": "lrcvhYPvMfH_MpHC_PFYNb_bsw6vy2VR0yZxv3Pv8C4",
+          "fingerprint": "qq"
         }
       }
     },
