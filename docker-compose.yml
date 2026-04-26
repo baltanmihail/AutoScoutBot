@@ -39,7 +39,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/autoscout
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
-      - TELEGRAM_PROXY=socks5://tor:9050
+      - TELEGRAM_PROXY=socks5://tor:9150
       - CHECKO_API_KEY=${CHECKO_API_KEY}
       - LLM_API_KEY=${LLM_API_KEY}
       - GIGACHAT_API_TOKEN=${GIGACHAT_API_TOKEN}
