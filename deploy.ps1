@@ -16,7 +16,7 @@ if ($LASTEXITCODE -ne 0) {
 
 Write-Host "`n🌐 2. Подключаемся к серверу (37.230.192.5) и обновляем контейнеры..." -ForegroundColor Yellow
 # Команда для SSH. Если ты используешь специфичный ключ, можно добавить -i путь_к_ключу
-$sshCommand = "cd /home/autoscoutbot/autoscoutbot && git pull && sudo docker compose up -d --build"
+$sshCommand = "cd /home/autoscoutbot/autoscoutbot && git pull && docker compose up -d --build"
 
 # Выполняем команду на сервере
 ssh autoscoutbot@37.230.192.5 $sshCommand
