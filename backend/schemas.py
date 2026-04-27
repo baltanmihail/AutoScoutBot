@@ -18,6 +18,8 @@ class StartupBrief(BaseModel):
     year_founded: Optional[int] = None
     score_overall: float = 0
     ml_score: Optional[float] = None
+    company_description: str = ""
+    technologies: str = ""
 
     class Config:
         from_attributes = True
@@ -65,6 +67,7 @@ class SearchRequest(BaseModel):
     top_k: int = Field(default=5, ge=1, le=50)
     filters: dict = Field(default_factory=dict)
     user_id: Optional[int] = None
+    exclude_ids: list[str] = Field(default_factory=list)
 
 
 class SearchResult(BaseModel):
@@ -125,7 +128,7 @@ class ScoreExplanation(BaseModel):
 
 class FullScoreResponse(BaseModel):
     startup_id: str
-    name: str
+    startup: StartupDetail
     proxy_scores: dict  # 6 proxy scores (1-10)
     ml_scores: Optional[dict] = None  # 6 ML scores (1-10)
     ml_model_version: Optional[str] = None
@@ -133,6 +136,11 @@ class FullScoreResponse(BaseModel):
     all_explanations: Optional[dict] = None  # SHAP for all 6 targets
     financials: list[FinancialRecord] = []
     external_data: Optional[dict] = None
+    # Parsed metrics
+    z_score: Optional[float] = None
+    revenue_cagr: Optional[float] = None
+    team_size: Optional[int] = None
+    liquidity_ratio: Optional[float] = None
 
 
 # ---------------------------------------------------------------------------

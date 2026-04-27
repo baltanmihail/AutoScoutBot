@@ -292,13 +292,13 @@
         <div v-if="hasSearched && !isSearching && searchResults.length > 0" class="w-full max-w-4xl space-y-4">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-white tracking-tight">Найдено: {{ searchResults.length }}</h3>
-            <button @click="hasSearched = false; searchQuery = ''; errorMessage = ''" class="px-4 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-medium rounded-lg border border-blue-500/30 transition-all flex items-center gap-2">
+            <button @click="hasSearched = false; searchQuery = ''; errorMessage = ''; seenStartupIds = [];" class="px-4 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-medium rounded-lg border border-blue-500/30 transition-all flex items-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
               Новый поиск
             </button>
           </div>
           
-          <div v-for="(res, idx) in searchResults" :key="idx" class="glass-panel p-5 rounded-xl border border-white/10 hover:border-fuchsia-500/30 transition-all cursor-pointer group flex flex-col md:flex-row gap-4 relative overflow-hidden">
+          <div v-for="(res, idx) in searchResults" :key="idx" @click="window.location.href='/startup.html?id=' + res.startup.id" class="glass-panel p-5 rounded-xl border border-white/10 hover:border-fuchsia-500/30 transition-all cursor-pointer group flex flex-col md:flex-row gap-4 relative overflow-hidden">
             <div class="absolute inset-0 bg-gradient-to-r from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             
             <div class="flex-shrink-0 w-12 h-12 rounded-xl bg-dark-800 border border-white/5 flex items-center justify-center text-lg font-bold text-slate-300">
@@ -310,7 +310,7 @@
                 <h4 class="text-base font-semibold text-white truncate">{{ res.startup.name }}</h4>
                 <div class="flex flex-wrap gap-2 shrink-0">
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-fuchsia-500/20 text-fuchsia-400 border border-fuchsia-500/30">
-                    AI Relevance: {{ (res.ai_relevance * 100).toFixed(0) }}%
+                    AI Relevance: {{ (res.ai_relevance * 10).toFixed(0) }}%
                   </span>
                   <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" v-if="res.ml_score !== null">
                     ML-Скор: {{ res.ml_score.toFixed(1) }}
@@ -339,7 +339,7 @@
           </svg>
           <h3 class="text-lg font-medium text-white mb-2">Ничего не найдено</h3>
           <p class="text-slate-400 mt-1 mb-6">Попробуйте изменить поисковый запрос или модель поиска.</p>
-          <button @click="hasSearched = false; searchQuery = ''; errorMessage = ''" class="px-6 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-medium rounded-xl border border-blue-500/30 transition-all inline-flex items-center gap-2">
+          <button @click="hasSearched = false; searchQuery = ''; errorMessage = ''; seenStartupIds = [];" class="px-6 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 font-medium rounded-xl border border-blue-500/30 transition-all inline-flex items-center gap-2">
             Новый поиск
           </button>
         </div>
@@ -359,6 +359,7 @@
         const searchQuery = ref('');
         const modelType = ref('standard');
         const searchResults = ref([]);
+        const seenStartupIds = ref([]);
         const isSearching = ref(false);
         const hasSearched = ref(false);
         const errorMessage = ref('');
@@ -366,8 +367,16 @@
         const performSearch = async () => {
           if (!searchQuery.value.trim()) return;
           isSearching.value = true;
-          hasSearched.value = true;
           errorMessage.value = '';
+          
+          if (hasSearched.value && searchResults.value.length > 0) {
+            const newIds = searchResults.value.map(r => r.startup.id);
+            seenStartupIds.value = [...new Set([...seenStartupIds.value, ...newIds])];
+          } else if (!hasSearched.value) {
+            seenStartupIds.value = [];
+          }
+          
+          hasSearched.value = true;
           searchResults.value = [];
           
           try {
@@ -380,8 +389,9 @@
               },
               body: JSON.stringify({
                 query: searchQuery.value,
-                top_k: 10,
-                model_type: modelType.value
+                top_k: 3,
+                model_type: modelType.value,
+                exclude_ids: seenStartupIds.value
               })
             });
             
@@ -507,6 +517,53 @@ const fetchProfileLimits = (token) => {
           }).catch(err => console.error("Error fetching limits", err));
         };
 
+    // Favicon Animation
+    const faviconCanvas = document.createElement('canvas');
+    faviconCanvas.width = 32;
+    faviconCanvas.height = 32;
+    const favCtx = faviconCanvas.getContext('2d');
+    const favLink = document.createElement('link');
+    favLink.rel = 'icon';
+    document.head.appendChild(favLink);
+
+    const favLetters = ['W', 'B', 'A', 'C', 'AI'];
+    const favColors = [
+      ['#3b82f6', '#9333ea'], 
+      ['#10b981', '#0d9488'], 
+      ['#a855f7', '#db2777'], 
+      ['#f43f5e', '#ea580c'], 
+      ['#d946ef', '#4f46e5']  
+    ];
+    let favIndex = 4; // Start at AI for search
+
+    function updateFavicon() {
+      const letter = favLetters[favIndex];
+      const [c1, c2] = favColors[favIndex];
+      
+      const grad = favCtx.createLinearGradient(0, 0, 32, 32);
+      grad.addColorStop(0, c1);
+      grad.addColorStop(1, c2);
+      
+      favCtx.fillStyle = grad;
+      favCtx.beginPath();
+      favCtx.roundRect ? favCtx.roundRect(0, 0, 32, 32, 8) : favCtx.rect(0, 0, 32, 32);
+      favCtx.fill();
+      
+      favCtx.fillStyle = 'white';
+      favCtx.font = 'bold 16px Inter, sans-serif';
+      favCtx.textAlign = 'center';
+      favCtx.textBaseline = 'middle';
+      if (letter === 'AI') {
+        favCtx.font = 'bold 14px Inter, sans-serif';
+      }
+      favCtx.fillText(letter, 16, 17);
+      
+      favLink.href = faviconCanvas.toDataURL('image/png');
+    }
+    
+    // Initial favicon
+    updateFavicon();
+
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
           if (!token) {
@@ -534,7 +591,7 @@ const fetchProfileLimits = (token) => {
             }
             
             function scheduleNextSpin() {
-              const delay = 30000 + Math.random() * 15000;
+              const delay = 7000 + Math.random() * 10000;
               scrollInterval = setTimeout(() => {
                 doSpin();
                 scheduleNextSpin();
@@ -571,6 +628,8 @@ const fetchProfileLimits = (token) => {
               if (logoBgContainer) {
                 logoBgContainer.className = `w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg ${shadowColors[index]} overflow-hidden relative transition-shadow duration-700`;
               }
+              favIndex = index;
+              updateFavicon();
             }
             
             // Mouse wheel scroll with throttling

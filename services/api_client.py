@@ -99,11 +99,11 @@ class AutoScoutAPI:
 
     async def get_score(self, startup_id: str) -> Optional[dict]:
         """
-        Call /score endpoint for basic scores + SHAP.
+        Call /api/score endpoint for basic scores + SHAP.
         """
         client = await self._get_client()
         try:
-            resp = await client.post("/score/", json={"startup_id": startup_id})
+            resp = await client.post("/api/score/", json={"startup_id": startup_id})
             resp.raise_for_status()
             return resp.json()
         except Exception as e:
@@ -112,11 +112,11 @@ class AutoScoutAPI:
 
     async def get_full_score(self, startup_id: str) -> Optional[dict]:
         """
-        Call /score/full endpoint for complete scoring pipeline.
+        Call /api/score/full endpoint for complete scoring pipeline.
         """
         client = await self._get_client()
         try:
-            resp = await client.post("/score/full", json={"startup_id": startup_id})
+            resp = await client.post("/api/score/full", json={"startup_id": startup_id})
             resp.raise_for_status()
             return resp.json()
         except Exception as e:

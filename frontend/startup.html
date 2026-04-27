@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoScout Web | Аналитика Стартапа</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: { 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb' },
+            dark: { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    [v-cloak] { display: none; }
+    
+    .glass-panel {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #94a3b8;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover { color: #f8fafc; }
+    .tab-btn.active {
+      color: #60a5fa;
+      border-bottom-color: #3b82f6;
+    }
+  </style>
+</head>
+<body class="bg-dark-950 text-slate-300 font-sans antialiased min-h-screen" id="app">
+
+  <!-- Background glow -->
+  <div class="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+    <div class="absolute -top-40 left-1/4 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[128px] opacity-10"></div>
+    <div class="absolute bottom-0 right-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-10"></div>
+  </div>
+
+  <div class="flex flex-col md:flex-row h-screen overflow-hidden relative z-10" v-cloak>
+    
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 glass-panel border-b md:border-b-0 md:border-r border-white/10 flex flex-col z-20 shrink-0 h-auto md:h-full">
+          <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
+            <!-- Animated Logo -->
+            <a href="/dashboard.html" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
+              <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700" id="logo-bg-container">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-700" id="bg-grad-0"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 transition-opacity duration-700 opacity-0" id="bg-grad-1"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-600 transition-opacity duration-700 opacity-0" id="bg-grad-2"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-orange-600 transition-opacity duration-700 opacity-0" id="bg-grad-3"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-600 transition-opacity duration-700 opacity-0" id="bg-grad-4"></div>
+                
+                <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
+                  <div class="h-8 w-8 flex items-center justify-center shrink-0">W</div>
+                  <div class="h-8 w-8 flex items-center justify-center shrink-0">B</div>
+                  <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
+                  <div class="h-8 w-8 flex items-center justify-center shrink-0">C</div>
+                  <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">AI</div>
+                </div>
+              </div>
+              <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
+                AutoScout
+                <div class="h-6 overflow-hidden relative ml-1 inline-flex w-16 pt-0.5">
+                  <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out font-normal" id="text-wheel">
+                    <div class="h-6 flex items-center shrink-0 text-blue-400 transition-colors duration-500">Web</div>
+                    <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Bot</div>
+                    <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">App</div>
+                    <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Com</div>
+                    <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">AI</div>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+      
+      <div class="flex-1 overflow-y-auto py-6 px-4">
+        <nav class="space-y-2">
+          <a href="/dashboard.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            Главная
+          </a>
+          <a href="/search.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
+            <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            AI Поиск
+          </a>
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col overflow-hidden bg-dark-950/50 relative">
+      
+      <div v-if="loading" class="absolute inset-0 flex items-center justify-center z-50 bg-dark-950">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+
+      <div v-if="error" class="m-8 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl text-center">
+        {{ error }}
+      </div>
+
+      <template v-if="!loading && !error && startupData">
+        <!-- Header -->
+        <header class="p-6 md:p-8 border-b border-white/10 glass-panel">
+          <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-3 mb-2">
+                <h1 class="text-3xl font-bold text-white tracking-tight">{{ startupData.startup.name }}</h1>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 uppercase tracking-wider">
+                  {{ startupData.startup.status }}
+                </span>
+                <span v-if="startupData.startup.cluster" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30 uppercase">
+                  {{ startupData.startup.cluster }}
+                </span>
+              </div>
+              <p class="text-sm text-slate-400 mb-1">ИНН: <span class="text-slate-300 font-mono">{{ startupData.startup.inn || 'Н/Д' }}</span> &nbsp;|&nbsp; Основан: <span class="text-slate-300">{{ startupData.startup.year_founded || 'Н/Д' }}</span></p>
+              <a v-if="startupData.startup.website" :href="formatUrl(startupData.startup.website)" target="_blank" class="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1 w-max">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                {{ startupData.startup.website }}
+              </a>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">ML Оценка</div>
+                <div class="text-3xl font-bold text-white flex items-center justify-end gap-2">
+                  {{ (startupData.startup.ml_score || startupData.startup.score_overall).toFixed(1) }}
+                  <span class="text-sm font-normal text-slate-500">/ 10</span>
+                </div>
+              </div>
+              <button @click="downloadExcel" class="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-lg border border-emerald-500/30 transition-all flex items-center gap-2 h-max">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Отчет XLSX
+              </button>
+            </div>
+          </div>
+        </header>
+
+        <!-- Tabs -->
+        <div class="border-b border-white/10 px-6 md:px-8 flex overflow-x-auto no-scrollbar glass-panel z-10 sticky top-0">
+          <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id" :class="['tab-btn whitespace-nowrap', currentTab === tab.id ? 'active' : '']">
+            {{ tab.label }}
+          </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8 pb-20">
+          
+          <!-- TAB: OVERVIEW -->
+          <div v-show="currentTab === 'overview'" class="space-y-6 animate-fade-in">
+            <div class="glass-panel p-6 rounded-xl border border-white/5">
+              <h3 class="text-lg font-semibold text-white mb-4">Описание компании</h3>
+              <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{{ startupData.startup.company_description || 'Нет описания' }}</p>
+              
+              <div v-if="startupData.team_size" class="mt-4 pt-4 border-t border-white/5 flex items-center gap-2">
+                <span class="text-xs text-slate-500 uppercase tracking-wider block">Размер команды:</span>
+                <span class="text-sm text-white font-medium bg-dark-900 px-3 py-1 rounded-full border border-white/10">{{ startupData.team_size }} чел.</span>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="glass-panel p-6 rounded-xl border border-white/5">
+                <h3 class="text-lg font-semibold text-white mb-4">Технологии и индустрии</h3>
+                <div class="mb-4">
+                  <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">Технологии</span>
+                  <div class="text-sm text-slate-300 leading-relaxed">{{ startupData.startup.technologies || 'Не указаны' }}</div>
+                </div>
+                <div>
+                  <span class="text-xs text-slate-500 uppercase tracking-wider block mb-1">Отрасли</span>
+                  <div class="text-sm text-slate-300 leading-relaxed">{{ startupData.startup.industries || 'Не указаны' }}</div>
+                </div>
+              </div>
+              
+              <div class="glass-panel p-6 rounded-xl border border-white/5">
+                <h3 class="text-lg font-semibold text-white mb-4">Уровни готовности (Technology & Market)</h3>
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="bg-dark-900/50 p-4 rounded-lg border border-white/5 text-center group relative">
+                    <div class="text-2xl font-bold text-white">{{ startupData.startup.trl }}</div>
+                    <div class="text-xs text-slate-400 mt-1 cursor-help border-b border-dashed border-slate-500 inline-block">TRL (Технологии)</div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-dark-800 text-slate-300 text-[10px] p-2 rounded border border-white/10 shadow-xl pointer-events-none z-10 text-left">
+                      Уровень технологической готовности (Technology Readiness Level). Оценивает зрелость самой технологии от идеи (1) до полномасштабного серийного производства (9).
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-4 rounded-lg border border-white/5 text-center group relative">
+                    <div class="text-2xl font-bold text-white">{{ startupData.startup.crl }}</div>
+                    <div class="text-xs text-slate-400 mt-1 cursor-help border-b border-dashed border-slate-500 inline-block">CRL (Коммерция)</div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-dark-800 text-slate-300 text-[10px] p-2 rounded border border-white/10 shadow-xl pointer-events-none z-10 text-left">
+                      Уровень коммерческой готовности (Commercial Readiness Level). Показывает, насколько продукт готов к продажам на открытом рынке.
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-4 rounded-lg border border-white/5 text-center group relative">
+                    <div class="text-2xl font-bold text-white">{{ startupData.startup.irl }}</div>
+                    <div class="text-xs text-slate-400 mt-1 cursor-help border-b border-dashed border-slate-500 inline-block">IRL (Инвестиции)</div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-dark-800 text-slate-300 text-[10px] p-2 rounded border border-white/10 shadow-xl pointer-events-none z-10 text-left">
+                      Уровень инвестиционной привлекательности (Investment Readiness Level). Оценивает готовность стартапа к привлечению венчурного капитала.
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-4 rounded-lg border border-white/5 text-center group relative">
+                    <div class="text-2xl font-bold text-white">{{ startupData.startup.mrl }}</div>
+                    <div class="text-xs text-slate-400 mt-1 cursor-help border-b border-dashed border-slate-500 inline-block">MRL (Производство)</div>
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-dark-800 text-slate-300 text-[10px] p-2 rounded border border-white/10 shadow-xl pointer-events-none z-10 text-left">
+                      Уровень производственной готовности (Manufacturing Readiness Level). Способность масштабировать производство без потери качества.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: FINANCIALS -->
+          <div v-show="currentTab === 'financials'" class="space-y-6 animate-fade-in">
+            <!-- Key Financial Metrics Panel -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div class="glass-panel p-5 rounded-xl border border-white/5">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Оценка Банкротства (Z-Score)</div>
+                <div class="text-2xl font-bold" :class="startupData.z_score == null ? 'text-slate-500' : (startupData.z_score > 2.9 ? 'text-emerald-400' : (startupData.z_score > 1.23 ? 'text-yellow-400' : 'text-rose-400'))">
+                  {{ startupData.z_score != null ? startupData.z_score.toFixed(2) : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1" v-if="startupData.z_score != null">
+                  Модель Альтмана. {{ startupData.z_score > 2.9 ? 'Зеленая зона' : (startupData.z_score > 1.23 ? 'Серая зона' : 'Красная зона') }}
+                </div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">CAGR Выручки</div>
+                <div class="text-2xl font-bold" :class="startupData.revenue_cagr == null ? 'text-slate-500' : (startupData.revenue_cagr >= 0 ? 'text-emerald-400' : 'text-rose-400')">
+                  {{ startupData.revenue_cagr != null ? (startupData.revenue_cagr > 0 ? '+' : '') + (startupData.revenue_cagr * 100).toFixed(1) + '%' : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1">Среднегодовой темп роста</div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5">
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Коэф. Ликвидности</div>
+                <div class="text-2xl font-bold text-blue-400">
+                  {{ startupData.liquidity_ratio != null ? startupData.liquidity_ratio.toFixed(2) : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1">Текущие активы / Обязательства</div>
+              </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-xl border border-white/5">
+              <h3 class="text-lg font-semibold text-white mb-6">Динамика выручки и прибыли (тыс. руб)</h3>
+              <div v-if="!startupData.financials || startupData.financials.length === 0" class="text-center text-slate-500 py-10">
+                Финансовые данные отсутствуют в базе
+              </div>
+              <div v-else class="h-80 w-full relative">
+                <canvas id="finChart"></canvas>
+              </div>
+            </div>
+            
+            <!-- Table for precise numbers -->
+            <div v-if="startupData.financials && startupData.financials.length > 0" class="glass-panel rounded-xl border border-white/10 overflow-hidden">
+              <table class="min-w-full divide-y divide-white/5">
+                <thead class="bg-dark-800/80">
+                  <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Год</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Выручка (₽)</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Прибыль (₽)</th>
+                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Рентабельность</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-white/5 bg-dark-900/30">
+                  <tr v-for="fin in sortedFinancials" :key="fin.year">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{{ fin.year }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-300 text-right">{{ formatMoney(fin.revenue) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold" :class="fin.profit >= 0 ? 'text-emerald-400' : 'text-rose-500'">{{ formatMoney(fin.profit) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-300 text-right">
+                      {{ fin.revenue > 0 ? ((fin.profit / fin.revenue) * 100).toFixed(1) + '%' : 'N/A' }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- TAB: RISKS & SCORES -->
+          <div v-show="currentTab === 'risks'" class="space-y-6 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              
+              <div class="glass-panel p-6 rounded-xl border border-white/5">
+                <h3 class="text-lg font-semibold text-white mb-6">Профиль рисков и оценок ML (1-10)</h3>
+                <div class="h-80 w-full relative flex justify-center">
+                  <canvas id="radarChart"></canvas>
+                </div>
+              </div>
+
+              <div class="glass-panel p-6 rounded-xl border border-white/5">
+                <h3 class="text-lg font-semibold text-white mb-6">Факторы оценки (SHAP Values)</h3>
+                <div v-if="!startupData.explanation" class="text-center text-slate-500 py-10">
+                  Интерпретация ML-модели недоступна
+                </div>
+                <div v-else class="space-y-4">
+                  <div>
+                    <h4 class="text-sm font-medium text-emerald-400 mb-2">Позитивные факторы (повышают оценку)</h4>
+                    <div class="space-y-2">
+                      <div v-for="(item, i) in startupData.explanation.top_positive" :key="i" class="flex items-center justify-between text-sm">
+                        <span class="text-slate-300 truncate pr-2">{{ translateFeature(item.feature) }} ({{ formatFeatureValue(item.value, item.feature) }})</span>
+                        <span class="text-emerald-400 font-mono">+{{ item.contribution.toFixed(2) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="pt-2 border-t border-white/5">
+                    <h4 class="text-sm font-medium text-rose-400 mb-2">Негативные факторы (снижают оценку)</h4>
+                    <div class="space-y-2">
+                      <div v-for="(item, i) in startupData.explanation.top_negative" :key="i" class="flex items-center justify-between text-sm">
+                        <span class="text-slate-300 truncate pr-2">{{ translateFeature(item.feature) }} ({{ formatFeatureValue(item.value, item.feature) }})</span>
+                        <span class="text-rose-400 font-mono">{{ item.contribution.toFixed(2) }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB: INVESTMENT -->
+          <div v-show="currentTab === 'investment'" class="space-y-6 animate-fade-in">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              
+              <!-- Calculator Form -->
+              <div class="lg:col-span-1 glass-panel p-6 rounded-xl border border-white/5">
+                <h3 class="text-lg font-semibold text-white mb-4">Параметры сценария</h3>
+                
+                <div class="space-y-4">
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Сумма инвестиций (₽)</label>
+                    <input type="number" v-model.number="calc.investment" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Доля инвестора (%)</label>
+                    <input type="number" v-model.number="calc.equity_share" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Ставка дисконтирования (%) <span v-if="calc.cbrRate" class="text-blue-400">(ЦБ РФ: {{calc.cbrRate}}%)</span></label>
+                    <input type="number" v-model.number="calc.discount_rate" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Горизонт (лет)</label>
+                    <input type="number" v-model.number="calc.years" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                  </div>
+                  <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Ожидаемый мультипликатор P/S на выходе</label>
+                    <input type="number" v-model.number="calc.ps_multiplier" step="0.1" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results -->
+              <div class="lg:col-span-2 glass-panel p-6 rounded-xl border border-white/5 flex flex-col justify-center">
+                <h3 class="text-lg font-semibold text-white mb-6">Результаты моделирования</h3>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <div class="text-sm text-slate-400 mb-1">Внутренняя норма доходности (IRR)</div>
+                    <div class="text-3xl font-bold" :class="calculatedIRR >= calc.discount_rate ? 'text-emerald-400' : 'text-rose-400'">
+                      {{ calculatedIRR }}%
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <div class="text-sm text-slate-400 mb-1">Чистая приведенная стоимость (NPV)</div>
+                    <div class="text-3xl font-bold" :class="calculatedNPV >= 0 ? 'text-emerald-400' : 'text-rose-400'">
+                      {{ formatMoney(calculatedNPV) }} ₽
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <div class="text-sm text-slate-400 mb-1">Ожидаемая оценка на выходе (Exit Val)</div>
+                    <div class="text-2xl font-bold text-white">
+                      {{ formatMoney(exitValuation) }} ₽
+                    </div>
+                  </div>
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <div class="text-sm text-slate-400 mb-1">Cash-on-Cash Return (ROI)</div>
+                    <div class="text-2xl font-bold text-white">
+                      {{ calculatedROI }}x
+                    </div>
+                  </div>
+                </div>
+                
+                <p class="text-xs text-slate-500 leading-relaxed">
+                  * Расчет строится на экстраполяции <strong>реальной исторической выручки</strong> (CAGR) компании (если данные есть в базе), 
+                  умножении на P/S мультипликатор и вычислении вашей доли. Денежные потоки (Cash Flows) 
+                  дисконтируются по указанной ставке (по умолчанию базовая ставка ЦБ РФ + премия за риск).
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB: SUMMARY -->
+          <div v-show="currentTab === 'summary'" class="space-y-6 animate-fade-in">
+            <div class="glass-panel p-6 rounded-xl border border-white/5">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center border border-purple-500/30">
+                  <svg class="w-5 h-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div>
+                  <h3 class="text-xl font-bold text-white">Итоговое заключение AI</h3>
+                  <p class="text-xs text-slate-400">Генеративный анализ на основе собранных факторов</p>
+                </div>
+              </div>
+              
+              <div class="space-y-4">
+                <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5 relative overflow-hidden">
+                  <div class="absolute -right-10 -top-10 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl"></div>
+                  <h4 class="text-sm font-bold text-white mb-2 uppercase tracking-wider relative z-10">Резюме инвестиционной привлекательности</h4>
+                  <p class="text-sm text-slate-300 leading-relaxed relative z-10 whitespace-pre-wrap">{{ summaryText }}</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <h4 class="text-sm font-bold text-emerald-400 mb-2">Ключевые преимущества (Драйверы роста)</h4>
+                    <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside ml-2">
+                      <li v-for="(item, i) in summaryPros" :key="i">{{ item }}</li>
+                    </ul>
+                    <div v-if="!summaryPros.length" class="text-xs text-slate-500 mt-2">Недостаточно данных для анализа сильных сторон.</div>
+                  </div>
+                  
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <h4 class="text-sm font-bold text-rose-400 mb-2">Критические риски (Стоп-факторы)</h4>
+                    <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside ml-2">
+                      <li v-for="(item, i) in summaryCons" :key="i">{{ item }}</li>
+                    </ul>
+                    <div v-if="!summaryCons.length" class="text-xs text-slate-500 mt-2">Значительных стоп-факторов не выявлено (или нет данных).</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </template>
+    </main>
+  </div>
+
+  <script>
+    const { createApp, ref, onMounted, computed, watch, nextTick } = Vue;
+
+    createApp({
+      setup() {
+        const loading = ref(true);
+        const error = ref('');
+        const startupData = ref(null);
+        const currentTab = ref('overview');
+        
+        const tabs = [
+          { id: 'overview', label: 'Обзор проекта' },
+          { id: 'financials', label: 'Финансы' },
+          { id: 'risks', label: 'Оценки и Риски' },
+          { id: 'investment', label: 'Инвест. Модель' },
+          { id: 'summary', label: 'Общая оценка' }
+        ];
+
+        let finChartInstance = null;
+        let radarChartInstance = null;
+
+        // Calc state
+        const calc = ref({
+          investment: 10000000,
+          equity_share: 10,
+          discount_rate: 20,
+          years: 3,
+          ps_multiplier: 5.0,
+          cbrRate: null
+        });
+
+        const formatUrl = (url) => {
+          if (!url) return '#';
+          return url.startsWith('http') ? url : `https://${url}`;
+        };
+
+        const formatMoney = (val) => {
+          if (!val) return '0';
+          return new Intl.NumberFormat('ru-RU').format(val);
+        };
+
+        const translateFeature = (f) => {
+          const map = {
+            'trl': 'Технологическая готовность (TRL)',
+            'crl': 'Коммерческая готовность (CRL)',
+            'irl': 'Инвестиционная готовность (IRL)',
+            'revenue_2024': 'Выручка 2024',
+            'profit_2024': 'Прибыль 2024',
+            'revenue_2025': 'Выручка 2025',
+            'profit_2025': 'Прибыль 2025',
+            'patent_count': 'Кол-во патентов'
+          };
+          return map[f] || f;
+        };
+
+        const formatFeatureValue = (val, feat) => {
+          if (feat.includes('revenue') || feat.includes('profit')) return formatMoney(val) + ' ₽';
+          return val;
+        };
+
+        const sortedFinancials = computed(() => {
+          if (!startupData.value?.financials) return [];
+          return [...startupData.value.financials].sort((a, b) => b.year - a.year);
+        });
+
+        // Basic extrapolation for exit valuation using real historical CAGR
+        const exitValuation = computed(() => {
+          if (!startupData.value?.financials || startupData.value.financials.length === 0) return 0;
+          const fins = sortedFinancials.value;
+          const latestRev = fins[0].revenue;
+          if (latestRev <= 0) return 0;
+          
+          let cagr = 1.0;
+          if (startupData.value.revenue_cagr !== null) {
+            cagr = 1 + startupData.value.revenue_cagr;
+          }
+          // Cap CAGR between -20% and +100% for realistic modeling if it's too wild
+          cagr = Math.max(0.8, Math.min(2.0, cagr));
+          
+          const futureRev = latestRev * Math.pow(cagr, calc.value.years);
+          return futureRev * calc.value.ps_multiplier;
+        });
+
+        const calculatedNPV = computed(() => {
+          const exitVal = exitValuation.value;
+          const investorReturn = exitVal * (calc.value.equity_share / 100);
+          const r = calc.value.discount_rate / 100;
+          const pvReturn = investorReturn / Math.pow(1 + r, calc.value.years);
+          return pvReturn - calc.value.investment;
+        });
+
+        const calculatedROI = computed(() => {
+          const exitVal = exitValuation.value;
+          const investorReturn = exitVal * (calc.value.equity_share / 100);
+          if (calc.value.investment <= 0) return 0;
+          return (investorReturn / calc.value.investment).toFixed(2);
+        });
+
+        const calculatedIRR = computed(() => {
+          const exitVal = exitValuation.value;
+          const investorReturn = exitVal * (calc.value.equity_share / 100);
+          if (calc.value.investment <= 0 || investorReturn <= 0) return 0;
+          const irr = Math.pow(investorReturn / calc.value.investment, 1 / calc.value.years) - 1;
+          return (irr * 100).toFixed(1);
+        });
+
+        const downloadExcel = () => {
+          const id = new URLSearchParams(window.location.search).get('id');
+          if (id) {
+            window.location.href = `/api/export/startup/${id}`;
+          }
+        };
+
+        const summaryPros = computed(() => {
+          if (!startupData.value) return [];
+          let pros = [];
+          if (startupData.value.startup.trl >= 7) pros.push(`Высокая технологическая готовность (TRL ${startupData.value.startup.trl}). Продукт близок к серийному производству.`);
+          if (startupData.value.startup.irl >= 7) pros.push(`Привлекателен для инвестиций (IRL ${startupData.value.startup.irl}). Стадия поздних раундов (A+).`);
+          if (startupData.value.revenue_cagr > 0.2) pros.push(`Сильный тренд роста выручки (+${(startupData.value.revenue_cagr * 100).toFixed(0)}% г/г), превышающий среднерыночные показатели.`);
+          if (startupData.value.z_score > 2.9) pros.push(`Исключительная финансовая устойчивость (Z-Score > 2.9), минимальный риск банкротства.`);
+          if (startupData.value.startup.patent_count > 0) pros.push(`Наличие интеллектуальной собственности (Патентов: ${startupData.value.startup.patent_count}), что создает защитный ров от конкурентов.`);
+          if (startupData.value.liquidity_ratio > 1.5) pros.push(`Высокий запас ликвидности (${startupData.value.liquidity_ratio.toFixed(1)}), позволяет легко покрывать краткосрочные обязательства.`);
+          return pros;
+        });
+
+        const summaryCons = computed(() => {
+          if (!startupData.value) return [];
+          let cons = [];
+          if (startupData.value.startup.trl <= 4) cons.push(`Низкая технологическая зрелость (TRL ${startupData.value.startup.trl}). Возможны проблемы с разработкой продукта.`);
+          if (startupData.value.z_score != null && startupData.value.z_score < 1.23) cons.push(`Повышенный риск банкротства (Z-Score: ${startupData.value.z_score.toFixed(2)} - Красная зона). Требуется доп. аудит обязательств.`);
+          if (startupData.value.revenue_cagr != null && startupData.value.revenue_cagr < 0) cons.push(`Отрицательный тренд выручки. Компания теряет рынок или меняет бизнес-модель.`);
+          if (startupData.value.liquidity_ratio != null && startupData.value.liquidity_ratio < 1.0) cons.push(`Дефицит ликвидности (${startupData.value.liquidity_ratio.toFixed(2)}). Риск кассового разрыва в краткосрочном периоде.`);
+          
+          const fins = sortedFinancials.value;
+          if (fins.length > 0 && fins[0].profit < 0) {
+            cons.push(`Убыточность на последнем отчетном периоде (Прибыль: ${formatMoney(fins[0].profit)} ₽). Компания "сжигает" капитал.`);
+          }
+          return cons;
+        });
+
+        const summaryText = computed(() => {
+          if (!startupData.value) return '';
+          const score = startupData.value.startup.ml_score || startupData.value.startup.score_overall || 5;
+          const rating = score > 8 ? 'AAA' : (score > 6 ? 'AA' : (score > 4 ? 'A' : 'B'));
+          
+          let text = `Автоматизированный анализ на основе предиктивной ML-модели присвоил проекту "${startupData.value.startup.name}" кредитный рейтинг ${rating} (ML-Скор: ${score.toFixed(1)}/10).\n\n`;
+          
+          if (score > 8) {
+            text += `Актив классифицируется как высоконадежный. Финансовые и нефинансовые метрики демонстрируют сильную устойчивость и значительный потенциал роста. Рекомендуется к рассмотрению в портфель с умеренным риск-профилем.`;
+          } else if (score > 6) {
+            text += `Актив имеет средний уровень риска с хорошими перспективами. Требуется детальное изучение стоп-факторов, однако проект имеет все шансы на успешное масштабирование.`;
+          } else {
+            text += `Венчурная инвестиция с высоким уровнем риска. Текущие показатели свидетельствуют о нестабильности (технологической или финансовой). Рекомендуется применять повышенную ставку дисконтирования при моделировании.`;
+          }
+          return text;
+        });
+
+
+        const renderFinChart = () => {
+          const ctx = document.getElementById('finChart');
+          if (!ctx || !startupData.value?.financials?.length) return;
+          if (finChartInstance) finChartInstance.destroy();
+
+          const fins = [...startupData.value.financials].sort((a, b) => a.year - b.year);
+          const labels = fins.map(f => f.year);
+          const rev = fins.map(f => f.revenue);
+          const prof = fins.map(f => f.profit);
+
+          finChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [
+                { label: 'Выручка (₽)', data: rev, backgroundColor: '#3b82f6', borderRadius: 4 },
+                { label: 'Прибыль (₽)', data: prof, backgroundColor: '#10b981', borderRadius: 4 }
+              ]
+            },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              plugins: { legend: { labels: { color: '#cbd5e1' } } },
+              scales: {
+                y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                x: { ticks: { color: '#94a3b8' }, grid: { display: false } }
+              }
+            }
+          });
+        };
+
+        const renderRadarChart = () => {
+          const ctx = document.getElementById('radarChart');
+          if (!ctx) return;
+          if (radarChartInstance) radarChartInstance.destroy();
+
+          const s = startupData.value.proxy_scores || {};
+          const ml = startupData.value.ml_scores || {};
+
+          const labels = ['Технологии', 'Инновации', 'Рынок', 'Команда', 'Финансы'];
+          const dataProxy = [s.tech_maturity||0, s.innovation||0, s.market_potential||0, s.team_readiness||0, s.financial_health||0];
+          const dataML = [ml.tech_maturity||0, ml.innovation||0, ml.market_potential||0, ml.team_readiness||0, ml.financial_health||0];
+
+          const datasets = [{
+            label: 'Базовая Оценка',
+            data: dataProxy,
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: '#3b82f6',
+            pointBackgroundColor: '#3b82f6'
+          }];
+
+          if (startupData.value.ml_scores) {
+            datasets.push({
+              label: 'ML Оценка (XGBoost)',
+              data: dataML,
+              backgroundColor: 'rgba(168, 85, 247, 0.2)',
+              borderColor: '#a855f7',
+              pointBackgroundColor: '#a855f7'
+            });
+          }
+
+          radarChartInstance = new Chart(ctx, {
+            type: 'radar',
+            data: { labels, datasets },
+            options: {
+              responsive: true, maintainAspectRatio: false,
+              scales: {
+                r: {
+                  min: 0, max: 10,
+                  ticks: { display: false },
+                  grid: { color: 'rgba(255,255,255,0.1)' },
+                  pointLabels: { color: '#cbd5e1', font: { size: 12 } },
+                  angleLines: { color: 'rgba(255,255,255,0.1)' }
+                }
+              },
+              plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } }
+            }
+          });
+        };
+
+        watch(currentTab, (val) => {
+          if (val === 'financials') nextTick(renderFinChart);
+          if (val === 'risks') nextTick(renderRadarChart);
+        });
+
+    // Favicon Animation
+    const faviconCanvas = document.createElement('canvas');
+    faviconCanvas.width = 32;
+    faviconCanvas.height = 32;
+    const favCtx = faviconCanvas.getContext('2d');
+    const favLink = document.createElement('link');
+    favLink.rel = 'icon';
+    document.head.appendChild(favLink);
+
+    const favLetters = ['I', 'N', 'V', 'AI', 'PRO'];
+    const favColors = [
+      ['#3b82f6', '#9333ea'], 
+      ['#10b981', '#0d9488'], 
+      ['#a855f7', '#db2777'], 
+      ['#f43f5e', '#ea580c'], 
+      ['#d946ef', '#4f46e5']  
+    ];
+    let favIndex = 0; 
+
+    function updateFavicon() {
+      const letter = favLetters[favIndex];
+      const [c1, c2] = favColors[favIndex];
+      
+      const grad = favCtx.createLinearGradient(0, 0, 32, 32);
+      grad.addColorStop(0, c1);
+      grad.addColorStop(1, c2);
+      
+      favCtx.fillStyle = grad;
+      favCtx.beginPath();
+      favCtx.roundRect ? favCtx.roundRect(0, 0, 32, 32, 8) : favCtx.rect(0, 0, 32, 32);
+      favCtx.fill();
+      
+      favCtx.fillStyle = 'white';
+      favCtx.font = 'bold 16px Inter, sans-serif';
+      favCtx.textAlign = 'center';
+      favCtx.textBaseline = 'middle';
+      if (letter === 'AI' || letter === 'PRO') {
+        favCtx.font = 'bold 12px Inter, sans-serif';
+      }
+      favCtx.fillText(letter, 16, 17);
+      
+      favLink.href = faviconCanvas.toDataURL('image/png');
+    }
+    
+    // Initial favicon
+    updateFavicon();
+
+        onMounted(async () => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const id = urlParams.get('id');
+          if (!id) {
+            window.location.href = '/dashboard.html';
+            return;
+          }
+
+          // Animation Logic
+          const logoWheel = document.getElementById('logo-wheel');
+          const textWheel = document.getElementById('text-wheel');
+          
+          if (logoWheel && textWheel) {
+            let currentIndex = 0;
+            const totalItems = 5;
+            let scrollInterval;
+            
+            function doSpin() {
+              currentIndex = (currentIndex + 1) % totalItems;
+              updateWheel(currentIndex);
+            }
+            
+            function scheduleNextSpin() {
+              const delay = 7000 + Math.random() * 10000;
+              scrollInterval = setTimeout(() => {
+                doSpin();
+                scheduleNextSpin();
+              }, delay);
+            }
+            
+            updateWheel(currentIndex);
+            scheduleNextSpin();
+            
+            function updateWheel(index) {
+              if(!logoWheel || !textWheel) return;
+              logoWheel.style.transform = `translateY(-${index * 32}px)`;
+              textWheel.style.transform = `translateY(-${index * 24}px)`;
+              
+              for (let i = 0; i < totalItems; i++) {
+                const grad = document.getElementById(`bg-grad-${i}`);
+                if(grad) {
+                  grad.style.opacity = i === index ? '1' : '0';
+                }
+              }
+            }
+          }
+
+          const token = localStorage.getItem('auth_token');
+          if (!token) window.location.href = '/index.html';
+
+          try {
+            // Fetch Startup Details
+            const res = await fetch(`/api/startup/${id}`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) throw new Error('Не удалось загрузить данные стартапа');
+            startupData.value = await res.json();
+
+            // Fetch CBR Rate
+            const cbrRes = await fetch('/api/finance/cbr-rate', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (cbrRes.ok) {
+              const cbrData = await cbrRes.json();
+              calc.value.cbrRate = cbrData.rate;
+              calc.value.discount_rate = cbrData.rate + 4.0; // CBR + 4% risk premium
+            }
+
+          } catch (e) {
+            error.value = e.message;
+          } finally {
+            loading.value = false;
+          }
+        });
+
+        return {
+          loading, error, startupData, currentTab, tabs, formatUrl, formatMoney,
+          translateFeature, formatFeatureValue, sortedFinancials,
+          calc, calculatedNPV, calculatedIRR, calculatedROI, exitValuation,
+          downloadExcel, summaryPros, summaryCons, summaryText
+        };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

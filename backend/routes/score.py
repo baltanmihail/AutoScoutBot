@@ -17,7 +17,7 @@ from backend.schemas import (
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/score", tags=["score"])
+router = APIRouter(prefix="/api/score", tags=["score"])
 
 
 def _startup_to_feature_row(startup: Startup, financials: list) -> dict:
@@ -70,6 +70,11 @@ async def get_top_startups(
             "cluster": startup.cluster,
             "status": startup.status,
             "year_founded": startup.year_founded,
+            "trl": startup.trl,
+            "irl": startup.irl,
+            "crl": startup.crl,
+            "mrl": startup.mrl,
+            "patents": startup.patents,
             "score_overall": sc.score_overall if sc else 0,
             "ml_score": sc.ml_score if sc else 0,
             "company_description": startup.company_description or startup.technologies or "Описание отсутствует."
@@ -309,7 +314,26 @@ async def get_full_score(
 
     return FullScoreResponse(
         startup_id=startup.id,
-        name=startup.name,
+        startup=StartupDetail(
+            id=startup.id,
+            name=startup.name,
+            cluster=startup.cluster,
+            status=startup.status,
+            year_founded=startup.year_founded,
+            score_overall=sc.score_overall if sc else 0,
+            ml_score=ml_scores.get("overall") if ml_scores else None,
+            website=startup.website or "",
+            company_description=startup.company_description or "",
+            technologies=startup.technologies or "",
+            industries=startup.industries or "",
+            inn=startup.inn or "",
+            ogrn=startup.ogrn or "",
+            trl=startup.trl or 0,
+            irl=startup.irl or 0,
+            mrl=startup.mrl or 0,
+            crl=startup.crl or 0,
+            patent_count=len(startup.patents.split(",")) if startup.patents else 0,
+        ),
         proxy_scores=proxy_scores,
         ml_scores=ml_scores,
         ml_model_version=ml_version,
