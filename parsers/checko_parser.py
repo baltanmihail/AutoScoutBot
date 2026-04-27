@@ -118,8 +118,12 @@ class CheckoParser(BaseParser):
                 continue
 
             if resp.status_code == 404:
-                logger.info("Checko: INN %s not found", inn)
+                logger.info("Checko: INN %s not found for endpoint %s", inn, endpoint)
                 return None, 404
+                
+            if resp.status_code == 400:
+                logger.info("Checko: 400 Bad Request for INN %s on endpoint %s", inn, endpoint)
+                return None, 400
 
             if resp.status_code != 200:
                 resp.raise_for_status()
