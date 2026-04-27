@@ -10,7 +10,7 @@ from backend.models import Startup, StartupFinancial, StartupScore
 from scoring.labeler import label_dataframe, _parse_money, _parse_level
 
 ROOT = Path(__file__).resolve().parents[1]
-CSV_PATH = ROOT / "SkolkovoStartups.csv"
+CSV_PATH = ROOT / "db" / "SkolkovoStartups.csv"
 LABELED_PATH = ROOT / "scoring" / "labeled_startups.csv"
 
 COLUMN_MAP = {
