@@ -937,6 +937,11 @@
             error.value = e.message;
           } finally {
             loading.value = false;
+            if (currentTab.value === 'financials') {
+              nextTick(renderFinChart);
+            } else if (currentTab.value === 'risks') {
+              nextTick(renderRadarChart);
+            }
           }
         });
 
