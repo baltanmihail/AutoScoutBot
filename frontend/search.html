@@ -81,6 +81,7 @@
             <div class="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-600 transition-opacity duration-700 opacity-0" id="bg-grad-2"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-rose-500 to-orange-600 transition-opacity duration-700 opacity-0" id="bg-grad-3"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500 to-indigo-600 transition-opacity duration-700 opacity-0" id="bg-grad-4"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-amber-500 to-yellow-600 transition-opacity duration-700 opacity-0" id="bg-grad-5"></div>
             
             <div class="absolute inset-0 flex flex-col transition-transform duration-700 ease-in-out" id="logo-wheel">
               <div class="h-8 w-8 flex items-center justify-center shrink-0">W</div>
@@ -88,6 +89,7 @@
               <div class="h-8 w-8 flex items-center justify-center shrink-0">A</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0">C</div>
               <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">AI</div>
+              <div class="h-8 w-8 flex items-center justify-center shrink-0 text-[14px]">Inv</div>
             </div>
           </div>
           <div class="ml-3 text-xl font-bold text-white tracking-tight hidden md:flex items-center">
@@ -99,6 +101,7 @@
                 <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">App</div>
                 <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Com</div>
                 <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">AI</div>
+                <div class="h-6 flex items-center shrink-0 text-slate-500 transition-colors duration-500">Inv</div>
               </div>
             </div>
           </div>
@@ -107,26 +110,39 @@
       
       <div class="flex-1 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto py-2 md:py-6 px-2 md:px-0">
         <nav class="flex md:flex-col flex-row space-x-2 md:space-x-0 md:space-y-2 px-2 md:px-4">
-          <a href="javascript:void(0)" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(37,99,235,0.1)] whitespace-nowrap">
-            <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <a href="javascript:void(0)" onclick="history.back()" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap mb-2 hidden md:flex">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Назад
+          </a>
+
+          <a href="/dashboard.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
             </svg>
             Главная
           </a>
 
-          <a href="javascript:void(0)" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
-            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          <a href="/search.html" class="bg-blue-500/10 text-blue-400 border border-blue-500/20 group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all shadow-[0_0_10px_rgba(37,99,235,0.1)] whitespace-nowrap">
+            <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            Портфель
+            AI Поиск
           </a>
-          
-          <a href="javascript:void(0)" @click.prevent="showCalculator = true" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+
+          <a href="/profile.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
             <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
-            <span class="hidden md:inline">IRR / NPV Калькулятор</span>
-            <span class="md:hidden">Фин. Модель</span>
+            AutoScout Inv
+          </a>
+
+          <a href="javascript:void(0)" onclick="alert('Модуль комьюнити скоро будет доступен.')" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+            </svg>
+            Комьюнити
           </a>
 
           <a href="/profile.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
@@ -582,20 +598,23 @@ const fetchProfileLimits = (token) => {
           
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 4; // Start at AI for search page
-            const totalItems = 5; // Web, Bot, App, Com, AI
+            const pageIndex = 4; // The index corresponding to this page
+            const totalItems = 6; // Web, Bot, App, Com, AI, Inv
             let scrollInterval;
+            let isHovered = false;
             
             function doSpin() {
               currentIndex = (currentIndex + 1) % totalItems;
               updateWheel(currentIndex);
             }
             
-            function scheduleNextSpin() {
-              const delay = 7000 + Math.random() * 10000;
+            function scheduleNextSpin(delay = null) {
+              clearTimeout(scrollInterval);
+              const spinDelay = delay || (7000 + Math.random() * 10000); // 7-10 seconds normally
               scrollInterval = setTimeout(() => {
                 doSpin();
                 scheduleNextSpin();
-              }, delay);
+              }, spinDelay);
             }
             
             // Set initial state without spinning
@@ -608,8 +627,8 @@ const fetchProfileLimits = (token) => {
               logoWheel.style.transform = `translateY(-${index * 32}px)`;
               textWheel.style.transform = `translateY(-${index * 24}px)`;
               
-              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400'];
-              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30'];
+              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400', 'text-amber-400'];
+              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30', 'shadow-amber-500/30'];
               
               const textDivs = textWheel.children;
               for(let i=0; i<textDivs.length; i++) {
@@ -617,7 +636,7 @@ const fetchProfileLimits = (token) => {
                 textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
               }
               
-              for(let i=0; i<5; i++) {
+              for(let i=0; i<6; i++) {
                 const bg = document.getElementById(`bg-grad-${i}`);
                 if (bg) {
                   bg.style.opacity = i === index ? '1' : '0';
@@ -648,13 +667,19 @@ const fetchProfileLimits = (token) => {
                 currentIndex = (currentIndex - 1 + totalItems) % totalItems;
               }
               updateWheel(currentIndex);
-              scheduleNextSpin();
+              scheduleNextSpin(isHovered ? 15000 : null);
+            });
+
+            logoContainer.addEventListener('mouseenter', () => {
+              isHovered = true;
+              clearTimeout(scrollInterval);
+              currentIndex = pageIndex;
+              updateWheel(currentIndex);
+              scheduleNextSpin(15000); // 15 sec cooldown when hovering
             });
             
             logoContainer.addEventListener('mouseleave', () => {
-              clearTimeout(scrollInterval);
-              currentIndex = 4; // Back to "AI" for search page
-              updateWheel(currentIndex);
+              isHovered = false;
               scheduleNextSpin();
             });
             
@@ -666,6 +691,7 @@ const fetchProfileLimits = (token) => {
                 case 2: alert('Мобильное приложение находится в разработке.'); break; // App
                 case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
                 case 4: window.location.href = '/search.html'; break; // AI
+                case 5: window.location.href = '/profile.html'; break; // Inv
               }
             });
           }
