@@ -233,3 +233,30 @@ class CheckoParser(BaseParser):
         if payload is None:
             return {}
         return payload.get("data", {})
+
+    async def fetch_legal_cases(self, inn: str) -> Dict[str, Any]:
+        """Arbitration (legal cases) info. Extra API request."""
+        if not self._keys:
+            return {}
+        payload, _ = await self._request("legal-cases", inn)
+        if payload is None:
+            return {}
+        return payload.get("data", {})
+
+    async def fetch_contracts(self, inn: str) -> Dict[str, Any]:
+        """Government contracts (FZ-44, FZ-223). Extra API request."""
+        if not self._keys:
+            return {}
+        payload, _ = await self._request("contracts", inn)
+        if payload is None:
+            return {}
+        return payload.get("data", {})
+
+    async def fetch_enforcements(self, inn: str) -> Dict[str, Any]:
+        """FSSP enforcement proceedings (debts). Extra API request."""
+        if not self._keys:
+            return {}
+        payload, _ = await self._request("enforcements", inn)
+        if payload is None:
+            return {}
+        return payload.get("data", {})
