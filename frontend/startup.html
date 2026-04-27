@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoScout Web | Аналитика Стартапа</title>
+  <title>AutoScout AI | Аналитика Стартапа</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -181,10 +181,16 @@
                   <span class="text-sm font-normal text-slate-500">/ 10</span>
                 </div>
               </div>
-              <button @click="downloadExcel" class="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-lg border border-emerald-500/30 transition-all flex items-center gap-2 h-max">
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                Отчет XLSX
-              </button>
+              <div class="flex gap-2">
+                <button @click="downloadDocx" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-medium rounded-lg border border-blue-500/30 transition-all flex items-center gap-2 h-max">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  Отчет DOCX
+                </button>
+                <button @click="downloadExcel" class="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-lg border border-emerald-500/30 transition-all flex items-center gap-2 h-max">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                  XLSX
+                </button>
+              </div>
             </div>
           </div>
         </header>
@@ -263,28 +269,59 @@
           <div v-show="currentTab === 'financials'" class="space-y-6 animate-fade-in">
             <!-- Key Financial Metrics Panel -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="glass-panel p-5 rounded-xl border border-white/5">
-                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Оценка Банкротства (Z-Score)</div>
-                <div class="text-2xl font-bold" :class="startupData.z_score == null ? 'text-slate-500' : (startupData.z_score > 2.9 ? 'text-emerald-400' : (startupData.z_score > 1.23 ? 'text-yellow-400' : 'text-rose-400'))">
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">Оценка Банкротства (Z-Score)</div>
+                <div class="text-2xl font-bold relative z-10" :class="startupData.z_score == null ? 'text-slate-500' : (startupData.z_score > 2.9 ? 'text-emerald-400' : (startupData.z_score > 1.23 ? 'text-yellow-400' : 'text-rose-400'))">
                   {{ startupData.z_score != null ? startupData.z_score.toFixed(2) : 'Н/Д' }}
                 </div>
-                <div class="text-xs text-slate-500 mt-1" v-if="startupData.z_score != null">
-                  Модель Альтмана. {{ startupData.z_score > 2.9 ? 'Зеленая зона' : (startupData.z_score > 1.23 ? 'Серая зона' : 'Красная зона') }}
+                <div class="text-xs text-slate-500 mt-1 relative z-10" v-if="startupData.z_score != null">
+                  Модель Альтмана. Риск: <span class="font-bold text-slate-300">{{ startupData.bankruptcy_risk_label || 'Низкий' }}</span>
                 </div>
               </div>
-              <div class="glass-panel p-5 rounded-xl border border-white/5">
-                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">CAGR Выручки</div>
-                <div class="text-2xl font-bold" :class="startupData.revenue_cagr == null ? 'text-slate-500' : (startupData.revenue_cagr >= 0 ? 'text-emerald-400' : 'text-rose-400')">
-                  {{ startupData.revenue_cagr != null ? (startupData.revenue_cagr > 0 ? '+' : '') + (startupData.revenue_cagr * 100).toFixed(1) + '%' : 'Н/Д' }}
-                </div>
-                <div class="text-xs text-slate-500 mt-1">Среднегодовой темп роста</div>
-              </div>
-              <div class="glass-panel p-5 rounded-xl border border-white/5">
-                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1">Коэф. Ликвидности</div>
-                <div class="text-2xl font-bold text-blue-400">
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">Ликвидность</div>
+                <div class="text-2xl font-bold relative z-10" :class="startupData.liquidity_ratio == null ? 'text-slate-500' : (startupData.liquidity_ratio >= 1.5 ? 'text-emerald-400' : (startupData.liquidity_ratio >= 1.0 ? 'text-yellow-400' : 'text-rose-400'))">
                   {{ startupData.liquidity_ratio != null ? startupData.liquidity_ratio.toFixed(2) : 'Н/Д' }}
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Текущие активы / Обязательства</div>
+                <div class="text-xs text-slate-500 mt-1 relative z-10" v-if="startupData.liquidity_ratio != null">
+                  Текущая. Оценка: <span class="font-bold text-slate-300">{{ startupData.liquidity_label || 'Умеренная' }}</span>
+                </div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">CAGR Выручки</div>
+                <div class="text-2xl font-bold relative z-10" :class="startupData.revenue_cagr == null ? 'text-slate-500' : (startupData.revenue_cagr >= 0 ? 'text-emerald-400' : 'text-rose-400')">
+                  {{ startupData.revenue_cagr != null ? (startupData.revenue_cagr > 0 ? '+' : '') + (startupData.revenue_cagr * 100).toFixed(1) + '%' : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 relative z-10">Среднегодовой темп роста</div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">Рентабельность Активов (ROA)</div>
+                <div class="text-2xl font-bold relative z-10" :class="startupData.roa == null ? 'text-slate-500' : (startupData.roa >= 0 ? 'text-emerald-400' : 'text-rose-400')">
+                  {{ startupData.roa != null ? (startupData.roa * 100).toFixed(1) + '%' : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 relative z-10">Чистая прибыль / Активы</div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">Рентабельность Капитала (ROE)</div>
+                <div class="text-2xl font-bold relative z-10" :class="startupData.roe == null ? 'text-slate-500' : (startupData.roe >= 0 ? 'text-emerald-400' : 'text-rose-400')">
+                  {{ startupData.roe != null ? (startupData.roe * 100).toFixed(1) + '%' : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 relative z-10">Чистая прибыль / Собств. капитал</div>
+              </div>
+              <div class="glass-panel p-5 rounded-xl border border-white/5 relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div class="text-xs text-slate-400 uppercase tracking-wider mb-1 relative z-10">Финансовый Рычаг (D/E)</div>
+                <div class="text-2xl font-bold relative z-10 text-fuchsia-400">
+                  {{ startupData.debt_equity != null ? (startupData.debt_equity === Infinity ? 'Отриц. Капитал' : startupData.debt_equity.toFixed(2)) : 'Н/Д' }}
+                </div>
+                <div class="text-xs text-slate-500 mt-1 relative z-10" v-if="startupData.debt_equity != null">
+                  Подушка: <span class="font-bold text-slate-300">{{ startupData.financial_cushion_label || 'Средняя' }}</span>
+                </div>
               </div>
             </div>
 
@@ -596,6 +633,13 @@
           }
         };
 
+        const downloadDocx = () => {
+          const id = new URLSearchParams(window.location.search).get('id');
+          if (id) {
+            window.location.href = `/api/export/startup/${id}/docx`;
+          }
+        };
+
         const summaryPros = computed(() => {
           if (!startupData.value) return [];
           let pros = [];
@@ -734,15 +778,16 @@
     favLink.rel = 'icon';
     document.head.appendChild(favLink);
 
-    const favLetters = ['I', 'N', 'V', 'AI', 'PRO'];
+    const favLetters = ['W', 'AI', 'Inv', 'B', 'A', 'C'];
     const favColors = [
       ['#3b82f6', '#9333ea'], 
+      ['#d946ef', '#4f46e5'],
+      ['#f59e0b', '#dc2626'],
       ['#10b981', '#0d9488'], 
       ['#a855f7', '#db2777'], 
-      ['#f43f5e', '#ea580c'], 
-      ['#d946ef', '#4f46e5']  
+      ['#f43f5e', '#ea580c']  
     ];
-    let favIndex = 0; 
+    let favIndex = 1; // AI is default for startup/search 
 
     function updateFavicon() {
       const letter = favLetters[favIndex];
@@ -761,7 +806,7 @@
       favCtx.font = 'bold 16px Inter, sans-serif';
       favCtx.textAlign = 'center';
       favCtx.textBaseline = 'middle';
-      if (letter === 'AI' || letter === 'PRO') {
+      if (letter === 'AI' || letter === 'Inv') {
         favCtx.font = 'bold 12px Inter, sans-serif';
       }
       favCtx.fillText(letter, 16, 17);
@@ -899,7 +944,7 @@
           loading, error, startupData, currentTab, tabs, formatUrl, formatMoney,
           translateFeature, formatFeatureValue, sortedFinancials,
           calc, calculatedNPV, calculatedIRR, calculatedROI, exitValuation,
-          downloadExcel, summaryPros, summaryCons, summaryText
+          downloadExcel, downloadDocx, summaryPros, summaryCons, summaryText
         };
       }
     }).mount('#app');

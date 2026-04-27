@@ -141,6 +141,12 @@ class FullScoreResponse(BaseModel):
     revenue_cagr: Optional[float] = None
     team_size: Optional[int] = None
     liquidity_ratio: Optional[float] = None
+    roa: Optional[float] = None
+    roe: Optional[float] = None
+    debt_equity: Optional[float] = None
+    bankruptcy_risk_label: Optional[str] = None
+    liquidity_label: Optional[str] = None
+    financial_cushion_label: Optional[str] = None
 
 
 # ---------------------------------------------------------------------------

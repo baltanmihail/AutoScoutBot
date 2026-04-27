@@ -76,6 +76,12 @@ async def get_startup_details(startup_id: str, session: AsyncSession = Depends(g
     revenue_cagr = None
     team_size = None
     liquidity_ratio = None
+    roa = None
+    roe = None
+    debt_equity = None
+    bankruptcy_risk_label = None
+    liquidity_label = None
+    financial_cushion_label = None
 
     # Calculate CAGR
     if fin_rows:
@@ -124,7 +130,11 @@ async def get_startup_details(startup_id: str, session: AsyncSession = Depends(g
                     cl = bfo_fin.get("current_liabilities", 0)
                     re = bfo_fin.get("retained_earnings", 0)
                     ebit = bfo_fin.get("operating_profit", 0)
+                    np = bfo_fin.get("net_profit", 0)
                     eq = bfo_fin.get("equity", 0)
+                    debt_long = bfo_fin.get("long_term_liabilities", 0)
+                    debt_short = bfo_fin.get("short_term_liabilities", 0)
+                    total_debt = debt_long + debt_short
 
                     # Z-Score (Altman for private non-manufacturing: 6.56T1 + 3.26T2 + 6.72T3 + 1.05T4)
                     if ta > 0:
@@ -133,10 +143,39 @@ async def get_startup_details(startup_id: str, session: AsyncSession = Depends(g
                         t3 = ebit / ta
                         t4 = eq / tl if tl > 0 else 0
                         z_score = 6.56 * t1 + 3.26 * t2 + 6.72 * t3 + 1.05 * t4
+                        
+                        if z_score > 2.9:
+                            bankruptcy_risk_label = "Низкий"
+                        elif z_score > 1.23:
+                            bankruptcy_risk_label = "Умеренный"
+                        else:
+                            bankruptcy_risk_label = "Высокий"
+                        
+                        roa = np / ta
+                        if eq > 0:
+                            roe = np / eq
                     
                     # Liquidity Ratio (Current Ratio)
                     if cl > 0:
                         liquidity_ratio = ca / cl
+                        if liquidity_ratio >= 2.0:
+                            liquidity_label = "Высокая"
+                        elif liquidity_ratio >= 1.0:
+                            liquidity_label = "Умеренная"
+                        else:
+                            liquidity_label = "Низкая"
+                            
+                    if eq > 0:
+                        debt_equity = total_debt / eq
+                        if debt_equity < 0.5:
+                            financial_cushion_label = "Сильная"
+                        elif debt_equity < 1.5:
+                            financial_cushion_label = "Средняя"
+                        else:
+                            financial_cushion_label = "Слабая"
+                    elif tl > 0 and eq <= 0:
+                        debt_equity = float('inf')
+                        financial_cushion_label = "Критическая (отриц. капитал)"
 
     except Exception as e:
         logger.warning(f"Failed to load external data for {startup_id}: {e}")
@@ -173,5 +212,11 @@ async def get_startup_details(startup_id: str, session: AsyncSession = Depends(g
         z_score=z_score,
         revenue_cagr=revenue_cagr,
         team_size=team_size,
-        liquidity_ratio=liquidity_ratio
+        liquidity_ratio=liquidity_ratio,
+        roa=roa,
+        roe=roe,
+        debt_equity=debt_equity,
+        bankruptcy_risk_label=bankruptcy_risk_label,
+        liquidity_label=liquidity_label,
+        financial_cushion_label=financial_cushion_label
     )

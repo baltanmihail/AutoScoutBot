@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoScout Web | Панель Управления</title>
+  <title>AutoScout AI | Поиск Стартапов</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -540,15 +540,16 @@ const fetchProfileLimits = (token) => {
     favLink.rel = 'icon';
     document.head.appendChild(favLink);
 
-    const favLetters = ['W', 'B', 'A', 'C', 'AI'];
+    const favLetters = ['W', 'AI', 'Inv', 'B', 'A', 'C'];
     const favColors = [
       ['#3b82f6', '#9333ea'], 
+      ['#d946ef', '#4f46e5'],
+      ['#f59e0b', '#dc2626'],
       ['#10b981', '#0d9488'], 
       ['#a855f7', '#db2777'], 
-      ['#f43f5e', '#ea580c'], 
-      ['#d946ef', '#4f46e5']  
+      ['#f43f5e', '#ea580c']  
     ];
-    let favIndex = 4; // Start at AI for search
+    let favIndex = 1; // AI
 
     function updateFavicon() {
       const letter = favLetters[favIndex];
@@ -567,8 +568,8 @@ const fetchProfileLimits = (token) => {
       favCtx.font = 'bold 16px Inter, sans-serif';
       favCtx.textAlign = 'center';
       favCtx.textBaseline = 'middle';
-      if (letter === 'AI') {
-        favCtx.font = 'bold 14px Inter, sans-serif';
+      if (letter === 'AI' || letter === 'Inv') {
+        favCtx.font = 'bold 12px Inter, sans-serif';
       }
       favCtx.fillText(letter, 16, 17);
       

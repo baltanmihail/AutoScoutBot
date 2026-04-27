@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AutoScout Web | Панель Управления</title>
+  <title>AutoScout Inv | Профиль и Портфель</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -471,6 +471,54 @@
           }
         };
 
+    // Favicon Animation
+    const faviconCanvas = document.createElement('canvas');
+    faviconCanvas.width = 32;
+    faviconCanvas.height = 32;
+    const favCtx = faviconCanvas.getContext('2d');
+    const favLink = document.createElement('link');
+    favLink.rel = 'icon';
+    document.head.appendChild(favLink);
+
+    const favLetters = ['W', 'AI', 'Inv', 'B', 'A', 'C'];
+    const favColors = [
+      ['#3b82f6', '#9333ea'], 
+      ['#d946ef', '#4f46e5'],
+      ['#f59e0b', '#dc2626'],
+      ['#10b981', '#0d9488'], 
+      ['#a855f7', '#db2777'], 
+      ['#f43f5e', '#ea580c']  
+    ];
+    let favIndex = 2; // Inv is index 2
+
+    function updateFavicon() {
+      const letter = favLetters[favIndex];
+      const [c1, c2] = favColors[favIndex];
+      
+      const grad = favCtx.createLinearGradient(0, 0, 32, 32);
+      grad.addColorStop(0, c1);
+      grad.addColorStop(1, c2);
+      
+      favCtx.fillStyle = grad;
+      favCtx.beginPath();
+      favCtx.roundRect ? favCtx.roundRect(0, 0, 32, 32, 8) : favCtx.rect(0, 0, 32, 32);
+      favCtx.fill();
+      
+      favCtx.fillStyle = 'white';
+      favCtx.font = 'bold 16px Inter, sans-serif';
+      favCtx.textAlign = 'center';
+      favCtx.textBaseline = 'middle';
+      if (letter === 'AI' || letter === 'Inv') {
+        favCtx.font = 'bold 12px Inter, sans-serif';
+      }
+      favCtx.fillText(letter, 16, 17);
+      
+      favLink.href = faviconCanvas.toDataURL('image/png');
+    }
+    
+    // Initial favicon
+    updateFavicon();
+
         onMounted(() => {
           const token = localStorage.getItem('auth_token');
           if (!token) {
@@ -489,8 +537,8 @@
           const logoContainer = document.getElementById('logo-container');
           
           if (logoWheel && textWheel && logoContainer) {
-            let currentIndex = 0;
-            const totalItems = 5;
+            let currentIndex = 2; // Inv is index 2
+            const totalItems = 6;
             let scrollInterval;
             
             function doSpin() {
@@ -508,20 +556,21 @@
             scheduleNextSpin();
             
             function updateWheel(index) {
+              if (typeof updateFavicon === 'function') updateFavicon(index);
               if(!logoWheel || !textWheel) return;
               
               logoWheel.style.transform = `translateY(-${index * 32}px)`;
               textWheel.style.transform = `translateY(-${index * 24}px)`;
               
-              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400'];
-              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30'];
+              const colors = ['text-blue-400', 'text-emerald-400', 'text-purple-400', 'text-rose-400', 'text-fuchsia-400', 'text-amber-400'];
+              const shadowColors = ['shadow-blue-500/30', 'shadow-emerald-500/30', 'shadow-purple-500/30', 'shadow-rose-500/30', 'shadow-fuchsia-500/30', 'shadow-amber-500/30'];
               
               const textDivs = textWheel.children;
               for(let i=0; i<textDivs.length; i++) {
                 textDivs[i].className = `h-6 flex items-center shrink-0 ${i === index ? colors[i] : 'text-slate-500'} transition-all duration-700 ease-in-out`;
               }
               
-              for(let i=0; i<5; i++) {
+              for(let i=0; i<6; i++) {
                 const bg = document.getElementById(`bg-grad-${i}`);
                 if (bg) {
                   bg.style.opacity = i === index ? '1' : '0';
