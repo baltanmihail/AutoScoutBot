@@ -295,21 +295,28 @@
 
         <!-- Startups Table -->
         <div class="glass-panel rounded-xl border border-white/10 overflow-hidden shadow-xl">
-          <div class="px-6 py-5 border-b border-white/10 flex justify-between items-center bg-dark-800/50">
+          <div class="px-6 py-5 border-b border-white/10 flex flex-col md:flex-row justify-between items-start md:items-center bg-dark-800/50 gap-4">
             <div class="flex items-center gap-3">
               <h3 class="text-lg font-semibold text-white tracking-tight">AI Рекомендации</h3>
               <span class="text-blue-500 text-sm font-bold">//</span>
               <span class="text-slate-400 text-sm">Топ стартапов</span>
             </div>
-            <button class="text-sm text-blue-400 font-medium hover:text-blue-300 transition-colors flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-blue-500/10">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-              Фильтры
-            </button>
+            
+            <!-- Фильтры и поиск по таблице -->
+            <div class="flex items-center gap-2 w-full md:w-auto">
+              <div class="relative flex-1 md:w-64">
+                <input type="text" v-model="filterQuery" class="w-full pl-9 pr-3 py-1.5 bg-dark-900 border border-white/10 rounded-lg text-white placeholder-slate-500 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm outline-none transition-all shadow-inner" placeholder="Фильтр по названию или ИНН...">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-white/5">
               <thead class="bg-dark-900/50">
                 <tr>
+                  <th scope="col" class="px-3 py-3 text-left text-[9px] font-bold text-slate-400 uppercase tracking-widest">Действия</th>
                   <th scope="col" class="px-3 py-3 text-left text-[9px] font-bold text-slate-400 uppercase tracking-widest">Компания / ИНН</th>
                   <th scope="col" class="px-3 py-3 text-left text-[9px] font-bold text-slate-400 uppercase tracking-widest">Отрасль</th>
                   <th scope="col" class="px-3 py-3 text-left text-[9px] font-bold text-slate-400 uppercase tracking-widest">ML-Скор / Рейтинг</th>
@@ -322,16 +329,30 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5 bg-transparent">
-                <tr v-if="topStartups.length === 0" class="hover:bg-white/5 transition-colors group">
-                  <td colspan="9" class="px-3 py-8 text-center text-slate-400">
-                    <svg class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <tr v-if="filteredStartups.length === 0" class="hover:bg-white/5 transition-colors group">
+                  <td colspan="10" class="px-3 py-8 text-center text-slate-400">
+                    <svg v-if="!topStartups.length" class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
-                    Загрузка стартапов...
+                    <svg v-else class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    {{ topStartups.length === 0 ? 'Загрузка стартапов...' : 'По вашему фильтру ничего не найдено' }}
                   </td>
                 </tr>
-                <tr v-for="startup in topStartups" :key="startup.id" class="hover:bg-white/5 transition-colors cursor-pointer group">
+                <tr v-for="(startup, idx) in filteredStartups" :key="startup.id" class="hover:bg-white/5 transition-colors group">
                   <td class="px-3 py-3 whitespace-nowrap">
+                    <div class="flex flex-col items-center gap-1.5 opacity-30 group-hover:opacity-100 transition-opacity">
+                      <button @click.stop="moveStartup(startup.id, -1)" :disabled="idx === 0" class="text-slate-500 hover:text-blue-400 disabled:opacity-20 transition-colors" title="Переместить выше">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                      </button>
+                      <button @click.stop="moveStartup(startup.id, 1)" :disabled="idx === filteredStartups.length - 1" class="text-slate-500 hover:text-blue-400 disabled:opacity-20 transition-colors" title="Переместить ниже">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </button>
+                      <button @click.stop="deleteStartup(startup.id)" class="text-slate-500 hover:text-rose-400 transition-colors mt-1" title="Удалить из списка">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                      </button>
+                    </div>
+                  </td>
+                  <td class="px-3 py-3 whitespace-nowrap cursor-pointer" @click="window.location.href='/startup.html?id=' + startup.id">
                     <div class="flex items-center">
                       <div class="flex-shrink-0 h-9 w-9 bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl flex items-center justify-center text-blue-400 font-bold shadow-inner group-hover:scale-105 transition-transform">
                         {{ startup.name.charAt(0).toUpperCase() }}
@@ -701,6 +722,32 @@
         });
 
         const topStartups = ref([]);
+        const filterQuery = ref('');
+        
+        const filteredStartups = Vue.computed(() => {
+          if (!filterQuery.value) return topStartups.value;
+          const q = filterQuery.value.toLowerCase();
+          return topStartups.value.filter(s => 
+            (s.name && s.name.toLowerCase().includes(q)) || 
+            (s.inn && s.inn.toLowerCase().includes(q))
+          );
+        });
+
+        const deleteStartup = (id) => {
+          topStartups.value = topStartups.value.filter(s => s.id !== id);
+        };
+
+        const moveStartup = (id, direction) => {
+          const index = topStartups.value.findIndex(s => s.id === id);
+          if (index < 0) return;
+          const newIndex = index + direction;
+          if (newIndex < 0 || newIndex >= topStartups.value.length) return;
+          
+          const temp = topStartups.value[index];
+          topStartups.value[index] = topStartups.value[newIndex];
+          topStartups.value[newIndex] = temp;
+        };
+
         const fetchTopStartups = async () => {
           try {
             const token = localStorage.getItem('auth_token');
@@ -795,6 +842,10 @@
           requestsData,
           totalRequests,
           topStartups,
+          filterQuery,
+          filteredStartups,
+          deleteStartup,
+          moveStartup,
           logout,
           showCalculator,
           calcInitialInvestment,
