@@ -9,7 +9,7 @@ from sqlalchemy import select, func, text, literal_column
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.database import get_session, DATABASE_URL
-from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult
+from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult, ExternalData
 from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief, HistoryResponse, QueryHistoryItem
 from backend.routes.profile import get_current_user_from_token
 
