@@ -118,7 +118,14 @@
             Главная
           </a>
 
-          <a href="javascript:void(0)" @click="currentTab = 'portfolio'" :class="currentTab === 'portfolio' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
+          <a href="/search.html" class="text-slate-400 hover:bg-white/5 hover:text-white group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all whitespace-nowrap">
+            <svg class="text-slate-500 group-hover:text-slate-400 md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            AI Поиск
+          </a>
+
+          <a href="javascript:void(0)" @click.prevent="currentTab = 'portfolio'" :class="currentTab === 'portfolio' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
             <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
@@ -132,7 +139,7 @@
             Комьюнити
           </a>
 
-          <a href="javascript:void(0)" @click="currentTab = 'profile'" :class="currentTab === 'profile' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
+          <a href="javascript:void(0)" @click.prevent="currentTab = 'profile'" :class="currentTab === 'profile' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
             <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -502,7 +509,7 @@
       <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" @click="showAddModal = false" v-cloak>
         <div class="glass-panel rounded-2xl border border-white/10 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]" @click.stop>
           <div class="p-6 border-b border-white/5 flex justify-between items-center bg-dark-800/50">
-            <h2 class="text-xl font-bold text-white tracking-tight">Добавить в "{{ kanbanColumns.find(c => c.id === targetColumnForAdd)?.title }}"</h2>
+            <h2 class="text-xl font-bold text-white tracking-tight">Добавить в «{{ addModalColumnTitle }}»</h2>
             <button type="button" @click="showAddModal = false" class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
               <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -844,7 +851,8 @@
     ];
     let favIndex = 5; // Inv is index 5
 
-    function updateFavicon() {
+    function updateFavicon(index) {
+      if (typeof index === 'number') favIndex = index;
       const letter = favLetters[favIndex];
       const [c1, c2] = favColors[favIndex];
       
@@ -942,7 +950,6 @@
             
             // Mouse wheel scroll with throttling
             let isScrolling = false;
-            let isHovered = false;
 
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
@@ -1104,6 +1111,11 @@
           (profile.requests_max || 0)
         );
 
+        const addModalColumnTitle = computed(() => {
+          const col = kanbanColumns.value.find((c) => c.id === targetColumnForAdd.value);
+          return col ? col.title : '';
+        });
+
         return {
           currentTab, showCalculator, kanbanColumns, savedStartups, getColumnCards, dragStart, dropCard, removeCard,
           calc, formatMoney, calculatedNPV, calculatedIRR, calculatedROI, formattedInvestment,
@@ -1131,7 +1143,8 @@
           isSearching,
           openAddModal,
           searchStartups,
-          addStartupToPortfolio
+          addStartupToPortfolio,
+          addModalColumnTitle
         }
       }
     }).mount('#app')
