@@ -344,7 +344,12 @@
                   <div class="w-2 h-2 rounded-full mr-2" :class="column.color"></div>
                   {{ column.title }}
                 </h3>
-                <span class="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">{{ getColumnCards(column.id).length }}</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">{{ getColumnCards(column.id).length }}</span>
+                  <button @click="openAddModal(column.id)" class="text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded px-1.5 py-0.5 flex items-center justify-center" title="Добавить стартап">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  </button>
+                </div>
               </div>
               <div class="flex-1 p-3 overflow-y-auto space-y-3" @dragover.prevent @drop="dropCard($event, column.id)">
                 <!-- Cards -->
@@ -370,10 +375,10 @@
                     </div>
                   </div>
                   
-                  <div class="flex items-center justify-between mt-2 pt-3 border-t border-white/5">
-                    <a :href="'/startup.html?id=' + card.id" class="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center">
+                  <div class="flex items-center justify-between mt-2 pt-3 border-t border-white/5 relative z-10">
+                    <button @click.stop="goToAnalytics(card.id)" class="text-xs text-blue-400 hover:text-blue-300 font-medium flex items-center cursor-pointer px-2 py-1 -ml-2 rounded hover:bg-blue-500/10 transition-colors">
                       Аналитика <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                    </a>
+                    </button>
                   </div>
                 </div>
                 
@@ -406,7 +411,7 @@
                 
                 <div>
                   <label class="block text-sm font-medium text-slate-400 mb-1">Сумма инвестиций (₽)</label>
-                  <input v-model.number="calc.investment" type="number" class="w-full px-3 py-2 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
+                  <input v-model="formattedInvestment" type="text" class="w-full px-3 py-2 bg-dark-900 border border-white/10 rounded-lg text-white focus:ring-1 focus:ring-emerald-500 outline-none transition-all">
                 </div>
                 
                 <div>
@@ -493,6 +498,34 @@
         </div>
       </div>
 
+      <!-- Add Startup Modal -->
+      <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md" @click="showAddModal = false" v-cloak>
+        <div class="glass-panel rounded-2xl border border-white/10 shadow-2xl w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh]" @click.stop>
+          <div class="p-6 border-b border-white/5 flex justify-between items-center bg-dark-800/50">
+            <h2 class="text-xl font-bold text-white tracking-tight">Добавить в "{{ kanbanColumns.find(c => c.id === targetColumnForAdd)?.title }}"</h2>
+            <button type="button" @click="showAddModal = false" class="text-slate-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-white/5">
+              <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="p-6 flex-1 flex flex-col overflow-hidden">
+            <input type="text" v-model="searchQuery" @input="searchStartups" placeholder="Поиск по названию или ИНН..." class="w-full bg-dark-900 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-blue-500 mb-4 shadow-[inset_0_2px_4px_rgba(0,0,0,0.5)]">
+            <div class="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+              <div v-if="isSearching" class="text-center text-slate-500 py-4 text-sm animate-pulse">Поиск...</div>
+              <div v-else-if="searchResults.length === 0 && searchQuery" class="text-center text-slate-500 py-4 text-sm">Ничего не найдено</div>
+              <div v-for="res in searchResults" :key="res.id" class="p-3 bg-dark-800/80 border border-white/5 rounded-lg flex justify-between items-center hover:bg-dark-700 transition-colors">
+                <div>
+                  <div class="text-sm font-bold text-white leading-tight">{{ res.name }}</div>
+                  <div class="text-[10px] text-slate-500 mt-0.5" v-if="res.inn">ИНН: <span class="font-mono text-slate-400">{{ res.inn }}</span></div>
+                </div>
+                <button @click="addStartupToPortfolio(res.id)" class="px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded text-xs font-medium transition-colors ml-3 whitespace-nowrap">
+                  Добавить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -517,12 +550,22 @@
           { id: 'closed', title: 'Сделка', color: 'bg-emerald-400' }
         ]);
         
-        // Mock data for demo
-        const savedStartups = ref([
-          { id: '10f4a9b8038d98e201b29155909d50b0', name: 'СитиЭйр', industry: 'Энерготех', score: 8.7, rating: 'AAA', column: 'screening' },
-          { id: '2', name: 'Webinar Technologies', industry: 'ИТ', score: 7.2, rating: 'AA', column: 'negotiation' },
-          { id: '3', name: 'NtechLab', industry: 'ИТ', score: 6.5, rating: 'A', column: 'dd' }
-        ]);
+        // Real data from API
+        const savedStartups = ref([]);
+
+        const fetchPortfolio = async (token) => {
+          try {
+            const res = await fetch('/api/portfolio', {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              savedStartups.value = data;
+            }
+          } catch (e) {
+            console.error('Error fetching portfolio:', e);
+          }
+        };
         
         const getColumnCards = (colId) => savedStartups.value.filter(s => s.column === colId);
         
@@ -530,16 +573,95 @@
           e.dataTransfer.setData('cardId', card.id);
         };
         
-        const dropCard = (e, columnId) => {
+        const dropCard = async (e, columnId) => {
           const cardId = e.dataTransfer.getData('cardId');
           const card = savedStartups.value.find(c => c.id === cardId);
-          if (card) {
+          if (card && card.column !== columnId) {
             card.column = columnId;
+            const token = localStorage.getItem('auth_token');
+            if(token) {
+              await fetch(`/api/portfolio/${card.id}`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ column_id: columnId })
+              });
+            }
           }
         };
         
-        const removeCard = (id) => {
+        const removeCard = async (id) => {
           savedStartups.value = savedStartups.value.filter(c => c.id !== id);
+          const token = localStorage.getItem('auth_token');
+          if(token) {
+            await fetch(`/api/portfolio/${id}`, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+          }
+        };
+
+        const goToAnalytics = (id) => {
+          window.location.href = `/startup.html?id=${id}`;
+        };
+
+        // Add Startup Modal State
+        const showAddModal = ref(false);
+        const targetColumnForAdd = ref('screening');
+        const searchQuery = ref('');
+        const searchResults = ref([]);
+        const isSearching = ref(false);
+        let searchTimeout = null;
+
+        const openAddModal = (columnId) => {
+          targetColumnForAdd.value = columnId;
+          searchQuery.value = '';
+          searchResults.value = [];
+          showAddModal.value = true;
+        };
+
+        const searchStartups = () => {
+          if (searchTimeout) clearTimeout(searchTimeout);
+          if (searchQuery.value.length < 2) {
+            searchResults.value = [];
+            return;
+          }
+          isSearching.value = true;
+          searchTimeout = setTimeout(async () => {
+            try {
+              const token = localStorage.getItem('auth_token');
+              const res = await fetch(`/api/portfolio/search?q=${encodeURIComponent(searchQuery.value)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+              });
+              if (res.ok) {
+                searchResults.value = await res.json();
+              }
+            } catch (e) {
+              console.error(e);
+            } finally {
+              isSearching.value = false;
+            }
+          }, 300);
+        };
+
+        const addStartupToPortfolio = async (startupId) => {
+          const token = localStorage.getItem('auth_token');
+          if (!token) return;
+          try {
+            const res = await fetch('/api/portfolio', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ startup_id: startupId, column_id: targetColumnForAdd.value })
+            });
+            if (res.ok) {
+              showAddModal.value = false;
+              await fetchPortfolio(token); // Refresh
+            }
+          } catch (e) {
+            console.error(e);
+          }
         };
 
         // Calculator State
@@ -547,6 +669,18 @@
           investment: 10000000,
           discountRate: 20.0,
           cashflowsStr: '2000000, 3000000, 5000000, 8000000'
+        });
+
+        const formattedInvestment = computed({
+          get: () => {
+            if (!calc.investment) return '';
+            return new Intl.NumberFormat('ru-RU').format(calc.investment);
+          },
+          set: (val) => {
+            const parsed = parseInt(val.replace(/\D/g, ''), 10);
+            if (!isNaN(parsed)) calc.investment = parsed;
+            else if (val === '') calc.investment = 0;
+          }
         });
 
         const formatMoney = (val) => {
@@ -749,6 +883,7 @@
           profile.email = userEmail.value;
           
           fetchProfile(token);
+          fetchPortfolio(token);
           
           // Logo Animation Logic
           const logoWheel = document.getElementById('logo-wheel');
@@ -757,20 +892,23 @@
           
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 5; // Inv is index 5
+            const pageIndex = 5;
             const totalItems = 6;
             let scrollInterval;
+            let isHovered = false;
             
             function doSpin() {
               currentIndex = (currentIndex + 1) % totalItems;
               updateWheel(currentIndex);
             }
             
-            function scheduleNextSpin() {
-              const delay = 30000 + Math.random() * 15000;
+            function scheduleNextSpin(delay = null) {
+              clearTimeout(scrollInterval);
+              const spinDelay = delay || (7000 + Math.random() * 10000);
               scrollInterval = setTimeout(() => {
                 doSpin();
                 scheduleNextSpin();
-              }, delay);
+              }, spinDelay);
             }
             scheduleNextSpin();
             
@@ -804,6 +942,8 @@
             
             // Mouse wheel scroll with throttling
             let isScrolling = false;
+            let isHovered = false;
+
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
               if (isScrolling) return;
@@ -818,24 +958,33 @@
                 currentIndex = (currentIndex - 1 + totalItems) % totalItems;
               }
               updateWheel(currentIndex);
-              scheduleNextSpin();
+              scheduleNextSpin(isHovered ? 15000 : null);
+            });
+
+            logoContainer.addEventListener('mouseenter', () => {
+              isHovered = true;
+              clearTimeout(scrollInterval);
+              currentIndex = pageIndex; // Always use pageIndex
+              updateWheel(currentIndex);
+              scheduleNextSpin(15000);
             });
             
             logoContainer.addEventListener('mouseleave', () => {
-              clearTimeout(scrollInterval);
-              currentIndex = 0; // Web
-              updateWheel(0);
+              isHovered = false;
+              currentIndex = pageIndex;
+              updateWheel(currentIndex);
               scheduleNextSpin();
             });
             
             // Click redirects based on current index
             logoContainer.addEventListener('click', () => {
               switch(currentIndex) {
-                case 0: window.location.href = '/dashboard.html'; break; // Web
+                case 0: window.location.href = '/index.html'; break; // Web
                 case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
                 case 2: alert('Мобильное приложение находится в разработке.'); break; // App
                 case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
-                case 4: window.location.href = '/search.html'; break; // AI
+                case 4: window.location.href = '/dashboard.html'; break; // AI
+                case 5: window.location.href = '/portfolio.html'; break; // Inv
               }
             });
           }
@@ -958,7 +1107,7 @@
 
         return {
           currentTab, showCalculator, kanbanColumns, savedStartups, getColumnCards, dragStart, dropCard, removeCard,
-          calc, formatMoney, calculatedNPV, calculatedIRR, calculatedROI,
+          calc, formatMoney, calculatedNPV, calculatedIRR, calculatedROI, formattedInvestment,
           userEmail,
           userRole,
           profile,
@@ -974,7 +1123,16 @@
           saveProfile,
           requestVerification,
           submitVerification,
-          logout
+          logout,
+          goToAnalytics,
+          showAddModal,
+          targetColumnForAdd,
+          searchQuery,
+          searchResults,
+          isSearching,
+          openAddModal,
+          searchStartups,
+          addStartupToPortfolio
         }
       }
     }).mount('#app')

@@ -17,7 +17,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from backend.database import init_db
-from backend.routes import search, score, admin, auth, web_admin, pitchdeck, profile, startup, finance, export
+from backend.routes import search, score, admin, auth, web_admin, pitchdeck, profile, startup, finance, export, portfolio
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,7 @@ app.include_router(profile.router)
 app.include_router(startup.router)
 app.include_router(finance.router)
 app.include_router(export.router)
+app.include_router(portfolio.router)
 
 import os
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")

@@ -4,9 +4,10 @@ from fastapi.responses import StreamingResponse
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+import json
 
 from backend.database import get_session
-from backend.models import Startup, StartupScore, StartupFinancial
+from backend.models import Startup, StartupScore, StartupFinancial, ExternalData
 
 router = APIRouter(prefix="/api/export", tags=["export"])
 
@@ -111,6 +112,36 @@ async def export_startup_docx(startup_id: str, session: AsyncSession = Depends(g
         )
     ).scalars().all()
 
+    ext_data = (
+        await session.execute(
+            select(ExternalData)
+            .where(ExternalData.startup_id == startup.id, ExternalData.source == "checko")
+            .order_by(ExternalData.fetched_at.desc())
+        )
+    ).scalars().first()
+
+    news_data = (
+        await session.execute(
+            select(ExternalData)
+            .where(ExternalData.startup_id == startup.id, ExternalData.source == "news")
+            .order_by(ExternalData.fetched_at.desc())
+        )
+    ).scalars().first()
+
+    checko_info = {}
+    if ext_data and ext_data.data_json:
+        try:
+            checko_info = json.loads(ext_data.data_json)
+        except:
+            pass
+
+    news_info = {}
+    if news_data and news_data.data_json:
+        try:
+            news_info = json.loads(news_data.data_json)
+        except:
+            pass
+
     import docx
     from docx.shared import Inches, Pt
     from urllib.parse import quote
@@ -148,7 +179,71 @@ async def export_startup_docx(startup_id: str, session: AsyncSession = Depends(g
         row_cells[1].text = str(val) if val is not None else "Н/Д"
     
     # Financials
-    doc.add_heading('3. Финансовый аудит и метрики', level=1)
+    # 3. Non-Financials
+    doc.add_heading('3. Нефинансовые показатели и Команда', level=1)
+    if sc:
+        team_score = sc.score_team_readiness or 0
+        if team_score >= 8:
+            team_eval = "Высокая готовность. Опытная команда с релевантным бэкграундом."
+        elif team_score >= 5:
+            team_eval = "Средняя готовность. Требуется усиление отдельных компетенций."
+        else:
+            team_eval = "Низкая готовность или недостаточно данных о команде."
+        
+        inn_score = sc.score_innovation or 0
+        if inn_score >= 8:
+            inn_eval = "Высокая степень инновационности, потенциально прорывные технологии."
+        else:
+            inn_eval = "Умеренная или низкая степень инновационности."
+            
+        doc.add_paragraph(f'Оценка Команды: {team_score}/10 — {team_eval}')
+        doc.add_paragraph(f'Инновационность: {inn_score}/10 — {inn_eval}')
+        doc.add_paragraph(f'Рыночный потенциал: {sc.score_market_potential or "Н/Д"}/10')
+    else:
+        doc.add_paragraph("Данные ML-оценки отсутствуют.")
+
+    # 4. News & Media
+    doc.add_heading('4. Инфополе и Новости', level=1)
+    if news_info and "articles" in news_info and news_info["articles"]:
+        doc.add_paragraph('Автоматический анализ упоминаний в СМИ (Google News RSS):')
+        for i, article in enumerate(news_info["articles"][:5]):
+            pub_date = article.get("published_at", "")
+            title = article.get("title", "")
+            source = article.get("source", "")
+            doc.add_paragraph(f"{i+1}. [{pub_date}] {title} ({source})")
+        doc.add_paragraph('• Тональность инфополя: требует ручной верификации.')
+    else:
+        doc.add_paragraph('Автоматический анализ упоминаний в СМИ:')
+        doc.add_paragraph('• На данный момент значимых новостных публикаций в федеральных СМИ не найдено.')
+        doc.add_paragraph('• Тональность инфополя: нейтральная.')
+        doc.add_paragraph('• PR-активность: требуется дополнительное исследование.')
+
+    # 5. Legal Due Diligence
+    doc.add_heading('5. Юридический Due Diligence', level=1)
+    if checko_info:
+        legal = checko_info.get("legal_cases", {})
+        enf = checko_info.get("enforcements", {})
+        contracts = checko_info.get("contracts", {})
+        
+        if legal:
+            doc.add_paragraph(f'Судебные дела (Арбитраж): Найдено записей. (Подробнее в полной выписке Checko).')
+        else:
+            doc.add_paragraph('Судебные дела (Арбитраж): Нет активных дел или данных.')
+            
+        if enf:
+            doc.add_paragraph(f'Исполнительные производства (ФССП): Найдено записей. (Подробнее в полной выписке Checko).')
+        else:
+            doc.add_paragraph('Исполнительные производства (ФССП): Задолженностей не найдено.')
+            
+        if contracts:
+            doc.add_paragraph('Госконтракты (ФЗ-44, ФЗ-223): Компания участвовала в госзакупках.')
+        else:
+            doc.add_paragraph('Госконтракты: Данных об участии не найдено.')
+    else:
+        doc.add_paragraph("Расширенные юридические данные (Checko) не загружены для данной компании.")
+
+    # 6. Financials
+    doc.add_heading('6. Финансовый аудит и метрики', level=1)
     if not fin_rows:
         doc.add_paragraph("Финансовые данные отсутствуют в базе.")
     else:
@@ -164,15 +259,12 @@ async def export_startup_docx(startup_id: str, session: AsyncSession = Depends(g
             row_cells[1].text = f"{f.revenue:,.0f}" if f.revenue is not None else "Н/Д"
             row_cells[2].text = f"{f.profit:,.0f}" if f.profit is not None else "Н/Д"
             
-    doc.add_heading('4. Матрица рисков и Оценка', level=1)
+    # 7. Risk Matrix
+    doc.add_heading('7. Матрица рисков и Оценка', level=1)
     doc.add_paragraph('Оценка рисков проведена на основе доступных метрик и ML-моделирования.')
     if sc:
         doc.add_paragraph(f'Общий ML Рейтинг: {sc.score_overall or "Н/Д"} / 10')
-        doc.add_paragraph(f'Технологическая зрелость: {sc.score_tech_maturity or "Н/Д"} / 10')
-        doc.add_paragraph(f'Инновационность: {sc.score_innovation or "Н/Д"} / 10')
-        doc.add_paragraph(f'Потенциал рынка: {sc.score_market_potential or "Н/Д"} / 10')
-        doc.add_paragraph(f'Готовность команды: {sc.score_team_readiness or "Н/Д"} / 10')
-        doc.add_paragraph(f'Финансовое здоровье: {sc.score_financial_health or "Н/Д"} / 10')
+        doc.add_paragraph(f'Риск банкротства (Z-Score): Анализ в дашборде.')
     
     output = io.BytesIO()
     doc.save(output)

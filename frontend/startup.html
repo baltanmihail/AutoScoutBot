@@ -112,7 +112,7 @@
             AI Поиск
           </a>
 
-          <a href="/profile.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
+          <a href="/portfolio.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
             </svg>
@@ -126,7 +126,7 @@
             Комьюнити
           </a>
 
-          <a href="/profile.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
+          <a href="/portfolio.html" class="text-slate-400 hover:bg-white/5 hover:text-white flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all">
             <svg class="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -181,7 +181,14 @@
                   <span class="text-sm font-normal text-slate-500">/ 10</span>
                 </div>
               </div>
-              <div class="flex gap-2">
+              <div class="flex gap-2 relative">
+                <div v-if="portfolioMessage" class="absolute -top-10 right-0 bg-dark-800 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded text-xs whitespace-nowrap animate-fade-in z-50 shadow-lg">
+                  {{ portfolioMessage }}
+                </div>
+                <button @click="addToPortfolio" :disabled="isAddingToPortfolio" class="px-4 py-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-sm font-medium rounded-lg border border-amber-500/30 transition-all flex items-center gap-2 h-max disabled:opacity-50">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  В Портфель
+                </button>
                 <button @click="downloadDocx" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-sm font-medium rounded-lg border border-blue-500/30 transition-all flex items-center gap-2 h-max">
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                   Отчет DOCX
@@ -261,6 +268,26 @@
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <!-- News & Media Section -->
+            <div class="glass-panel p-6 rounded-xl border border-white/5 mt-6" v-if="startupData.external_data?.news?.data?.articles?.length">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="w-8 h-8 rounded-lg bg-blue-500/20 border border-blue-500/30 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-white">Инфополе и Новости</h3>
+              </div>
+              
+              <div class="space-y-4">
+                <a v-for="(article, idx) in startupData.external_data.news.data.articles" :key="idx" :href="article.link" target="_blank" class="block bg-dark-900/50 hover:bg-dark-800 p-4 rounded-lg border border-white/5 transition-colors group">
+                  <div class="flex justify-between items-start gap-4">
+                    <h4 class="text-sm font-semibold text-blue-400 group-hover:text-blue-300 leading-tight mb-1">{{ article.title }}</h4>
+                    <span class="text-[10px] text-slate-500 whitespace-nowrap font-mono">{{ new Date(article.published_at).toLocaleDateString('ru-RU') }}</span>
+                  </div>
+                  <div class="text-xs text-slate-400">{{ article.source }}</div>
+                </a>
               </div>
             </div>
           </div>
@@ -412,7 +439,7 @@
                 <div class="space-y-4">
                   <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Сумма инвестиций (₽)</label>
-                    <input type="number" v-model.number="calc.investment" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
+                    <input type="text" v-model="formattedInvestment" class="w-full bg-dark-900 border border-white/10 rounded-lg px-3 py-2 text-white text-sm focus:border-blue-500 outline-none">
                   </div>
                   <div>
                     <label class="block text-xs font-medium text-slate-400 mb-1">Доля инвестора (%)</label>
@@ -440,8 +467,8 @@
                 <div class="grid grid-cols-2 gap-4 mb-6">
                   <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
                     <div class="text-sm text-slate-400 mb-1">Внутренняя норма доходности (IRR)</div>
-                    <div class="text-3xl font-bold" :class="calculatedIRR >= calc.discount_rate ? 'text-emerald-400' : 'text-rose-400'">
-                      {{ calculatedIRR }}%
+                    <div class="text-3xl font-bold" :class="parseFloat(calculatedIRR) >= calc.discount_rate ? 'text-emerald-400' : 'text-rose-400'">
+                      {{ calculatedIRR }}
                     </div>
                   </div>
                   <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
@@ -459,7 +486,7 @@
                   <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
                     <div class="text-sm text-slate-400 mb-1">Cash-on-Cash Return (ROI)</div>
                     <div class="text-2xl font-bold text-white">
-                      {{ calculatedROI }}x
+                      {{ calculatedROI }}
                     </div>
                   </div>
                 </div>
@@ -494,15 +521,23 @@
                   <p class="text-sm text-slate-300 leading-relaxed relative z-10 whitespace-pre-wrap">{{ summaryText }}</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
-                    <h4 class="text-sm font-bold text-emerald-400 mb-2">Ключевые преимущества (Драйверы роста)</h4>
+                    <h4 class="text-sm font-bold text-emerald-400 mb-2">Ключевые преимущества (Драйверы)</h4>
                     <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside ml-2">
                       <li v-for="(item, i) in summaryPros" :key="i">{{ item }}</li>
                     </ul>
                     <div v-if="!summaryPros.length" class="text-xs text-slate-500 mt-2">Недостаточно данных для анализа сильных сторон.</div>
                   </div>
                   
+                  <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
+                    <h4 class="text-sm font-bold text-amber-400 mb-2">Зоны риска (Требуют внимания)</h4>
+                    <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside ml-2">
+                      <li v-for="(item, i) in summaryWarnings" :key="i">{{ item }}</li>
+                    </ul>
+                    <div v-if="!summaryWarnings.length" class="text-xs text-slate-500 mt-2">Явных точек риска не обнаружено (или нет данных).</div>
+                  </div>
+
                   <div class="bg-dark-900/50 p-5 rounded-xl border border-white/5">
                     <h4 class="text-sm font-bold text-rose-400 mb-2">Критические риски (Стоп-факторы)</h4>
                     <ul class="text-sm text-slate-300 space-y-2 list-disc list-inside ml-2">
@@ -551,6 +586,18 @@
           cbrRate: null
         });
 
+        const formattedInvestment = computed({
+          get: () => {
+            if (!calc.value.investment) return '';
+            return new Intl.NumberFormat('ru-RU').format(calc.value.investment);
+          },
+          set: (val) => {
+            const parsed = parseInt(val.replace(/\D/g, ''), 10);
+            if (!isNaN(parsed)) calc.value.investment = parsed;
+            else if (val === '') calc.value.investment = 0;
+          }
+        });
+
         const formatUrl = (url) => {
           if (!url) return '#';
           return url.startsWith('http') ? url : `https://${url}`;
@@ -566,18 +613,43 @@
             'trl': 'Технологическая готовность (TRL)',
             'crl': 'Коммерческая готовность (CRL)',
             'irl': 'Инвестиционная готовность (IRL)',
+            'mrl': 'Производственная готовность (MRL)',
             'revenue_2024': 'Выручка 2024',
             'profit_2024': 'Прибыль 2024',
             'revenue_2025': 'Выручка 2025',
             'profit_2025': 'Прибыль 2025',
-            'patent_count': 'Кол-во патентов'
+            'patent_count': 'Кол-во патентов',
+            'max_revenue_log': 'Пиковая выручка',
+            'max_profit_log': 'Пиковая прибыль',
+            'tech_count': 'Кол-во технологий',
+            'log_revenue_2022': 'Выручка 2022',
+            'log_revenue_2023': 'Выручка 2023',
+            'log_profit_2022': 'Прибыль 2022',
+            'log_profit_2023': 'Прибыль 2023',
+            'has_ai': 'Наличие AI',
+            'product_count': 'Кол-во продуктов',
+            'revenue_trend': 'Тренд выручки',
+            'profit_margin': 'Рентабельность',
+            'bfo_fixed_assets_share': 'Доля основных средств'
           };
           return map[f] || f;
         };
 
         const formatFeatureValue = (val, feat) => {
-          if (feat.includes('revenue') || feat.includes('profit')) return formatMoney(val) + ' ₽';
-          return val;
+          if (feat.includes('log_') || feat.includes('_log')) {
+            const realVal = Math.exp(val);
+            return formatMoney(Math.round(realVal)) + ' ₽';
+          }
+          if (feat === 'revenue_trend' || feat === 'profit_margin' || feat === 'bfo_fixed_assets_share') {
+            return (val * 100).toFixed(1) + '%';
+          }
+          if (feat === 'has_ai') {
+            return val > 0 ? 'Да' : 'Нет';
+          }
+          if (feat.includes('revenue') || feat.includes('profit')) {
+            return formatMoney(val) + ' ₽';
+          }
+          return Number.isInteger(val) ? val : parseFloat(val).toFixed(2);
         };
 
         const sortedFinancials = computed(() => {
@@ -615,7 +687,9 @@
           const exitVal = exitValuation.value;
           const investorReturn = exitVal * (calc.value.equity_share / 100);
           if (calc.value.investment <= 0) return 0;
-          return (investorReturn / calc.value.investment).toFixed(2);
+          const roi = investorReturn / calc.value.investment;
+          if (roi > 1000) return '>1000x (Проверьте сумму инвестиций)';
+          return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(roi) + 'x';
         });
 
         const calculatedIRR = computed(() => {
@@ -623,7 +697,9 @@
           const investorReturn = exitVal * (calc.value.equity_share / 100);
           if (calc.value.investment <= 0 || investorReturn <= 0) return 0;
           const irr = Math.pow(investorReturn / calc.value.investment, 1 / calc.value.years) - 1;
-          return (irr * 100).toFixed(1);
+          const irrPercent = irr * 100;
+          if (irrPercent > 5000) return '>5000% (Проверьте сумму инвестиций)';
+          return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 1 }).format(irrPercent) + '%';
         });
 
         const downloadExcel = () => {
@@ -659,12 +735,26 @@
           if (startupData.value.z_score != null && startupData.value.z_score < 1.23) cons.push(`Повышенный риск банкротства (Z-Score: ${startupData.value.z_score.toFixed(2)} - Красная зона). Требуется доп. аудит обязательств.`);
           if (startupData.value.revenue_cagr != null && startupData.value.revenue_cagr < 0) cons.push(`Отрицательный тренд выручки. Компания теряет рынок или меняет бизнес-модель.`);
           if (startupData.value.liquidity_ratio != null && startupData.value.liquidity_ratio < 1.0) cons.push(`Дефицит ликвидности (${startupData.value.liquidity_ratio.toFixed(2)}). Риск кассового разрыва в краткосрочном периоде.`);
-          
+          return cons;
+        });
+
+        const summaryWarnings = computed(() => {
+          if (!startupData.value) return [];
+          let warns = [];
           const fins = sortedFinancials.value;
           if (fins.length > 0 && fins[0].profit < 0) {
-            cons.push(`Убыточность на последнем отчетном периоде (Прибыль: ${formatMoney(fins[0].profit)} ₽). Компания "сжигает" капитал.`);
+            warns.push(`Убыточность на последнем отчетном периоде (Убыток: ${formatMoney(Math.abs(fins[0].profit))} ₽). Необходимо проанализировать структуру затрат (возможно, стадия активного роста и R&D).`);
           }
-          return cons;
+          if (startupData.value.z_score != null && startupData.value.z_score >= 1.23 && startupData.value.z_score <= 2.9) {
+            warns.push(`Промежуточная зона финансовой стабильности (Z-Score: ${startupData.value.z_score.toFixed(2)}). Не является критичным, но требует внимания.`);
+          }
+          if (startupData.value.liquidity_ratio != null && startupData.value.liquidity_ratio >= 1.0 && startupData.value.liquidity_ratio <= 1.5) {
+            warns.push(`Умеренная ликвидность (${startupData.value.liquidity_ratio.toFixed(2)}). Может потребоваться дополнительное фондирование для операционной деятельности.`);
+          }
+          if (startupData.value.startup.team_size && startupData.value.startup.team_size < 5 && startupData.value.startup.year_founded < 2022) {
+            warns.push(`Малый размер команды (${startupData.value.startup.team_size} чел.) при значительном возрасте проекта (основан в ${startupData.value.startup.year_founded}). Риск "бутикового" бизнеса без амбиций масштабирования.`);
+          }
+          return warns;
         });
 
         const summaryText = computed(() => {
@@ -701,7 +791,7 @@
               labels,
               datasets: [
                 { label: 'Выручка (₽)', data: rev, backgroundColor: '#3b82f6', borderRadius: 4 },
-                { label: 'Прибыль (₽)', data: prof, backgroundColor: '#10b981', borderRadius: 4 }
+                { label: 'Прибыль (₽)', data: prof, backgroundColor: prof.map(p => p < 0 ? '#f43f5e' : '#10b981'), borderRadius: 4 }
               ]
             },
             options: {
@@ -817,6 +907,34 @@
     // Initial favicon
     updateFavicon();
 
+        const isAddingToPortfolio = ref(false);
+        const portfolioMessage = ref('');
+
+        const addToPortfolio = async () => {
+          isAddingToPortfolio.value = true;
+          const token = localStorage.getItem('auth_token');
+          if (!token) return;
+          try {
+            const res = await fetch('/api/portfolio', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({ startup_id: id })
+            });
+            if (res.ok) {
+              const data = await res.json();
+              portfolioMessage.value = data.message === "Already in portfolio" ? "Уже в портфеле" : "Добавлено в портфель";
+              setTimeout(() => portfolioMessage.value = '', 3000);
+            }
+          } catch (e) {
+            console.error(e);
+          } finally {
+            isAddingToPortfolio.value = false;
+          }
+        };
+
         onMounted(async () => {
           const urlParams = new URLSearchParams(window.location.search);
           const id = urlParams.get('id');
@@ -896,17 +1014,19 @@
               
               logoContainer.addEventListener('mouseleave', () => {
                 isHovered = false;
+                currentIndex = pageIndex;
+                updateWheel(currentIndex);
                 scheduleNextSpin();
               });
 
               logoContainer.addEventListener('click', () => {
                 switch(currentIndex) {
-                  case 0: window.location.href = '/dashboard.html'; break; // Web
+                  case 0: window.location.href = '/index.html'; break; // Web
                   case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
                   case 2: alert('Мобильное приложение находится в разработке.'); break; // App
                   case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
-                  case 4: window.location.href = '/search.html'; break; // AI
-                  case 5: window.location.href = '/profile.html'; break; // Inv
+                  case 4: window.location.href = '/dashboard.html'; break; // AI
+                  case 5: window.location.href = '/portfolio.html'; break; // Inv
                 }
               });
             }
@@ -949,7 +1069,8 @@
           loading, error, startupData, currentTab, tabs, formatUrl, formatMoney,
           translateFeature, formatFeatureValue, sortedFinancials,
           calc, calculatedNPV, calculatedIRR, calculatedROI, exitValuation,
-          downloadExcel, downloadDocx, summaryPros, summaryCons, summaryText
+          downloadExcel, downloadDocx, summaryPros, summaryCons, summaryWarnings, summaryText,
+          addToPortfolio, portfolioMessage, isAddingToPortfolio, formattedInvestment
         };
       }
     }).mount('#app');

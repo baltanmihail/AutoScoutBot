@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 class StartupBrief(BaseModel):
     id: str
     name: str
+    inn: str = ""
     cluster: str = ""
     status: str = ""
     year_founded: Optional[int] = None
@@ -20,6 +21,7 @@ class StartupBrief(BaseModel):
     ml_score: Optional[float] = None
     company_description: str = ""
     technologies: str = ""
+    trl: int = 0
 
     class Config:
         from_attributes = True

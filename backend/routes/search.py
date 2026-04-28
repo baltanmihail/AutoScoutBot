@@ -499,9 +499,10 @@ async def get_dashboard_startups(
             try:
                 data = json.loads(ext.data_json)
                 if ext.source == "checko":
-                    # Checko might have employee count
-                    if "data" in data and "sved_rab" in data["data"]:
-                        team_size = data["data"]["sved_rab"].get("kol_rab")
+                    # Checko might have employee count in company_details
+                    comp_data = data.get("company_details", {})
+                    if "СведССЧР" in comp_data:
+                        team_size = comp_data["СведССЧР"].get("КолРаб")
                 if ext.source == "bfo":
                     # BFO for Z-score (latest year)
                     if data:
@@ -525,6 +526,12 @@ async def get_dashboard_startups(
             except Exception:
                 pass
 
+        revenue_latest = None
+        if fins:
+            fins_sorted = sorted(fins, key=lambda x: x.year)
+            if fins_sorted[-1].revenue:
+                revenue_latest = fins_sorted[-1].revenue
+
         results.append({
             "id": startup.id,
             "name": startup.name,
@@ -537,11 +544,13 @@ async def get_dashboard_startups(
             "crl": startup.crl,
             "mrl": startup.mrl,
             "patents": startup.patents,
-            "score_overall": sc.score_overall if sc else 0,
-            "ml_score": sc.ml_score if sc else 0,
+            "score_overall": sc.score_overall if sc else 5.0,
+            "score_market_potential": sc.score_market_potential if sc else 5.0,
+            "ml_score": sc.ml_score if sc else None,
             "company_description": startup.company_description or startup.technologies or "Описание отсутствует.",
             "is_recent_search": is_recent,
             "revenue_cagr": revenue_cagr,
+            "revenue_latest": revenue_latest,
             "z_score": z_score,
             "team_size": team_size
         })
@@ -610,6 +619,7 @@ async def get_search_history_details(
         brief = StartupBrief(
             id=startup.id,
             name=startup.name,
+            inn=startup.inn or "",
             cluster=startup.cluster,
             status=startup.status,
             year_founded=startup.year_founded,
@@ -617,6 +627,7 @@ async def get_search_history_details(
             ml_score=qr.ml_score,
             company_description=startup.company_description or "",
             technologies=startup.technologies or "",
+            trl=startup.trl or 0,
         )
         sr = SearchResult(
             startup=brief,

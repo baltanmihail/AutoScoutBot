@@ -117,8 +117,9 @@ async def get_startup_details(startup_id: str, session: AsyncSession = Depends(g
                 
                 # Parse specific metrics
                 if ext.source == "checko":
-                    if "data" in data and "sved_rab" in data["data"]:
-                        team_size = data["data"]["sved_rab"].get("kol_rab")
+                    comp_data = data.get("company_details", {})
+                    if "СведССЧР" in comp_data:
+                        team_size = comp_data["СведССЧР"].get("КолРаб")
                 elif ext.source == "bfo" and data:
                     # Get latest year for financial ratios
                     latest_year = max(data.keys(), key=int)

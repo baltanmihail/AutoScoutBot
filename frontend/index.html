@@ -472,17 +472,20 @@
               updateWheel();
             }
             
-            function scheduleNextSpin() {
-              const delay = 30000 + Math.random() * 15000;
+            function scheduleNextSpin(delay = null) {
+              clearTimeout(scrollInterval);
+              const spinDelay = delay || (30000 + Math.random() * 15000);
               scrollInterval = setTimeout(() => {
                 doSpin();
                 scheduleNextSpin();
-              }, delay);
+              }, spinDelay);
             }
             scheduleNextSpin();
             
             // Mouse wheel scroll with throttling
             let isScrolling = false;
+            let isHovered = false;
+
             logoContainer.addEventListener('wheel', (e) => {
               e.preventDefault();
               if (isScrolling) return;
@@ -497,14 +500,33 @@
                 currentIndex = (currentIndex - 1 + totalItems) % totalItems;
               }
               updateWheel();
-              scheduleNextSpin();
+              scheduleNextSpin(isHovered ? 15000 : null);
             });
-            
-            logoContainer.addEventListener('mouseleave', () => {
+
+            logoContainer.addEventListener('mouseenter', () => {
+              isHovered = true;
               clearTimeout(scrollInterval);
               currentIndex = 0; // Web
               updateWheel();
+              scheduleNextSpin(15000);
+            });
+            
+            logoContainer.addEventListener('mouseleave', () => {
+              isHovered = false;
+              currentIndex = 0; // Web
+              updateWheel();
               scheduleNextSpin();
+            });
+
+            logoContainer.addEventListener('click', () => {
+              switch(currentIndex) {
+                case 0: window.location.href = '/index.html'; break; // Web
+                case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
+                case 2: alert('Мобильное приложение находится в разработке.'); break; // App
+                case 3: alert('Модуль комьюнити скоро будет доступен.'); break; // Com
+                case 4: window.location.href = '/dashboard.html'; break; // AI
+                case 5: window.location.href = '/portfolio.html'; break; // Inv
+              }
             });
             
             function updateWheel() {

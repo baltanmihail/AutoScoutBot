@@ -272,6 +272,25 @@ class WebUser(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
 
+class PortfolioItem(Base):
+    __tablename__ = "portfolio_items"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("web_users.id"), nullable=False, index=True)
+    startup_id = Column(String(64), ForeignKey("startups.id"), nullable=False, index=True)
+    column_id = Column(String(50), default="screening")  # screening, negotiation, dd, closed
+    
+    created_at = Column(DateTime, default=func.now())
+    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+
+    user = relationship("WebUser", backref="portfolio_items")
+    startup = relationship("Startup")
+
+    __table_args__ = (
+        Index("ix_portfolio_user_startup", "user_id", "startup_id", unique=True),
+    )
+
+
 class User(Base):
     __tablename__ = "users"
 
