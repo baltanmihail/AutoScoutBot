@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - master
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -17,9 +18,12 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -e
             cd /home/autoscoutbot/autoscoutbot
-            git reset --hard HEAD
+            BRANCH="${{ github.ref_name }}"
+            git fetch origin
+            git checkout "$BRANCH"
+            git reset --hard "origin/$BRANCH"
             git clean -fd
-            git pull origin main
             docker compose build
             docker compose up -d

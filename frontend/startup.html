@@ -66,7 +66,7 @@
     <aside class="w-full md:w-64 glass-panel border-b md:border-b-0 md:border-r border-white/10 flex flex-col z-20 shrink-0 h-auto md:h-full">
           <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
             <!-- Animated Logo -->
-            <a href="/dashboard.html" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
+            <div class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" role="button" tabindex="0" title="Перейти к функции модуля">
               <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700" id="logo-bg-container">
             <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-700" id="bg-grad-0"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 transition-opacity duration-700 opacity-0" id="bg-grad-1"></div>
@@ -97,7 +97,7 @@
               </div>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
       
       <div class="flex-1 overflow-y-auto py-6 px-4">
@@ -1020,7 +1020,7 @@
               });
 
               logoContainer.addEventListener('click', () => {
-                switch(currentIndex) {
+                switch(pageIndex) {
                   case 0: window.location.href = '/dashboard.html'; break; // Web (Dashboard)
                   case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
                   case 2: alert('Мобильное приложение находится в разработке.'); break; // App

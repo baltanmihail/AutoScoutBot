@@ -74,7 +74,7 @@
     <aside class="w-full md:w-64 glass-panel border-b md:border-b-0 md:border-r border-white/10 flex flex-row md:flex-col transition-all z-20 shadow-2xl overflow-x-auto md:overflow-y-auto shrink-0 md:h-full h-auto">
       <div class="h-16 flex items-center px-4 md:px-6 border-r md:border-r-0 md:border-b border-white/10 shrink-0">
         <!-- Animated Logo -->
-        <a href="javascript:void(0)" class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" title="Перейти к функции">
+        <div class="flex-shrink-0 flex items-center cursor-pointer" id="logo-container" role="button" tabindex="0" title="Перейти к функции модуля">
           <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-blue-500/30 overflow-hidden relative transition-all duration-700" id="logo-bg-container">
             <div class="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-700" id="bg-grad-0"></div>
             <div class="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-600 transition-opacity duration-700 opacity-0" id="bg-grad-1"></div>
@@ -105,7 +105,7 @@
               </div>
             </div>
           </div>
-        </a>
+        </div>
       </div>
       
       <div class="flex-1 flex md:flex-col flex-row overflow-x-auto md:overflow-y-auto py-2 md:py-6 px-2 md:px-0">
@@ -327,13 +327,19 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5 bg-transparent">
-                <tr v-if="filteredStartups.length === 0" class="hover:bg-white/5 transition-colors group">
+                <tr v-if="topStartupsLoading" class="hover:bg-white/5 transition-colors group">
                   <td colspan="10" class="px-3 py-8 text-center text-slate-400">
-                    <svg v-if="!topStartups.length" class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg class="mx-auto h-8 w-8 text-slate-600 mb-3 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
-                    <svg v-else class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    {{ topStartups.length === 0 ? 'Загрузка стартапов...' : 'По вашему фильтру ничего не найдено' }}
+                    Загрузка стартапов...
+                  </td>
+                </tr>
+                <tr v-else-if="filteredStartups.length === 0" class="hover:bg-white/5 transition-colors group">
+                  <td colspan="10" class="px-3 py-8 text-center text-slate-400">
+                    <svg v-if="filterQuery && topStartups.length" class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <svg v-else class="mx-auto h-8 w-8 text-slate-600 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>
+                    {{ filterQuery && topStartups.length ? 'По вашему фильтру ничего не найдено' : 'Нет данных для отображения. Выполните поиск AI или проверьте позже.' }}
                   </td>
                 </tr>
                 <tr v-for="(startup, idx) in filteredStartups" :key="startup.id" class="hover:bg-white/5 transition-colors group">
@@ -384,7 +390,7 @@
                     <div class="flex flex-col gap-0.5">
                       <span class="text-[9px] text-slate-300"><span class="text-slate-500">TRL:</span> {{ startup.trl || 0 }} <span class="text-[9px] text-slate-500 font-normal">({{ startup.trl >= 7 ? 'Готов' : 'Прототип' }})</span></span>
                       <span class="text-[9px] text-slate-300"><span class="text-slate-500">Команда:</span> {{ startup.team_size != null ? startup.team_size : 'Н/Д' }} чел.</span>
-                      <span class="text-[9px] text-slate-300"><span class="text-slate-500">Тренд:</span> {{ startup.revenue_trend != null ? (startup.revenue_trend > 0 ? '+' : '') + (startup.revenue_trend * 100).toFixed(0) + '%' : 'Н/Д' }}</span>
+                      <span class="text-[9px] text-slate-300"><span class="text-slate-500">Тренд:</span> {{ startup.revenue_cagr != null ? (startup.revenue_cagr > 0 ? '+' : '') + (startup.revenue_cagr * 100).toFixed(0) + '% г/г' : 'Н/Д' }}</span>
                     </div>
                   </td>
                   <td class="px-3 py-3 whitespace-nowrap">
@@ -719,9 +725,9 @@
               scheduleNextSpin();
             });
             
-            // Click redirects based on current index
+            // Навигация по модулю текущей страницы (не по анимированному колесу — иначе после автопрокрутки уходит не туда)
             logoContainer.addEventListener('click', () => {
-              switch(currentIndex) {
+              switch(pageIndex) {
                 case 0: window.location.href = '/dashboard.html'; break; // Web (Dashboard)
                 case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
                 case 2: alert('Мобильное приложение находится в разработке.'); break; // App
@@ -734,6 +740,7 @@
         });
 
         const topStartups = ref([]);
+        const topStartupsLoading = ref(true);
         const filterQuery = ref('');
         
         const formatMoney = (val) => {
@@ -766,17 +773,23 @@
         };
 
         const fetchTopStartups = async () => {
+          topStartupsLoading.value = true;
           try {
             const token = localStorage.getItem('auth_token');
             const res = await fetch('/api/search/dashboard_startups', {
-              headers: { 'Authorization': `Bearer ${token}` }
+              headers: token ? { 'Authorization': `Bearer ${token}` } : {}
             });
             if (res.ok) {
               const data = await res.json();
               topStartups.value = data.top_startups || [];
+            } else {
+              topStartups.value = [];
             }
           } catch (e) {
             console.error("Error fetching top startups", e);
+            topStartups.value = [];
+          } finally {
+            topStartupsLoading.value = false;
           }
         };
 
@@ -859,8 +872,10 @@
           requestsData,
           totalRequests,
           topStartups,
+          topStartupsLoading,
           filterQuery,
           filteredStartups,
+          formatMoney,
           deleteStartup,
           moveStartup,
           logout,

@@ -445,11 +445,11 @@ async def get_dashboard_startups(
                 break
                 
     # 2. Get global top startups
+    # Не фильтруем по status: в данных часто пустой/NULL — иначе глобальный топ пустой
     top_stmt = (
         select(Startup, StartupScore)
         .outerjoin(StartupScore, Startup.id == StartupScore.startup_id)
-        .where(Startup.status != "")
-        .order_by(StartupScore.score_overall.desc().nullslast())
+        .order_by(StartupScore.score_overall.desc().nullslast(), Startup.id.asc())
         .limit(3)
     )
     top_rows = (await session.execute(top_stmt)).all()
