@@ -500,7 +500,7 @@ async def get_dashboard_startups(
                 data = json.loads(ext.data_json)
                 if ext.source == "checko":
                     # Checko might have employee count in company_details
-                    comp_data = data.get("company_details", {})
+                    comp_data = data.get("company_details") or {}
                     if "СведССЧР" in comp_data:
                         team_size = comp_data["СведССЧР"].get("КолРаб")
                 if ext.source == "bfo":
