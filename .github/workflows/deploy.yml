@@ -18,5 +18,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/autoscoutbot/autoscoutbot
+            git reset --hard HEAD
+            git clean -fd
             git pull origin main
-            docker compose up -d --build
+            docker compose build
+            docker compose up -d
