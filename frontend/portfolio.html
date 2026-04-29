@@ -125,7 +125,7 @@
             AI Поиск
           </a>
 
-          <a href="javascript:void(0)" @click.prevent="currentTab = 'portfolio'" :class="currentTab === 'portfolio' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
+          <a href="javascript:void(0)" @click.prevent="currentTab = 'portfolio'; if(window.setLogoTo) window.setLogoTo(5)" :class="currentTab === 'portfolio' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
             <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
@@ -139,7 +139,7 @@
             Комьюнити
           </a>
 
-          <a href="javascript:void(0)" @click.prevent="currentTab = 'profile'" :class="currentTab === 'profile' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
+          <a href="javascript:void(0)" @click.prevent="currentTab = 'profile'; if(window.setLogoTo) window.setLogoTo(0)" :class="currentTab === 'profile' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20 shadow-[0_0_10px_rgba(37,99,235,0.1)]' : 'text-slate-400 hover:bg-white/5 hover:text-white border-transparent'" class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg border transition-all whitespace-nowrap">
             <svg class="md:mr-3 mr-2 flex-shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
@@ -541,7 +541,8 @@
 
     createApp({
       setup() {
-        const currentTab = ref('portfolio');
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentTab = ref(urlParams.get('tab') === 'profile' ? 'profile' : 'portfolio');
         const showCalculator = ref(false);
         const userEmail = ref('');
         const userRole = ref('');
@@ -900,10 +901,31 @@
           
           if (logoWheel && textWheel && logoContainer) {
             let currentIndex = 5; // Inv is index 5
-            const pageIndex = 5;
+            let pageIndex = currentTab.value === 'profile' ? 0 : 5;
             const totalItems = 6;
             let scrollInterval;
             let isHovered = false;
+
+            window.setLogoTo = (index) => {
+              pageIndex = index;
+              currentIndex = index;
+              clearTimeout(scrollInterval);
+              updateWheel(index);
+              scheduleNextSpin(15000);
+            };
+
+            // Set initial position immediately without animation
+            if (logoWheel && textWheel) {
+              logoWheel.style.transition = 'none';
+              textWheel.style.transition = 'none';
+              currentIndex = pageIndex;
+              updateWheel(pageIndex);
+              // Restore transition after a tiny delay
+              setTimeout(() => {
+                logoWheel.style.transition = 'transform 700ms ease-in-out';
+                textWheel.style.transition = 'transform 700ms ease-in-out';
+              }, 50);
+            }
             
             function doSpin() {
               currentIndex = (currentIndex + 1) % totalItems;
