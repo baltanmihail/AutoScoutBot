@@ -79,9 +79,18 @@ app.include_router(export.router)
 app.include_router(portfolio.router)
 
 import os
+
+class NoCacheStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        res = await super().get_response(path, scope)
+        res.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        res.headers["Pragma"] = "no-cache"
+        res.headers["Expires"] = "0"
+        return res
+
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
 os.makedirs(frontend_dir, exist_ok=True)
-app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+app.mount("/", NoCacheStaticFiles(directory=frontend_dir, html=True), name="frontend")
 
 
 @app.get("/health")

@@ -725,9 +725,9 @@
               scheduleNextSpin();
             });
             
-            // Навигация по модулю текущей страницы (не по анимированному колесу — иначе после автопрокрутки уходит не туда)
+            // Навигация по модулю текущей страницы
             logoContainer.addEventListener('click', () => {
-              switch(pageIndex) {
+              switch(currentIndex) {
                 case 0: window.location.href = '/dashboard.html'; break; // Web (Dashboard)
                 case 1: window.open('https://t.me/SkoltechScoutBot', '_blank'); break; // Bot
                 case 2: alert('Мобильное приложение находится в разработке.'); break; // App
