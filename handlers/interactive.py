@@ -379,8 +379,6 @@ def register_interactive_handlers(
             except Exception as e:
                 logger.exception("Ошибка глубокого анализа")
                 await query.message.edit_text(f"❌ Ошибка при проведении анализа: {str(e)}")
-        
-        await query.answer()
 
     @router.callback_query(F.data == "deep_export_docx")
     async def deep_export_docx_callback(query: types.CallbackQuery, state: FSMContext):

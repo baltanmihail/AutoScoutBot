@@ -168,7 +168,25 @@ def parse_action_callback(callback_data: str) -> Dict[str, str]:
     if len(parts) < 2:
         return {"type": "unknown", "data": ""}
     
-    action_type = parts[1]  # rerun, refine, deep_analysis, etc.
+    # model_ callbacks must be checked FIRST -- compound action_type
+    # like "deep_analysis" would otherwise be caught by the "deep" branch
+    if parts[0] == "model":
+        if len(parts) >= 5 and parts[1] == "deep" and parts[2] == "analysis":
+            return {
+                "type": "model_selected",
+                "action_type": "deep_analysis",
+                "action_data": parts[3],
+                "model": parts[4],
+            }
+        if len(parts) >= 4:
+            return {
+                "type": "model_selected",
+                "action_type": parts[1],
+                "action_data": parts[2],
+                "model": parts[3],
+            }
+    
+    action_type = parts[1]
     
     if action_type == "rerun":
         query_id = parts[2] if len(parts) > 2 else "none"
@@ -187,16 +205,6 @@ def parse_action_callback(callback_data: str) -> Dict[str, str]:
     
     elif action_type == "back":
         return {"type": "back_to_results", "data": ""}
-    
-    elif parts[0] == "model":
-        # model_{action_type}_{action_data}_{model}
-        if len(parts) >= 4:
-            return {
-                "type": "model_selected",
-                "action_type": parts[1],
-                "action_data": parts[2],
-                "model": parts[3]
-            }
     
     return {"type": "unknown", "data": callback_data}
 

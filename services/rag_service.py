@@ -359,21 +359,20 @@ class RAGService:
         
         logger.info(f"🔍 Семантический поиск: {len(candidate_startups)} кандидатов")
         
-        # 3. Применяем ТОЛЬКО критичные фильтры (не отсекаем все!)
+        # 3. Hard filters (critical only)
         filtered_startups = candidate_startups
         
         if filter_functions:
             max_profit_limit = filters.get("max_profit_limit")
             get_max_profit = filter_functions.get('get_max_profit')
             determine_stage = filter_functions.get('determine_stage')
+            extract_level_value = filter_functions.get('extract_level_value')
             
-            # Критичный фильтр 1: max_profit_limit (убираем зрелые компании)
             if max_profit_limit and get_max_profit:
                 count_before = len(filtered_startups)
                 filtered_startups = [s for s in filtered_startups if get_max_profit(s) <= max_profit_limit]
                 logger.info(f"🔍 Фильтр 'max_profit_limit' (<= {max_profit_limit/1_000_000:.0f}M): {count_before} -> {len(filtered_startups)}")
             
-            # Критичный фильтр 2: status (только активные)
             status_filter = filters.get("status", [])
             if status_filter and len(status_filter) > 0:
                 count_before = len(filtered_startups)
@@ -383,7 +382,6 @@ class RAGService:
                 ]
                 logger.info(f"🔍 Фильтр 'status': {count_before} -> {len(filtered_startups)}")
             
-            # Критичный фильтр 3: исключаем зрелые компании для запросов "стартап"
             query_lower = query.lower()
             if "стартап" in query_lower and determine_stage:
                 count_before = len(filtered_startups)
@@ -393,16 +391,46 @@ class RAGService:
                 ]
                 logger.info(f"🎯 Фильтр 'стартап': {count_before} -> {len(filtered_startups)}")
         
-        # 4. Сортируем по similarity (ГЛАВНОЕ - релевантность!)
+            # 4. Soft-filter scoring: boost/penalize by structural match
+            stage_filter = filters.get("stage", [])
+            cluster_filter = filters.get("cluster", [])
+            trl_filter = filters.get("trl", [])
+            irl_filter = filters.get("irl", [])
+
+            has_soft = bool(stage_filter or cluster_filter or trl_filter or irl_filter)
+            if has_soft:
+                for s in filtered_startups:
+                    bonus = 0.0
+                    if stage_filter and determine_stage:
+                        if determine_stage(s) in stage_filter:
+                            bonus += 0.12
+                        else:
+                            bonus -= 0.08
+                    if cluster_filter:
+                        sc = s.get("cluster", "").lower()
+                        if any(c.lower() in sc for c in cluster_filter):
+                            bonus += 0.08
+                        else:
+                            bonus -= 0.04
+                    if trl_filter and extract_level_value:
+                        trl_val = extract_level_value(s.get("trl", ""))
+                        if trl_val in trl_filter or trl_val >= (min(trl_filter) if trl_filter else 0):
+                            bonus += 0.06
+                    if irl_filter and extract_level_value:
+                        irl_val = extract_level_value(s.get("irl", ""))
+                        if irl_val in irl_filter or irl_val >= (min(irl_filter) if irl_filter else 0):
+                            bonus += 0.04
+                    s["rag_similarity"] = max(0, s.get("rag_similarity", 0) + bonus)
+                logger.info(f"🎯 Soft-filter scoring: stage={stage_filter}, cluster={cluster_filter}, trl={trl_filter}")
+        
+        # 5. Sort by adjusted similarity
         filtered_startups.sort(
             key=lambda s: s.get('rag_similarity', 0),
             reverse=True
         )
         
-        logger.info(f"✅ После МЯГКОЙ фильтрации: {len(filtered_startups)} стартапов")
+        logger.info(f"✅ После фильтрации + soft-scoring: {len(filtered_startups)} стартапов")
         
-        # 5. Возвращаем топ-K по similarity, игнорируя остальные фильтры
-        # Цель: ВСЕГДА показывать результаты, даже если не все фильтры совпадают
         return filtered_startups[:top_k]
     
     def save_index(self, filepath: str = "rag_index.json"):
