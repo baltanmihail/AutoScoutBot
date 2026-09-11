@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+import os
+import time
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from sqlalchemy import select, func, text, literal_column
@@ -12,10 +14,39 @@ from backend.database import get_session, DATABASE_URL
 from backend.models import Startup, StartupScore, StartupFinancial, Query, QueryResult, ExternalData
 from backend.schemas import SearchRequest, SearchResponse, SearchResult, StartupBrief, HistoryResponse, QueryHistoryItem
 from backend.routes.profile import get_current_user_from_token
+from scoring.bfo_identity import resolve_obligations
+from backend.ranking import StagePercentiles, calibrated_scores, effective_relevance_weight
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/search", tags=["search"])
+
+# Ранжирование векторной выдачи: "calibrated" — нормализованное слияние (по умолчанию),
+# "legacy" — прежняя сумма 0.50*rel*10 + 0.32*ml + 0.18*proxy. После нормализации заданный
+# вес релевантности совпадает с фактическим (см. backend/ranking.py).
+RANK_MODE = os.getenv("SEARCH_RANK_MODE", "calibrated")
+RELEVANCE_WEIGHT = float(os.getenv("SEARCH_RELEVANCE_WEIGHT", "0.5"))
+_STAGE_CACHE: dict = {"obj": None, "ts": 0.0}
+_STAGE_TTL_SEC = 3600
+
+
+def _attractiveness(c: dict) -> float:
+    """Не зависящая от запроса часть прежней формулы: 0.32*ml + 0.18*proxy, нормированная на вес 0.5."""
+    proxy = c["proxy_overall"] or 0.0
+    return 0.64 * c["ml_score"] + 0.36 * proxy if c["ml_score"] is not None else proxy
+
+
+async def _get_stage_percentiles(session: AsyncSession) -> StagePercentiles:
+    """Распределение оценки внутри стадий TRL по всему корпусу (кэш на час)."""
+    now = time.monotonic()
+    if _STAGE_CACHE["obj"] is None or now - _STAGE_CACHE["ts"] > _STAGE_TTL_SEC:
+        rows = (await session.execute(
+            select(Startup.trl, StartupScore.score_overall)
+            .join(StartupScore, Startup.id == StartupScore.startup_id)
+            .where(Startup.status != "")
+        )).all()
+        _STAGE_CACHE.update(obj=StagePercentiles(rows), ts=now)
+    return _STAGE_CACHE["obj"]
 
 # Служебные слова, совпадение по ним слабо различает стартапы; не используем в OR alone.
 _RU_STOP = frozenset(
@@ -342,7 +373,22 @@ async def search_startups(
         else:
             c["rank_score"] = 0.50 * (rel * 10.0) + 0.32 * ml + 0.18 * proxy
 
-    scored_candidates.sort(key=lambda c: c["rank_score"], reverse=True)
+    for c in scored_candidates:
+        c["sort_key"] = c["rank_score"]
+    if vector_id_set and RANK_MODE == "calibrated" and scored_candidates:
+        # В прежней сумме разброс rel среди кандидатов втрое меньше разброса оценки, поэтому номинальный вес
+        # релевантности 0.5 фактически работал как ~0.25 и выдача смещалась к зрелым компаниям.
+        # Стандартизуем оба сигнала на множестве кандидатов; привлекательность — перцентиль внутри стадии TRL.
+        stage_pct = await _get_stage_percentiles(session)
+        rel = [c["relevance_01"] for c in scored_candidates]
+        attr_raw = [_attractiveness(c) for c in scored_candidates]
+        attr = [stage_pct.percentile(c["startup"].trl, a) for c, a in zip(scored_candidates, attr_raw)]
+        logger.debug("legacy rule effective relevance weight: %.3f",
+                     effective_relevance_weight([10.0 * r for r in rel], attr_raw, 0.5))
+        fused, display = calibrated_scores(rel, attr, RELEVANCE_WEIGHT)
+        for c, f, d in zip(scored_candidates, fused, display):
+            c["sort_key"], c["rank_score"] = f, d
+    scored_candidates.sort(key=lambda c: c["sort_key"], reverse=True)
     top_results = scored_candidates[:req.top_k]
 
     # --- Save query ---
@@ -510,7 +556,7 @@ async def get_dashboard_startups(
                         bfo_fin = data[latest_year]
                         ta = bfo_fin.get("total_assets", 0)
                         if ta > 0:
-                            tl = bfo_fin.get("total_liabilities", 0)
+                            tl = resolve_obligations(bfo_fin) or 0.0
                             ca = bfo_fin.get("current_assets", 0)
                             cl = bfo_fin.get("current_liabilities", 0)
                             re = bfo_fin.get("retained_earnings", 0)
