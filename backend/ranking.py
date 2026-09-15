@@ -4,8 +4,9 @@ The raw linear rule  lam*rel + (1-lam)*attr  orders candidates exactly as the st
 relevance weight  omega = lam*sd_rel / (lam*sd_rel + (1-lam)*sd_attr).  With rel = 10*cosine the relevance
 spread among candidates is ~3x smaller than the attractiveness spread, so the nominal 0.5 acted as ~0.25 and
 the top positions drifted to mature companies (PIERE 2026 study, docs/Статьи/Scopus, IEEE, ВАК).
-Standardizing both signals on the candidate set makes the configured weight the effective one; attractiveness
-is compared within the company's stage (TRL group) via an empirical CDF built on the whole corpus.
+Standardizing both signals on the candidate set makes the configured weight the effective one. Expert judgments
+favour weight 0.75; comparing attractiveness within the company's stage (TRL group) gave no extra benefit and is
+kept only as an option.
 """
 
 from __future__ import annotations

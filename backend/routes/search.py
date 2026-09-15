@@ -23,9 +23,11 @@ router = APIRouter(prefix="/api/search", tags=["search"])
 
 # Ранжирование векторной выдачи: "calibrated" — нормализованное слияние (по умолчанию),
 # "legacy" — прежняя сумма 0.50*rel*10 + 0.32*ml + 0.18*proxy. После нормализации заданный
-# вес релевантности совпадает с фактическим (см. backend/ranking.py).
+# вес релевантности совпадает с фактическим (см. backend/ranking.py). По экспертной разметке 1 122 пар
+# (PIERE 2026) лучший компромисс — вес 0.75 без стадийной поправки: выше и релевантность, и доля ранних компаний.
 RANK_MODE = os.getenv("SEARCH_RANK_MODE", "calibrated")
-RELEVANCE_WEIGHT = float(os.getenv("SEARCH_RELEVANCE_WEIGHT", "0.5"))
+RELEVANCE_WEIGHT = float(os.getenv("SEARCH_RELEVANCE_WEIGHT", "0.75"))
+USE_STAGE_PERCENTILE = os.getenv("SEARCH_STAGE_PERCENTILE", "0") == "1"
 _STAGE_CACHE: dict = {"obj": None, "ts": 0.0}
 _STAGE_TTL_SEC = 3600
 
@@ -378,11 +380,13 @@ async def search_startups(
     if vector_id_set and RANK_MODE == "calibrated" and scored_candidates:
         # В прежней сумме разброс rel среди кандидатов втрое меньше разброса оценки, поэтому номинальный вес
         # релевантности 0.5 фактически работал как ~0.25 и выдача смещалась к зрелым компаниям.
-        # Стандартизуем оба сигнала на множестве кандидатов; привлекательность — перцентиль внутри стадии TRL.
-        stage_pct = await _get_stage_percentiles(session)
+        # Стандартизуем оба сигнала на множестве кандидатов; перцентиль внутри стадии TRL — только по флагу.
         rel = [c["relevance_01"] for c in scored_candidates]
         attr_raw = [_attractiveness(c) for c in scored_candidates]
-        attr = [stage_pct.percentile(c["startup"].trl, a) for c, a in zip(scored_candidates, attr_raw)]
+        attr = attr_raw
+        if USE_STAGE_PERCENTILE:
+            stage_pct = await _get_stage_percentiles(session)
+            attr = [stage_pct.percentile(c["startup"].trl, a) for c, a in zip(scored_candidates, attr_raw)]
         logger.debug("legacy rule effective relevance weight: %.3f",
                      effective_relevance_weight([10.0 * r for r in rel], attr_raw, 0.5))
         fused, display = calibrated_scores(rel, attr, RELEVANCE_WEIGHT)
