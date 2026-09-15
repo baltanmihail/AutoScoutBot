@@ -1,0 +1,19 @@
+# Образ содержит только код и зависимости. docker-compose подключает папку проекта в контейнеры,
+# поэтому документы, история git и локальные данные в образ не нужны (иначе диск сервера переполняется).
+.git
+.github
+.idea
+.venv
+.venv312
+**/__pycache__
+**/*.pyc
+node_modules
+docs
+*.db
+*.sqlite
+_ibm2_*.py
+_vak_*.py
+scoring/models/*/model_2*
+id_rsa
+xray-config.json
+.env

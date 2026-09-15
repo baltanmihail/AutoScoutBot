@@ -17,9 +17,15 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 30m
           script: |
             set -e
             cd /home/autoscoutbot/autoscoutbot
+            echo "== место на диске до очистки"; df -h /
+            # Кэш сборки и образы без контейнеров; тома (база данных) и образы работающих контейнеров не затрагиваются
+            docker builder prune -af
+            docker image prune -af
+            echo "== после очистки"; df -h /
             BRANCH="${{ github.ref_name }}"
             git fetch origin
             git checkout "$BRANCH"
@@ -27,3 +33,5 @@ jobs:
             git clean -fd
             docker compose build
             docker compose up -d
+            docker image prune -f
+            echo "== после выкладки"; df -h /
