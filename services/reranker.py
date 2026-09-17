@@ -79,15 +79,32 @@ class ReRanker:
         logger.info("Re-ranking done: top-%d selected", top_k)
         return candidates[:top_k]
 
+    @staticmethod
+    def _get_stage(startup: Dict) -> str:
+        try:
+            from utils.startup_utils import determine_stage
+            return determine_stage(startup)
+        except Exception:
+            return "N/A"
+
     def _evaluate_relevance(self, query: str, startup: Dict) -> float:
         """Score relevance 0-100 via GigaChat. Falls back to RAG similarity."""
         client = self._client
         if client is None:
             return startup.get("rag_similarity", 0) * 100
 
+        stage = self._get_stage(startup)
+        ml_overall = startup.get("analysis", {}).get("ml_overall", "N/A")
+        fin_health = startup.get("analysis", {}).get("FinancialHealth", "N/A")
+
         startup_summary = (
             f"Название: {startup.get('name', 'N/A')}\n"
             f"Кластер: {startup.get('cluster', 'N/A')}\n"
+            f"Стадия: {stage}\n"
+            f"TRL: {startup.get('trl', 'N/A')}\n"
+            f"IRL: {startup.get('irl', 'N/A')}\n"
+            f"ML-скор: {ml_overall}/10\n"
+            f"Финансовое здоровье: {fin_health}\n"
             f"Описание: {(startup.get('company_description', '') or startup.get('description', ''))[:300]}\n"
             f"Продукты: {str(startup.get('product_names', 'N/A'))[:150]}\n"
             f"Технологии: {str(startup.get('technologies', 'N/A'))[:150]}\n"
@@ -99,11 +116,14 @@ class ReRanker:
             f"ЗАПРОС ПОЛЬЗОВАТЕЛЯ:\n{query}\n\n"
             f"СТАРТАП:\n{startup_summary}\n\n"
             "КРИТЕРИИ:\n"
-            "- 90-100: Прямое совпадение продукта/технологии\n"
-            "- 70-89: Высокая релевантность, смежная область\n"
-            "- 50-69: Средняя, общая тематика\n"
-            "- 30-49: Низкая, слабая связь\n"
+            "- 90-100: Прямое совпадение продукта/технологии И стадии/TRL если указаны в запросе\n"
+            "- 70-89: Совпадение продукта/технологии, но стадия или TRL не совпадают\n"
+            "- 50-69: Смежная область, частичное совпадение\n"
+            "- 30-49: Общая тематика, слабая связь\n"
             "- 0-29: Нерелевантно\n\n"
+            "ВАЖНО: Если в запросе указана конкретная стадия (seed, pre-seed и т.д.) или TRL, "
+            "несовпадение по ним должно существенно снижать оценку. "
+            "Если направление деятельности не соответствует запросу — оценка ниже 30.\n\n"
             "ОТВЕТ (только число от 0 до 100):"
         )
 
