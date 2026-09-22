@@ -181,11 +181,10 @@ async def _pgvector_search(
 async def _compute_query_embedding(query_text: str):
     """Compute embedding vector for a search query."""
     try:
-        from sentence_transformers import SentenceTransformer
+        from backend.embeddings import get_embedding_service
 
-        model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-        embedding = model.encode(query_text).tolist()
-        return embedding
+        # The shared service loads the model once per process; similarity is cosine, so normalisation does not change it
+        return get_embedding_service().encode_single(query_text)
     except ImportError:
         return None
     except Exception as e:
