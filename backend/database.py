@@ -53,6 +53,32 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 
 
+async def ensure_vector_column(dim: int) -> bool:
+    """
+    Convert startup_embeddings.embedding to vector(dim) if the table was created while the
+    pgvector package was missing (models.py then declares a text placeholder column).
+    Returns True if the column was converted.
+    """
+    if "postgresql" not in DATABASE_URL:
+        return False
+    from sqlalchemy import text
+
+    async with engine.begin() as conn:
+        data_type = (await conn.execute(text(
+            "SELECT data_type FROM information_schema.columns "
+            "WHERE table_schema = current_schema() AND table_name = 'startup_embeddings' AND column_name = 'embedding'"
+        ))).scalar()
+        if data_type != "text":
+            return False
+        # Placeholder rows hold no vectors; drop them so these startups are embedded again
+        await conn.execute(text("DELETE FROM startup_embeddings WHERE embedding IS NULL OR embedding = ''"))
+        await conn.execute(text(
+            f"ALTER TABLE startup_embeddings ALTER COLUMN embedding TYPE vector({int(dim)}) "
+            f"USING embedding::vector({int(dim)})"
+        ))
+        return True
+
+
 async def get_session() -> AsyncSession:
     async with async_session() as session:
         yield session

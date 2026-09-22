@@ -30,7 +30,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from backend.database import async_session, init_db, DATABASE_URL
+from backend.database import async_session, ensure_vector_column, init_db, DATABASE_URL
 from backend.models import Startup, StartupEmbedding
 
 logger = logging.getLogger(__name__)
@@ -203,6 +203,8 @@ def get_embedding_service() -> EmbeddingService:
 
 async def _main(batch_size: int = 100):
     await init_db()
+    if await ensure_vector_column(EMBEDDING_DIM):
+        print(f"Converted startup_embeddings.embedding to vector({EMBEDDING_DIM})")
     service = get_embedding_service()
     count = await service.embed_all_startups(batch_size=batch_size)
     print(f"Done. Embedded {count} startups.")
@@ -213,6 +215,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate startup embeddings for pgvector")
     parser.add_argument("--batch-size", type=int, default=100)
     args = parser.parse_args()
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     asyncio.run(_main(args.batch_size))
 
 

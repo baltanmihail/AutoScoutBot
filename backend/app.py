@@ -78,6 +78,45 @@ app.include_router(finance.router)
 app.include_router(export.router)
 app.include_router(portfolio.router)
 
+async def _vector_search_status() -> dict:
+    """Whether semantic search can run: libraries installed and startup embeddings stored."""
+    import importlib.util
+
+    status = {
+        "libraries": all(importlib.util.find_spec(m) is not None for m in ("sentence_transformers", "pgvector")),
+        "embeddings": None,
+    }
+    try:
+        from sqlalchemy import func, select
+
+        from backend.database import async_session
+        from backend.models import StartupEmbedding
+
+        async with async_session() as session:
+            status["embeddings"] = (await session.execute(select(func.count(StartupEmbedding.id)))).scalar()
+    except Exception as e:
+        logger.warning("Embedding count unavailable: %s", e)
+    return status
+
+
+# Registered before the static mount at "/", which would otherwise answer 404 for this path
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    ml_ready = False
+    try:
+        from scoring.predictor import get_predictor
+        ml_ready = get_predictor().is_ready
+    except Exception:
+        pass
+
+    return {
+        "status": "ok",
+        "ml_model_ready": ml_ready,
+        "vector_search": await _vector_search_status(),
+    }
+
+
 import os
 
 class NoCacheStaticFiles(StaticFiles):
@@ -92,18 +131,3 @@ frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "fronten
 os.makedirs(frontend_dir, exist_ok=True)
 app.mount("/", NoCacheStaticFiles(directory=frontend_dir, html=True), name="frontend")
 
-
-@app.get("/health")
-async def health():
-    """Health check endpoint."""
-    ml_ready = False
-    try:
-        from scoring.predictor import get_predictor
-        ml_ready = get_predictor().is_ready
-    except Exception:
-        pass
-
-    return {
-        "status": "ok",
-        "ml_model_ready": ml_ready,
-    }

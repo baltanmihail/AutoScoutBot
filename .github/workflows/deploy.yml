@@ -33,5 +33,8 @@ jobs:
             git clean -fd
             docker compose build
             docker compose up -d
+            # Векторы компаний для семантического поиска: считаются только для тех, у кого их ещё нет.
+            # Если библиотек или модели нет, шаг упадёт — поиск не должен молча откатываться к совпадению слов.
+            docker compose exec -T web python -m backend.embeddings
             docker image prune -f
             echo "== после выкладки"; df -h /

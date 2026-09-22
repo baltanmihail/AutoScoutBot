@@ -17,3 +17,5 @@ scoring/models/*/model_2*
 id_rsa
 xray-config.json
 .env
+# Кэш модели эмбеддингов на сервере (сотни мегабайт) — в образ не нужен
+.cache

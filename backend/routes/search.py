@@ -174,7 +174,7 @@ async def _pgvector_search(
         return [(r[0], float(r[1])) for r in rows]
 
     except Exception as e:
-        logger.debug("pgvector search unavailable: %s", e)
+        logger.warning("pgvector search unavailable, falling back to keyword search: %s", e)
         return []
 
 
