@@ -55,7 +55,7 @@ LLM_MODELS = {
 LLM_TOKEN_LIMITS = {
     "standard": {
         "filters": 1500,
-        "recommendations": 800,
+        "recommendations": 1200,
         "temperature_filters": 0.15,
         "temperature_recommendations": 0.5,
     },
