@@ -29,6 +29,9 @@ jobs:
             BRANCH="${{ github.ref_name }}"
             git fetch origin
             git checkout "$BRANCH"
+            # Базы SQLite и конфиг прокси не хранятся в git. Пока старая копия на сервере их отслеживает,
+            # reset удалил бы их при переходе через коммит, убравший их из репозитория; потом команда ничего не делает.
+            git rm -q --cached --ignore-unmatch users.db query_history.db xray-config.json
             git reset --hard "origin/$BRANCH"
             git clean -fd
             docker compose build

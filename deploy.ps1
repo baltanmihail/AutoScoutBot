@@ -15,8 +15,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "`n🌐 2. Подключаемся к серверу (37.230.192.5) и обновляем контейнеры..." -ForegroundColor Yellow
-# Команда для SSH. Если ты используешь специфичный ключ, можно добавить -i путь_к_ключу
-$sshCommand = "cd /home/autoscoutbot/autoscoutbot && git pull && docker compose up -d --build"
+# Ключ SSH берётся из ~/.ssh (или ssh-agent); в папке проекта ключей быть не должно.
+# Базы SQLite и конфиг прокси не хранятся в git: снимаем их с учёта, иначе git удалит их с сервера при переходе
+# через коммит, убравший их из репозитория. git pull после этого отказывается обновляться, поэтому код приводится
+# к ветке на GitHub через fetch + reset, как в .github/workflows/deploy.yml.
+$sshCommand = "cd /home/autoscoutbot/autoscoutbot && git rm -q --cached --ignore-unmatch users.db query_history.db xray-config.json && git fetch origin && git reset --hard '@{u}' && docker compose up -d --build"
 
 # Выполняем команду на сервере
 ssh autoscoutbot@37.230.192.5 $sshCommand
