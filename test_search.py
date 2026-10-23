@@ -1,6 +1,8 @@
 import asyncio
 import os
-os.environ["DATABASE_URL"] = "postgresql+asyncpg://postgres:password@localhost:5432/autoscout"
+from dotenv import load_dotenv
+load_dotenv()
+os.environ["DATABASE_URL"] = f"postgresql+asyncpg://postgres:{os.environ['POSTGRES_PASSWORD']}@localhost:5432/autoscout"
 
 from sqlalchemy import select, or_
 import re

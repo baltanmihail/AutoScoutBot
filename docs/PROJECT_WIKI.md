@@ -115,8 +115,12 @@ cd ~/autoscoutbot
 
 # 4. Настраиваем конфиг
 cp .env.example .env
-nano .env  # Вписываем TELEGRAM_BOT_TOKEN и ключи API
+nano .env  # Вписываем TELEGRAM_BOT_TOKEN, ключи API и POSTGRES_PASSWORD (openssl rand -hex 24)
 ```
+
+Пароль базы задаётся только в `.env` (`POSTGRES_PASSWORD`), без него `docker compose` не запустится. Порт 5432 опубликован только на `127.0.0.1` сервера; в группе безопасности СберCloud его открывать не нужно.
+
+**Смена пароля базы.** `POSTGRES_PASSWORD` применяется только при первом создании тома; у уже созданной базы пароль от правки `.env` не меняется. Порядок такой: сначала сменить пароль в работающей базе (`docker compose exec db psql -U postgres -d autoscout`, затем `\password postgres`), потом записать то же значение в `.env`, потом `docker compose up -d`. Если сделать иначе, web и bot потеряют доступ к базе.
 
 ### Запуск через Docker
 
